@@ -102,6 +102,7 @@ class AdminMainWindow(QDialog):
 
     def dashboard(self):
         self.stackedWidget.setCurrentIndex(0)
+        self.set_active_button(self.home_button)
         self.tableWidQueue = self.findChild(QTableWidget, "tableWidQueue")
         self.time_label = self.findChild(QLabel, "timeLabel")
         self.calendar_widget = self.findChild(QCalendarWidget, "adminCalendar")
@@ -111,6 +112,7 @@ class AdminMainWindow(QDialog):
     def patient(self):
         self.clear()
         self.stackedWidget.setCurrentIndex(1)
+        self.set_active_button(self.patients_button)
         self.tableWidPat = self.findChild(QTableWidget, "tableWidgetPat")
         self.searchPat = self.findChild(QLineEdit, "lineEditSearchPat")
         self.patient_controller = AdminPatientController(self.tableWidPat, self.searchPat)
@@ -126,6 +128,7 @@ class AdminMainWindow(QDialog):
     def appointment(self):
         self.clear()
         self.stackedWidget.setCurrentIndex(2)
+        self.set_active_button(self.appointments_button)
         self.tableWidApp = self.findChild(QTableWidget, "tableWidgetApp")
         self.searchApp = self.findChild(QLineEdit, "lineEditSearchApp")
         self.appointment_controller = AdminAppointmentController(self.tableWidApp, self.searchApp)
@@ -141,11 +144,13 @@ class AdminMainWindow(QDialog):
     def files(self):
         self.clear()
         self.stackedWidget.setCurrentIndex(3)
+        self.set_active_button(self.files_button)
         self.tableWidFolder = self.findChild(QTableWidget, "")
 
     def staff(self):
         self.clear()
         self.stackedWidget.setCurrentIndex(4)
+        self.set_active_button(self.staff_button)
         self.tableWidUser = self.findChild(QTableWidget, "tableWidgetStaff")
         self.searchUser = self.findChild(QLineEdit, "lineEditSearchStaff")
         self.user_controller = AdminUserController(self.tableWidUser, self.searchUser, self.user_id)
@@ -161,6 +166,7 @@ class AdminMainWindow(QDialog):
     def report(self):
         self.clear()
         self.stackedWidget.setCurrentIndex(5)
+        self.set_active_button(self.report_button)
 
     def settings(self):
         self.clear()
@@ -196,6 +202,12 @@ class AdminMainWindow(QDialog):
             from Login import LoginWindow
             self.login_window = LoginWindow()
             self.login_window.show()
+    
+    def set_active_button(self, active_button):
+        for btn in [self.home_button, self.patients_button, self.appointments_button, self.files_button, self.staff_button, self.report_button]:
+            btn.setProperty("active", btn == active_button)
+            btn.style().unpolish(btn)
+            btn.style().polish(btn)
 
 
 if __name__ == "__main__":

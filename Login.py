@@ -1,6 +1,7 @@
-from PyQt5.QtWidgets import QApplication, QDialog, QMessageBox, QLineEdit, QPushButton
+from PyQt5.QtWidgets import QApplication, QDialog, QMessageBox, QLineEdit, QPushButton, QCheckBox
 from PyQt5 import uic
 from PyQt5.QtGui import QIcon
+from PyQt5.QtCore import Qt 
 import sys
 
 from Admin_Main_Controller import AdminMainWindow
@@ -16,10 +17,13 @@ class LoginWindow(QDialog):
 
         self.setWindowTitle("WellFam Care")
         self.setWindowIcon(QIcon("wfpics/logo1.jpg"))
+        self.setWindowFlags(Qt.Window)
 
         self.username_input = self.findChild(QLineEdit, "lineEditUsername")
         self.password_input = self.findChild(QLineEdit, "lineEditPassword")
         self.login_button = self.findChild(QPushButton, "signInButton")
+        self.show_password_checkbox = self.findChild(QCheckBox, "checkBoxShowPassword")
+        self.show_password_checkbox.stateChanged.connect(self.toggle_password_visibility)
 
         self.login_button.clicked.connect(self.check_login)
         
@@ -56,6 +60,13 @@ class LoginWindow(QDialog):
 
         except Exception as e:
             QMessageBox.critical(self, "Unexpected Error", f"Something went wrong:\n{str(e)}")
+    
+    def toggle_password_visibility(self):
+        if self.show_password_checkbox.isChecked():
+            self.password_input.setEchoMode(QLineEdit.Normal)
+        else:
+            self.password_input.setEchoMode(QLineEdit.Password)
+
 
 
 

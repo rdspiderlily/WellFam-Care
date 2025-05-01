@@ -3,6 +3,8 @@ from PyQt5 import uic
 from PyQt5.QtGui import QIcon
 
 from Admin_Controllers.Admin_Patient_View.Personal_Info import PersonalInfoController
+from Admin_Controllers.Admin_Patient_View.Maternal_Records import MaternalRecordsController
+from Admin_Controllers.Admin_Patient_View.Family_Planning import FamPlanController
 from Admin_Controllers.Admin_Patient_View.Appointment_History import AppointmentHistoryController
 
 class ViewPatientDialog(QDialog):
@@ -24,33 +26,48 @@ class ViewPatientDialog(QDialog):
 
         
         self.info_btn.clicked.connect(self.pat_info)
-        self.msr_btn.clicked.connect(lambda: self.stackedWidget.setCurrentIndex(1))
-        self.fpf_btn.clicked.connect(lambda: self.stackedWidget.setCurrentIndex(2))
+        self.msr_btn.clicked.connect(self.msr)
+        self.fpf_btn.clicked.connect(self.fpf)
         self.ph_btn.clicked.connect(lambda: self.stackedWidget.setCurrentIndex(3))
         self.wfar_btn.clicked.connect(lambda: self.stackedWidget.setCurrentIndex(4))
         self.ah_btn.clicked.connect(self.ah)
         
         self.pat_info()
-        self.ah()
         
     def pat_info(self):
         self.stackedWidget.setCurrentIndex(0)
+        self.set_active_button(self.info_btn)
         page = self.stackedWidget.widget(0)
         self.personal_info_widget = PersonalInfoController(page, self.patient_id)
         
     def msr(self):
         self.stackedWidget.setCurrentIndex(1)
+        self.set_active_button(self.msr_btn)
+        pageMSR = self.stackedWidget.widget(1)
+        self.maternal_records_widget = MaternalRecordsController(pageMSR, self.patient_id)
         
     def fpf(self):
         self.stackedWidget.setCurrentIndex(2)
+        self.set_active_button(self.fpf_btn)
+        pageFPF = self.stackedWidget.widget(2)
+        self.maternal_records_widget = FamPlanController(pageFPF, self.patient_id)
         
     def ph(self):
         self.stackedWidget.setCurrentIndex(3)
+        self.set_active_button(self.ph_btn)
         
     def wfar(self):
         self.stackedWidget.setCurrentIndex(4)
+        self.set_active_button(self.wfar_btn)
 
     def ah(self):
         self.stackedWidget.setCurrentIndex(5)
+        self.set_active_button(self.ah_btn)
         appHpage = self.stackedWidget.widget(5)
         self.app_history_widget = AppointmentHistoryController(appHpage, self.patient_id)
+    
+    def set_active_button(self, active_button):
+        for btn in [self.info_btn, self.msr_btn, self.fpf_btn, self.ph_btn, self.wfar_btn, self.ah_btn]:
+            btn.setProperty("active", btn == active_button)
+            btn.style().unpolish(btn)
+            btn.style().polish(btn)

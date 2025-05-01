@@ -150,9 +150,21 @@
      </font>
     </property>
     <property name="styleSheet">
-     <string notr="true">background-color: rgb(0, 51, 102);
-color: white;
-border-radius: 10px;</string>
+     <string notr="true">QPushButton[active=&quot;true&quot;] {
+	background-color: rgb(246, 235, 97);
+	color:  rgb(0, 51, 102);
+}
+
+QPushButton {
+	background-color: rgb(0, 51, 102);
+	color: white;
+	border-radius: 10px;
+}
+
+QPushButton:hover {
+	background-color: #2980b9;
+}
+</string>
     </property>
     <property name="text">
      <string>Home</string>
@@ -177,9 +189,21 @@ border-radius: 10px;</string>
      </font>
     </property>
     <property name="styleSheet">
-     <string notr="true">background-color: rgb(0, 51, 102);
-color: white;
-border-radius: 10px;</string>
+     <string notr="true">QPushButton[active=&quot;true&quot;] {
+	background-color: rgb(246, 235, 97);
+	color:  rgb(0, 51, 102);
+}
+
+QPushButton {
+	background-color: rgb(0, 51, 102);
+	color: white;
+	border-radius: 10px;
+}
+
+QPushButton:hover {
+	background-color: #2980b9;
+}
+</string>
     </property>
     <property name="text">
      <string>Patients</string>
@@ -204,9 +228,21 @@ border-radius: 10px;</string>
      </font>
     </property>
     <property name="styleSheet">
-     <string notr="true">background-color: rgb(0, 51, 102);
-color: white;
-border-radius: 10px;</string>
+     <string notr="true">QPushButton[active=&quot;true&quot;] {
+	background-color: rgb(246, 235, 97);
+	color:  rgb(0, 51, 102);
+}
+
+QPushButton {
+	background-color: rgb(0, 51, 102);
+	color: white;
+	border-radius: 10px;
+}
+
+QPushButton:hover {
+	background-color: #2980b9;
+}
+</string>
     </property>
     <property name="text">
      <string>Appointments</string>
@@ -231,9 +267,21 @@ border-radius: 10px;</string>
      </font>
     </property>
     <property name="styleSheet">
-     <string notr="true">background-color: rgb(0, 51, 102);
-color: white;
-border-radius: 10px;</string>
+     <string notr="true">QPushButton[active=&quot;true&quot;] {
+	background-color: rgb(246, 235, 97);
+	color:  rgb(0, 51, 102);
+}
+
+QPushButton {
+	background-color: rgb(0, 51, 102);
+	color: white;
+	border-radius: 10px;
+}
+
+QPushButton:hover {
+	background-color: #2980b9;
+}
+</string>
     </property>
     <property name="text">
      <string>Staffs</string>
@@ -258,12 +306,24 @@ border-radius: 10px;</string>
      </font>
     </property>
     <property name="styleSheet">
-     <string notr="true">background-color: rgb(0, 51, 102);
-color: white;
-border-radius: 10px;</string>
+     <string notr="true">QPushButton[active=&quot;true&quot;] {
+	background-color: rgb(246, 235, 97);
+	color:  rgb(0, 51, 102);
+}
+
+QPushButton {
+	background-color: rgb(0, 51, 102);
+	color: white;
+	border-radius: 10px;
+}
+
+QPushButton:hover {
+	background-color: #2980b9;
+}
+</string>
     </property>
     <property name="text">
-     <string>Reports</string>
+     <string>Reports and Logs</string>
     </property>
    </widget>
    <widget class="QPushButton" name="pushBtnSettings">
@@ -337,9 +397,21 @@ border-radius: 10px;</string>
      </font>
     </property>
     <property name="styleSheet">
-     <string notr="true">background-color: rgb(0, 51, 102);
-color: white;
-border-radius: 10px;</string>
+     <string notr="true">QPushButton[active=&quot;true&quot;] {
+	background-color: rgb(246, 235, 97);
+	color:  rgb(0, 51, 102);
+}
+
+QPushButton {
+	background-color: rgb(0, 51, 102);
+	color: white;
+	border-radius: 10px;
+}
+
+QPushButton:hover {
+	background-color: #2980b9;
+}
+</string>
     </property>
     <property name="text">
      <string>File</string>
