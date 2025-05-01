@@ -332,7 +332,7 @@ QPushButton:hover {
     <string notr="true"/>
    </property>
    <property name="currentIndex">
-    <number>2</number>
+    <number>4</number>
    </property>
    <widget class="QWidget" name="viewPatInfo">
     <widget class="QLabel" name="label_3">
@@ -9013,7 +9013,7 @@ QPushButton:focus {
         <string>NAME OF CLIENT</string>
        </property>
       </widget>
-      <widget class="QLineEdit" name="lineEdit_58">
+      <widget class="QLineEdit" name="clientFPLname">
        <property name="geometry">
         <rect>
          <x>10</x>
@@ -9061,7 +9061,7 @@ border-radius: 2px;
         <string>Date of Birth</string>
        </property>
       </widget>
-      <widget class="QComboBox" name="comboBox_21">
+      <widget class="QComboBox" name="clientFPEduAtt">
        <property name="geometry">
         <rect>
          <x>650</x>
@@ -9088,7 +9088,7 @@ border-radius: 2px;
         </property>
        </item>
       </widget>
-      <widget class="QDateEdit" name="dateEdit_16">
+      <widget class="QDateEdit" name="clientFPDOB">
        <property name="geometry">
         <rect>
          <x>480</x>
@@ -9313,7 +9313,7 @@ border: 2px solid rgba(0, 0, 0, .3);
        <property name="frameShadow">
         <enum>QFrame::Raised</enum>
        </property>
-       <widget class="QLineEdit" name="client">
+       <widget class="QLineEdit" name="clientID">
         <property name="geometry">
          <rect>
           <x>130</x>
@@ -9382,7 +9382,7 @@ border-radius: 2px;
          <string>PHILHEALTH NO:</string>
         </property>
        </widget>
-       <widget class="QLineEdit" name="lineEdit_85">
+       <widget class="QLineEdit" name="philHealthNo">
         <property name="geometry">
          <rect>
           <x>130</x>
@@ -9430,7 +9430,7 @@ border-radius: 2px;
          <string>NHTS?</string>
         </property>
        </widget>
-       <widget class="QCheckBox" name="checkBox_364">
+       <widget class="QCheckBox" name="NHTSy">
         <property name="geometry">
          <rect>
           <x>60</x>
@@ -9449,7 +9449,7 @@ border-radius: 2px;
          <string>Yes</string>
         </property>
        </widget>
-       <widget class="QCheckBox" name="checkBox_365">
+       <widget class="QCheckBox" name="NHTSn">
         <property name="geometry">
          <rect>
           <x>110</x>
@@ -9489,7 +9489,7 @@ border-radius: 2px;
          <string>Pantawid Pamilya Program (4Ps):</string>
         </property>
        </widget>
-       <widget class="QCheckBox" name="checkBox_366">
+       <widget class="QCheckBox" name="fourPsY">
         <property name="geometry">
          <rect>
           <x>390</x>
@@ -9508,7 +9508,7 @@ border-radius: 2px;
          <string>Yes</string>
         </property>
        </widget>
-       <widget class="QCheckBox" name="checkBox_367">
+       <widget class="QCheckBox" name="fourPsN">
         <property name="geometry">
          <rect>
           <x>440</x>
@@ -9528,7 +9528,7 @@ border-radius: 2px;
         </property>
        </widget>
       </widget>
-      <widget class="QLineEdit" name="lineEdit_59">
+      <widget class="QLineEdit" name="clientFPFname">
        <property name="geometry">
         <rect>
          <x>210</x>
@@ -9555,7 +9555,7 @@ border-radius: 2px;
         <string>Given Name</string>
        </property>
       </widget>
-      <widget class="QLineEdit" name="lineEdit_60">
+      <widget class="QLineEdit" name="clientFPMidI">
        <property name="geometry">
         <rect>
          <x>410</x>
@@ -9582,7 +9582,7 @@ border-radius: 2px;
         <string>M.I</string>
        </property>
       </widget>
-      <widget class="QLineEdit" name="lineEdit_61">
+      <widget class="QLineEdit" name="clientFPAge">
        <property name="geometry">
         <rect>
          <x>580</x>
@@ -9651,7 +9651,7 @@ border-radius: 2px;
         <string>Educ. Attainment</string>
        </property>
       </widget>
-      <widget class="QLineEdit" name="lineEdit_62">
+      <widget class="QLineEdit" name="clientFPOccu">
        <property name="geometry">
         <rect>
          <x>800</x>
@@ -9720,7 +9720,7 @@ border-radius: 2px;
         <string>ADDRESS</string>
        </property>
       </widget>
-      <widget class="QLineEdit" name="lineEdit_63">
+      <widget class="QLineEdit" name="clientFP_NSAdd">
        <property name="geometry">
         <rect>
          <x>10</x>
@@ -9747,7 +9747,7 @@ border-radius: 2px;
         <string>No./Street</string>
        </property>
       </widget>
-      <widget class="QLineEdit" name="lineEdit_64">
+      <widget class="QLineEdit" name="clientFP_BarAdd">
        <property name="geometry">
         <rect>
          <x>240</x>
@@ -9774,7 +9774,7 @@ border-radius: 2px;
         <string>Barangay</string>
        </property>
       </widget>
-      <widget class="QLineEdit" name="lineEdit_65">
+      <widget class="QLineEdit" name="clientFP_MuniAdd">
        <property name="geometry">
         <rect>
          <x>400</x>
@@ -9801,7 +9801,7 @@ border-radius: 2px;
         <string>Municipality</string>
        </property>
       </widget>
-      <widget class="QLineEdit" name="lineEdit_66">
+      <widget class="QLineEdit" name="clientFP_ProvAdd">
        <property name="geometry">
         <rect>
          <x>550</x>
@@ -9828,7 +9828,7 @@ border-radius: 2px;
         <string>Province</string>
        </property>
       </widget>
-      <widget class="QLineEdit" name="lineEdit_67">
+      <widget class="QLineEdit" name="clientFPCont">
        <property name="geometry">
         <rect>
          <x>690</x>
@@ -9855,7 +9855,7 @@ border-radius: 2px;
         <string/>
        </property>
       </widget>
-      <widget class="QComboBox" name="comboBox_31">
+      <widget class="QComboBox" name="clientFPCivilStat">
        <property name="geometry">
         <rect>
          <x>810</x>
@@ -9882,7 +9882,7 @@ border-radius: 2px;
         </property>
        </item>
       </widget>
-      <widget class="QComboBox" name="comboBox_32">
+      <widget class="QComboBox" name="clientFPReligion">
        <property name="geometry">
         <rect>
          <x>900</x>
@@ -9993,7 +9993,7 @@ border-radius: 2px;
         <string>NAME OF SPOUSE</string>
        </property>
       </widget>
-      <widget class="QLineEdit" name="lineEdit_86">
+      <widget class="QLineEdit" name="spouseFPLname">
        <property name="geometry">
         <rect>
          <x>10</x>
@@ -10020,7 +10020,7 @@ border-radius: 2px;
         <string>Last Name</string>
        </property>
       </widget>
-      <widget class="QLineEdit" name="lineEdit_87">
+      <widget class="QLineEdit" name="spouseFPFname">
        <property name="geometry">
         <rect>
          <x>210</x>
@@ -10047,7 +10047,7 @@ border-radius: 2px;
         <string>Given Name</string>
        </property>
       </widget>
-      <widget class="QLineEdit" name="lineEdit_88">
+      <widget class="QLineEdit" name="spouseFPMidI">
        <property name="geometry">
         <rect>
          <x>410</x>
@@ -10074,7 +10074,7 @@ border-radius: 2px;
         <string>M.I</string>
        </property>
       </widget>
-      <widget class="QDateEdit" name="dateEdit_22">
+      <widget class="QDateEdit" name="spouseFPDOB">
        <property name="geometry">
         <rect>
          <x>480</x>
@@ -10120,7 +10120,7 @@ border-radius: 2px;
         <string>Date of Birth</string>
        </property>
       </widget>
-      <widget class="QLineEdit" name="lineEdit_89">
+      <widget class="QLineEdit" name="spouseFPAge">
        <property name="geometry">
         <rect>
          <x>580</x>
@@ -10168,7 +10168,7 @@ border-radius: 2px;
         <string>Age</string>
        </property>
       </widget>
-      <widget class="QLineEdit" name="lineEdit_90">
+      <widget class="QLineEdit" name="spouseFPOccu">
        <property name="geometry">
         <rect>
          <x>650</x>
@@ -10237,7 +10237,7 @@ border-radius: 2px;
         <string>NO. OF LIVING CHILDREN:</string>
        </property>
       </widget>
-      <widget class="QLineEdit" name="lineEdit_91">
+      <widget class="QLineEdit" name="noLivingKids">
        <property name="geometry">
         <rect>
          <x>210</x>
@@ -10285,7 +10285,7 @@ border-radius: 2px;
         <string>PLAN TO HAVE MORE CHILDREN?</string>
        </property>
       </widget>
-      <widget class="QCheckBox" name="checkBox_368">
+      <widget class="QCheckBox" name="planMoreKidY">
        <property name="geometry">
         <rect>
          <x>535</x>
@@ -10304,7 +10304,7 @@ border-radius: 2px;
         <string>Yes</string>
        </property>
       </widget>
-      <widget class="QCheckBox" name="checkBox_369">
+      <widget class="QCheckBox" name="planMoreKidN">
        <property name="geometry">
         <rect>
          <x>580</x>
@@ -10344,7 +10344,7 @@ border-radius: 2px;
         <string>AVERAGE MONTHLY INCOME:</string>
        </property>
       </widget>
-      <widget class="QLineEdit" name="lineEdit_92">
+      <widget class="QLineEdit" name="monthlyIncome">
        <property name="geometry">
         <rect>
          <x>850</x>
@@ -22183,7 +22183,7 @@ border-radius: 10px;</string>
         <string>NAME</string>
        </property>
       </widget>
-      <widget class="QLineEdit" name="lineEdit_79">
+      <widget class="QLineEdit" name="patientPDSname">
        <property name="geometry">
         <rect>
          <x>60</x>
@@ -22210,7 +22210,7 @@ border-radius: 2px;
         <string>Full Name of Patient</string>
        </property>
       </widget>
-      <widget class="QComboBox" name="comboBox_25">
+      <widget class="QComboBox" name="patientPDSreligion">
        <property name="geometry">
         <rect>
          <x>740</x>
@@ -22237,7 +22237,7 @@ border-radius: 2px;
         </property>
        </item>
       </widget>
-      <widget class="QDateEdit" name="dateEdit_18">
+      <widget class="QDateEdit" name="patientPDSdob">
        <property name="geometry">
         <rect>
          <x>510</x>
@@ -22262,7 +22262,7 @@ border-radius: 2px;
         <string>MM/dd/yyyy</string>
        </property>
       </widget>
-      <widget class="QLineEdit" name="lineEdit_81">
+      <widget class="QLineEdit" name="patientPDSoccupation">
        <property name="geometry">
         <rect>
          <x>120</x>
@@ -22289,7 +22289,7 @@ border-radius: 2px;
         <string>Given Name</string>
        </property>
       </widget>
-      <widget class="QLineEdit" name="lineEdit_84">
+      <widget class="QLineEdit" name="patientPDScontact">
        <property name="geometry">
         <rect>
          <x>770</x>
@@ -22337,7 +22337,7 @@ border-radius: 2px;
         <string>ADDRESS</string>
        </property>
       </widget>
-      <widget class="QLineEdit" name="lineEdit_116">
+      <widget class="QLineEdit" name="patientPDSaddress">
        <property name="geometry">
         <rect>
          <x>90</x>
@@ -22364,7 +22364,7 @@ border-radius: 2px;
         <string>Full Address of Patient</string>
        </property>
       </widget>
-      <widget class="QLineEdit" name="lineEdit_120">
+      <widget class="QLineEdit" name="patientPDSage">
        <property name="geometry">
         <rect>
          <x>690</x>
@@ -22433,7 +22433,7 @@ border-radius: 2px;
         <string>SEX</string>
        </property>
       </widget>
-      <widget class="QComboBox" name="comboBox_27">
+      <widget class="QComboBox" name="patientPDSsex">
        <property name="geometry">
         <rect>
          <x>560</x>
@@ -22565,7 +22565,7 @@ border-radius: 2px;
         <string>AGE</string>
        </property>
       </widget>
-      <widget class="QLineEdit" name="lineEdit_80">
+      <widget class="QLineEdit" name="spousePDSname">
        <property name="geometry">
         <rect>
          <x>150</x>
@@ -22613,7 +22613,7 @@ border-radius: 2px;
         <string>OCCUPATION</string>
        </property>
       </widget>
-      <widget class="QLineEdit" name="lineEdit_82">
+      <widget class="QLineEdit" name="spousePDSoccupation">
        <property name="geometry">
         <rect>
          <x>670</x>
@@ -22661,7 +22661,7 @@ border-radius: 2px;
         <string>AGE</string>
        </property>
       </widget>
-      <widget class="QLineEdit" name="lineEdit_135">
+      <widget class="QLineEdit" name="spousePDSage">
        <property name="geometry">
         <rect>
          <x>80</x>
@@ -22709,7 +22709,7 @@ border-radius: 2px;
         <string>RELIGION</string>
        </property>
       </widget>
-      <widget class="QComboBox" name="comboBox_28">
+      <widget class="QComboBox" name="spousePDSreligion">
        <property name="geometry">
         <rect>
          <x>320</x>
@@ -22757,7 +22757,7 @@ border-radius: 2px;
         <string>CONTACT #</string>
        </property>
       </widget>
-      <widget class="QLineEdit" name="lineEdit_115">
+      <widget class="QLineEdit" name="spousePDScontact">
        <property name="geometry">
         <rect>
          <x>600</x>

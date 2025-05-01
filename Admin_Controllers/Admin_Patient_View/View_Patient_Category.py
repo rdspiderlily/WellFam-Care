@@ -5,6 +5,7 @@ from PyQt5.QtGui import QIcon
 from Admin_Controllers.Admin_Patient_View.Personal_Info import PersonalInfoController
 from Admin_Controllers.Admin_Patient_View.Maternal_Records import MaternalRecordsController
 from Admin_Controllers.Admin_Patient_View.Family_Planning import FamPlanController
+from Admin_Controllers.Admin_Patient_View.Admission import AdmissionController
 from Admin_Controllers.Admin_Patient_View.Appointment_History import AppointmentHistoryController
 
 class ViewPatientDialog(QDialog):
@@ -29,7 +30,7 @@ class ViewPatientDialog(QDialog):
         self.msr_btn.clicked.connect(self.msr)
         self.fpf_btn.clicked.connect(self.fpf)
         self.ph_btn.clicked.connect(lambda: self.stackedWidget.setCurrentIndex(3))
-        self.wfar_btn.clicked.connect(lambda: self.stackedWidget.setCurrentIndex(4))
+        self.wfar_btn.clicked.connect(self.wfar)
         self.ah_btn.clicked.connect(self.ah)
         
         self.pat_info()
@@ -50,7 +51,7 @@ class ViewPatientDialog(QDialog):
         self.stackedWidget.setCurrentIndex(2)
         self.set_active_button(self.fpf_btn)
         pageFPF = self.stackedWidget.widget(2)
-        self.maternal_records_widget = FamPlanController(pageFPF, self.patient_id)
+        self.famplan_widget = FamPlanController(pageFPF, self.patient_id)
         
     def ph(self):
         self.stackedWidget.setCurrentIndex(3)
@@ -59,6 +60,8 @@ class ViewPatientDialog(QDialog):
     def wfar(self):
         self.stackedWidget.setCurrentIndex(4)
         self.set_active_button(self.wfar_btn)
+        pageWFAR = self.stackedWidget.widget(4)
+        self.admission_widget = AdmissionController(pageWFAR, self.patient_id)
 
     def ah(self):
         self.stackedWidget.setCurrentIndex(5)

@@ -81,15 +81,13 @@ class MaternalRecordsController:
         self.prefilled_pinfo()
         
     def prefilled_pinfo(self):
-        personal_info_page = self.stackWidMSR.currentWidget()  # This will give you the current sub-widget in the stack
+        personal_info_page = self.stackWidMSR.currentWidget()  
         
-        # Find widgets inside the personal info page (sub-stack)
         self.clt_lname = personal_info_page.findChild(QLineEdit, "clientLName")
         self.clt_fname = personal_info_page.findChild(QLineEdit, "clientFname")
         self.clt_minit = personal_info_page.findChild(QLineEdit, "clientMidI")
         self.clt_dob = personal_info_page.findChild(QDateEdit, "clientDOB")
         
-        # Execute query to fetch patient info based on patient_id
         query = """
             SELECT PAT_LNAME, PAT_FNAME, LEFT(PAT_MNAME, 1) || '.' AS MIDDLE_INITIAL, PAT_DOB
             FROM PATIENT
@@ -99,12 +97,11 @@ class MaternalRecordsController:
         cursor.execute(query, (self.patient_id,))
         result = cursor.fetchone()
 
-        # If data is found, prefill the widgets with the retrieved data
         if result:
-            self.clt_lname.setText(result[0])  # Set last name
-            self.clt_fname.setText(result[1])  # Set first name
-            self.clt_minit.setText(result[2])  # Set middle initial
-            self.clt_dob.setDate(result[3])    # Set date of birth (QDateEdit)
+            self.clt_lname.setText(result[0])  
+            self.clt_fname.setText(result[1])  
+            self.clt_minit.setText(result[2])  
+            self.clt_dob.setDate(result[3])    
         else:
             print("No patient found for PAT_ID:", self.patient_id)
 
