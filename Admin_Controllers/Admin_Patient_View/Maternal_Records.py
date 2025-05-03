@@ -41,6 +41,7 @@ class MaternalRecordsController:
         self.personal_info()
         self.medicalH_info()
         self.physicalE_info()
+        self.birthEPlan_info()
     
     def go_prev(self):
         current_index = self.stackWidMSR.currentIndex()
@@ -111,6 +112,8 @@ class MaternalRecordsController:
             self.save_medical()
             self.save_obstetrical()
             self.save_physicalE()
+            self.save_pelvicE()
+            self.save_birthEPlan()
             print("Saved successfully.")
         except Exception as e:
             print("Error while saving:", e)
@@ -730,9 +733,8 @@ class MaternalRecordsController:
                         no_widget.setChecked(value == "No")
                         yes_widget.setChecked(value == "Yes")
 
-            print("Loaded other personal info.")
         except Exception as e:
-            print("Error loading other personal info:", e)
+            print("Error loading obstetrical:", e)
     
     def save_obstetrical(self):
         try:
@@ -787,17 +789,16 @@ class MaternalRecordsController:
                     print(f"[Warning] FORM_OPTION not found for label: {label}")
 
             self.conn.commit()
-            print("Other Personal Info saved.")
         except Exception as e:
-            print("Error saving other personal info:", e)
+            print("Error saving obstetrical:", e)
             self.conn.rollback()
     
     def physicalE_info(self):
         self.stackWidMSR.setCurrentIndex(2)
         self.load_physicalE_widgets()
-        # self.load_pelvicE_widgets()
+        self.load_pelvicE_widgets()
         self.load_physicalE()
-        # self.load_pelvicE()
+        self.load_pelvicE()
     
     def load_physicalE_widgets(self):
         self.phye_bps = self.pageMSR.findChild(QSpinBox, "phye_bps")
@@ -870,7 +871,7 @@ class MaternalRecordsController:
                 "Fetal part in the fundus": self.phye_fpitf,
                 "Position of Fetal Back": self.phye_pofb,
                 "Presenting Part": self.phye_pp,
-                "Status of Presenting Partt": self.phye_sopp,
+                "Status of Presenting Part": self.phye_sopp,
                 "Uterine Activity": self.phye_ua,
                 
                 "Cervix Consistency": self.phye_cc,
@@ -976,6 +977,257 @@ class MaternalRecordsController:
             self.conn.commit()
         except Exception as e:
             print("Error saving physical examination:", e)
+            self.conn.rollback()
+    
+    def load_pelvicE_widgets(self):
+        self.pelv_sN = self.pageMSR.findChild(QCheckBox, "pelv_sN")
+        self.pelv_sY = self.pageMSR.findChild(QCheckBox, "pelv_sY")
+        self.pelv_wmN = self.pageMSR.findChild(QCheckBox, "pelv_wmN")
+        self.pelv_wmY = self.pageMSR.findChild(QCheckBox, "pelv_wmY")
+        self.pelv_lacN = self.pageMSR.findChild(QCheckBox, "pelv_lacN")
+        self.pelv_lacY = self.pageMSR.findChild(QCheckBox, "pelv_lacY")
+        self.pelv_sevaN = self.pageMSR.findChild(QCheckBox, "pelv_sevaN")
+        self.pelv_sevaY = self.pageMSR.findChild(QCheckBox, "pelv_sevaY")
+        
+        self.pelv_bcN = self.pageMSR.findChild(QCheckBox, "pelv_bcN")
+        self.pelv_bcY = self.pageMSR.findChild(QCheckBox, "pelv_bcY")
+        self.pelv_wsgdN = self.pageMSR.findChild(QCheckBox, "pelv_wsgdN")
+        self.pelv_wsgdY = self.pageMSR.findChild(QCheckBox, "pelv_wsgdY")
+        self.pelv_crN = self.pageMSR.findChild(QCheckBox, "pelv_crN")
+        self.pelv_crY = self.pageMSR.findChild(QCheckBox, "pelv_crY")
+        self.pelv_pdbN = self.pageMSR.findChild(QCheckBox, "pelv_pdbN")
+        self.pelv_pdbY = self.pageMSR.findChild(QCheckBox, "pelv_pdbY")
+        self.pelv_epfN = self.pageMSR.findChild(QCheckBox, "pelv_epfN")
+        self.pelv_epfY = self.pageMSR.findChild(QCheckBox, "pelv_epfY")
+        
+    def load_pelvicE(self):
+        try:
+            cursor = self.conn.cursor()
+            checkbox_to_widget = {
+                "Scars": (self.pelv_sN, self.pelv_sY),
+                "Warts/mass": (self.pelv_wmN, self.pelv_wmY),
+                "Laceration": (self.pelv_lacN, self.pelv_lacY),
+                "Pelvic Severe Varicosities": (self.pelv_sevaN, self.pelv_sevaY),
+                
+                "Bartholins cyst": (self.pelv_bcN, self.pelv_bcY),
+                "Warts/Skenes gland discharge": (self.pelv_wsgdN, self.pelv_wsgdY),
+                "Cystocele/rectocele": (self.pelv_crN, self.pelv_crY),
+                "Purulent discharge/bleeding": (self.pelv_pdbN, self.pelv_pdbY),
+                "Erosion/polyp/foreign body": (self.pelv_epfN, self.pelv_epfY)
+            }
+            
+            for checkbox, widget in checkbox_to_widget.items():
+                cursor.execute("""
+                    SELECT FR.FORM_RES_VAL
+                    FROM FORM_RESPONSE FR
+                    JOIN FORM_OPTION FO ON FR.FORM_OPT_ID = FO.FORM_OPT_ID
+                    WHERE FO.FORM_OPT_LABEL = %s AND FR.PAT_ID = %s
+                """, (checkbox, self.patient_id))
+                result = cursor.fetchone()
+                if result:
+                    value = result[0]
+                    if isinstance(widget, tuple):
+                        no_widget, yes_widget = widget
+                        no_widget.setChecked(value == "No")
+                        yes_widget.setChecked(value == "Yes")
+            
+        except Exception as e:
+            print("Error loading pelvic examination:", e)
+            
+    def save_pelvicE(self):
+        try:
+            cursor = self.conn.cursor()
+            
+            pelvEcheckbox = {
+                "Scars": "No" if self.pelv_sN.isChecked() else "Yes",
+                "Warts/mass": "No" if self.pelv_wmN.isChecked() else "Yes",
+                "Laceration": "No" if self.pelv_lacN.isChecked() else "Yes",
+                "Pelvic Severe Varicosities": "No" if self.pelv_sevaN.isChecked() else "Yes",
+                
+                "Bartholins cyst": "No" if self.pelv_bcN.isChecked() else "Yes",
+                "Warts/Skenes gland discharge": "No" if self.pelv_wsgdN.isChecked() else "Yes",
+                "Cystocele/rectocele": "No" if self.pelv_crN.isChecked() else "Yes",
+                "Purulent discharge/bleeding": "No" if self.pelv_pdbN.isChecked() else "Yes",
+                "Erosion/polyp/foreign body": "No" if self.pelv_epfN.isChecked() else "Yes",
+            }
+            
+            for checkbox, value in pelvEcheckbox.items():
+                cursor.execute("""
+                    SELECT FORM_OPT_ID FROM FORM_OPTION
+                    WHERE FORM_OPT_LABEL = %s
+                """, (checkbox,))
+                opt_result = cursor.fetchone()
+                if opt_result:
+                    form_opt_id = opt_result[0]
+
+                    cursor.execute("""
+                        SELECT FORM_RES_ID FROM FORM_RESPONSE
+                        WHERE FORM_OPT_ID = %s AND PAT_ID = %s
+                    """, (form_opt_id, self.patient_id))
+                    exists = cursor.fetchone()
+
+                    if exists:
+                        cursor.execute("""
+                            UPDATE FORM_RESPONSE
+                            SET FORM_RES_VAL = %s
+                            WHERE FORM_OPT_ID = %s AND PAT_ID = %s
+                        """, (value, form_opt_id, self.patient_id))
+                    else:
+                        cursor.execute("""
+                            INSERT INTO FORM_RESPONSE (FORM_RES_VAL, FORM_OPT_ID, PAT_ID)
+                            VALUES (%s, %s, %s)
+                        """, (value, form_opt_id, self.patient_id))
+                else:
+                    print(f"[Warning] FORM_OPTION not found for label: {checkbox}")
+            
+            self.conn.commit()
+        except Exception as e:
+            print("Error saving pelvic examination:", e)
+            
+    def birthEPlan_info(self):
+        self.stackWidMSR.setCurrentIndex(3)
+        self.load_birthEPlan_widgets()
+        self.load_birthEPlan()
+        self.prefilled_birthEPlan()
+    
+    def prefilled_birthEPlan(self):
+        try:
+            self.load_birthEPlan_widgets()
+            self.load_basic_pinfo()
+
+            # List of fields to check and prefill
+            fields = {
+                self.clt_PNEName: self.bep_ptnn,
+                self.clt_PNEAdd: self.bep_ptna,
+                self.clt_PNEContact: self.bep_ptnc
+            }
+
+            for clt_field, bep_field in fields.items():
+                if clt_field:
+                    bep_field.setText(clt_field.text())
+                else:
+                    print(f"Warning: {clt_field} is None.")
+            
+        except Exception as e:
+            print("Error prefilling birth plan data:", e)
+    
+    def load_birthEPlan_widgets(self):
+        self.bep_ptnn = self.pageMSR.findChild(QLineEdit, "bep_ptnn")
+        self.bep_ptna = self.pageMSR.findChild(QLineEdit, "bep_ptna")
+        self.bep_ptnc = self.pageMSR.findChild(QLineEdit, "bep_ptnc")
+            
+        self.bep_ptnr = self.pageMSR.findChild(QLineEdit, "bep_ptnr")
+        
+        self.bep_dan = self.pageMSR.findChild(QLineEdit, "bep_dan")
+        self.bep_dfna = self.pageMSR.findChild(QLineEdit, "bep_dfna")
+        self.bep_dfpaY = self.pageMSR.findChild(QCheckBox, "bep_dfpaY")
+        self.bep_dfpaN = self.pageMSR.findChild(QCheckBox, "bep_dfpaN")
+        self.bep_dfmpc = self.pageMSR.findChild(QLineEdit, "bep_dfmpc")
+        self.bep_dft = self.pageMSR.findChild(QLineEdit, "bep_dft")
+        
+        self.bep_cnn = self.pageMSR.findChild(QLineEdit, "bep_cnn")
+        self.bep_cn = self.pageMSR.findChild(QLineEdit, "bep_cn")
+        self.bep_can = self.pageMSR.findChild(QLineEdit, "bep_can")
+        self.bep_dn1 = self.pageMSR.findChild(QLineEdit, "bep_dn1")
+        self.bep_dn2 = self.pageMSR.findChild(QLineEdit, "bep_dn2")
+        self.bep_rf = self.pageMSR.findChild(QLineEdit, "bep_rf")
+        
+    def load_birthEPlan(self):
+        try:
+            cursor = self.conn.cursor()
+            label_to_widget = {
+                "BEPPerson to Notify: Relationship": self.bep_ptnr,
+                
+                "BEPDelivery Attendant Name": self.bep_dan,
+                "BEPDelivery Facility Name or Address": self.bep_dfna,
+                "BEPDelivery Facility: PhilHealth accredited": (self.bep_dfpaY, self.bep_dfpaN),
+                "BEPDelivery Facility Maternal Package Cost": self.bep_dfmpc,
+                "BEPDelivery Facility Transportation": self.bep_dft,
+                
+                "BEPContact Name/Number": self.bep_cnn,
+                "BEPCompanion Name": self.bep_cn,
+                "BEPChildren Attendant Name": self.bep_can,
+                "BEPDonor Name 1": self.bep_dn1,
+                "BEPDonor Name 2": self.bep_dn2,
+                "BEPReferred Facility": self.bep_rf
+            }
+
+            for label, widget in label_to_widget.items():
+                cursor.execute("""
+                    SELECT FR.FORM_RES_VAL
+                    FROM FORM_RESPONSE FR
+                    JOIN FORM_OPTION FO ON FR.FORM_OPT_ID = FO.FORM_OPT_ID
+                    WHERE FO.FORM_OPT_LABEL = %s AND FR.PAT_ID = %s
+                """, (label, self.patient_id))
+                result = cursor.fetchone()
+                if result:
+                    value = result[0]
+                    if isinstance(widget, QLineEdit):
+                        widget.setText(value)
+                    elif isinstance(widget, tuple):  # radio button pairs
+                        yes_widget, no_widget = widget
+                        yes_widget.setChecked(value == "Yes")
+                        no_widget.setChecked(value == "No")
+    
+        except Exception as e:
+            print("Error loading other personal info:", e)
+            
+    def save_birthEPlan(self):
+        try:
+            cursor = self.conn.cursor()
+            
+            birthEPlan = {
+                "BEPPerson to Notify: Relationship": self.bep_ptnr.text(),
+                
+                "BEPDelivery Attendant Name": self.bep_dan.text(),
+                "BEPDelivery Facility Name or Address": self.bep_dfna.text(),
+                "BEPDelivery Facility: PhilHealth accredited": "Yes" if self.bep_dfpaY.isChecked() else "No",
+                "BEPDelivery Facility Maternal Package Cost": self.bep_dfmpc.text(),
+                "BEPDelivery Facility Transportation": self.bep_dft.text(),
+                
+                "BEPContact Name/Number": self.bep_cnn.text(),
+                "BEPCompanion Name": self.bep_cn.text(),
+                "BEPChildren Attendant Name": self.bep_can.text(),
+                "BEPDonor Name 1": self.bep_dn1.text(),
+                "BEPDonor Name 2": self.bep_dn2.text(),
+                "BEPReferred Facility": self.bep_rf.text()
+            }
+
+            # Save single-option responses
+            for bep, value in birthEPlan.items():
+                cursor.execute("""
+                    SELECT FORM_OPT_ID FROM FORM_OPTION
+                    WHERE FORM_OPT_LABEL = %s
+                """, (bep,))
+                opt_result = cursor.fetchone()
+                if opt_result:
+                    form_opt_id = opt_result[0]
+
+                    cursor.execute("""
+                        SELECT FORM_RES_ID FROM FORM_RESPONSE
+                        WHERE FORM_OPT_ID = %s AND PAT_ID = %s
+                    """, (form_opt_id, self.patient_id))
+                    exists = cursor.fetchone()
+
+                    if exists:
+                        cursor.execute("""
+                            UPDATE FORM_RESPONSE
+                            SET FORM_RES_VAL = %s
+                            WHERE FORM_OPT_ID = %s AND PAT_ID = %s
+                        """, (value, form_opt_id, self.patient_id))
+                    else:
+                        cursor.execute("""
+                            INSERT INTO FORM_RESPONSE (FORM_RES_VAL, FORM_OPT_ID, PAT_ID)
+                            VALUES (%s, %s, %s)
+                        """, (value, form_opt_id, self.patient_id))
+                else:
+                    print(f"[Warning] FORM_OPTION not found for label: {bep}")
+            
+            self.conn.commit()
+            
+            print("Birth Emergency Plan saved successfully.")
+        except Exception as e:
+            print("Error saving other personal info:", e)
             self.conn.rollback()
 
     def on_save_clicked(self):
@@ -1100,6 +1352,32 @@ class MaternalRecordsController:
         self.phye_cd.setValue(0)
         self.phye_ppp.setCurrentIndex(0)
         self.phye_sobow.setCurrentIndex(0)
+        
+        #Pelvic Examination Category
+        for pelvE_chk in [
+            self.pelv_sN, self.pelv_wmN, self.pelv_lacN, self.pelv_sevaN,
+            self.pelv_sY, self.pelv_wmY, self.pelv_lacY, self.pelv_sevaY,
+            self.pelv_bcN, self.pelv_wsgdN, self.pelv_crN, self.pelv_pdbN, self.pelv_epfN,
+            self.pelv_bcY, self.pelv_wsgdY, self.pelv_crY, self.pelv_pdbY, self.pelv_epfY
+        ]:
+            pelvE_chk.setChecked(False)
+            
+        #Birth and Emergency Plan Category
+        self.bep_ptnr.clear()
+
+        self.bep_dan.clear()
+        self.bep_dfna.clear()
+        self.bep_dfpaY.setChecked(False)
+        self.bep_dfpaN.setChecked(False)
+        self.bep_dfmpc.clear()
+        self.bep_dft.clear()
+
+        self.bep_cnn.clear()
+        self.bep_cn.clear()
+        self.bep_can.clear()
+        self.bep_dn1.clear()
+        self.bep_dn2.clear()
+        self.bep_rf.clear()
     
     def cancel_editing(self):
         self.reset_fields()
@@ -1111,4 +1389,6 @@ class MaternalRecordsController:
         self.load_medical()
         self.load_obstetrical()
         self.load_physicalE()
+        self.load_pelvicE()
+        self.load_birthEPlan()
     
