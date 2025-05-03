@@ -40,6 +40,7 @@ class MaternalRecordsController:
         self.update_nav_buttons()  # Disable prev if on first page, etc.
         self.personal_info()
         self.medicalH_info()
+        self.physicalE_info()
     
     def go_prev(self):
         current_index = self.stackWidMSR.currentIndex()
@@ -109,6 +110,7 @@ class MaternalRecordsController:
             self.save_other_pinfo()
             self.save_medical()
             self.save_obstetrical()
+            self.save_physicalE()
             print("Saved successfully.")
         except Exception as e:
             print("Error while saving:", e)
@@ -199,6 +201,7 @@ class MaternalRecordsController:
                         index = widget.findText(value)
                         if index != -1:
                             widget.setCurrentIndex(index)
+                            
         except Exception as e:
             print("Error loading basic personal info:", e)
 
@@ -427,6 +430,7 @@ class MaternalRecordsController:
                     print(f"[Warning] FORM_OPTION not found for checkbox: {label}")
 
             self.conn.commit()
+            
         except Exception as e:
             print("Error saving other personal info:", e)
             self.conn.rollback()
@@ -787,6 +791,192 @@ class MaternalRecordsController:
         except Exception as e:
             print("Error saving other personal info:", e)
             self.conn.rollback()
+    
+    def physicalE_info(self):
+        self.stackWidMSR.setCurrentIndex(2)
+        self.load_physicalE_widgets()
+        # self.load_pelvicE_widgets()
+        self.load_physicalE()
+        # self.load_pelvicE()
+    
+    def load_physicalE_widgets(self):
+        self.phye_bps = self.pageMSR.findChild(QSpinBox, "phye_bps")
+        self.phye_bpd = self.pageMSR.findChild(QSpinBox, "phye_bpd")
+        self.phye_weight = self.pageMSR.findChild(QDoubleSpinBox, "phye_weight")
+        self.phye_height = self.pageMSR.findChild(QDoubleSpinBox, "phye_height")
+        self.phye_bloodt = self.pageMSR.findChild(QComboBox, "phye_bloodt")
+        
+        self.phye_pN = self.pageMSR.findChild(QCheckBox, "phye_pN")
+        self.phye_pY = self.pageMSR.findChild(QCheckBox, "phye_pY")
+        self.phye_yN = self.pageMSR.findChild(QCheckBox, "phye_yN")
+        self.phye_yY = self.pageMSR.findChild(QCheckBox, "phye_yY")
+        self.phye_etN = self.pageMSR.findChild(QCheckBox, "phye_etN")
+        self.phye_etY = self.pageMSR.findChild(QCheckBox, "phye_etY")
+        self.phye_elnN = self.pageMSR.findChild(QCheckBox, "phye_elnN")
+        self.phye_elnY = self.pageMSR.findChild(QCheckBox, "phye_elnY")
+        self.phye_mN = self.pageMSR.findChild(QCheckBox, "phye_mN")
+        self.phye_mY = self.pageMSR.findChild(QCheckBox, "phye_mY")
+        self.phye_ndN = self.pageMSR.findChild(QCheckBox, "phye_ndN")
+        self.phye_ndY = self.pageMSR.findChild(QCheckBox, "phye_ndY")
+        self.phye_sodN = self.pageMSR.findChild(QCheckBox, "phye_sodN")
+        self.phye_sodY = self.pageMSR.findChild(QCheckBox, "phye_sodY")
+        self.phye_ealnN = self.pageMSR.findChild(QCheckBox, "phye_ealnN")
+        self.phye_ealnY = self.pageMSR.findChild(QCheckBox, "phye_ealnY")
+        self.phye_ahscrN = self.pageMSR.findChild(QCheckBox, "phye_ahscrN")
+        self.phye_ahscrY = self.pageMSR.findChild(QCheckBox, "phye_ahscrY")
+        self.phye_ahsrrN = self.pageMSR.findChild(QCheckBox, "phye_ahsrrN")
+        self.phye_ahsrrY = self.pageMSR.findChild(QCheckBox, "phye_ahsrrY")
+        
+        self.phye_fhic = self.pageMSR.findChild(QDoubleSpinBox, "phye_fhic")
+        self.phye_fht = self.pageMSR.findChild(QSpinBox, "phye_fht")
+        self.phye_fm = self.pageMSR.findChild(QComboBox, "phye_fm")
+        
+        self.phye_fpitf = self.pageMSR.findChild(QComboBox, "phye_fpitf")
+        self.phye_pofb = self.pageMSR.findChild(QComboBox, "phye_pofb")
+        self.phye_pp = self.pageMSR.findChild(QComboBox, "phye_pp")
+        self.phye_sopp = self.pageMSR.findChild(QComboBox, "phye_sopp")
+        self.phye_ua = self.pageMSR.findChild(QComboBox, "phye_ua")
+        
+        self.phye_cc = self.pageMSR.findChild(QComboBox, "phye_cc")
+        self.phye_cd = self.pageMSR.findChild(QSpinBox, "phye_cd")
+        self.phye_ppp = self.pageMSR.findChild(QComboBox, "phye_ppp")
+        self.phye_sobow = self.pageMSR.findChild(QComboBox, "phye_sobow")
+    
+    def load_physicalE(self):
+        try:
+            cursor = self.conn.cursor()
+            field_to_widget = {
+                "Blood Pressure: Systolic": self.phye_bps,
+                "Blood Pressure: Diastolic": self.phye_bpd,
+                "Weight": self.phye_weight,
+                "Height": self.phye_height,
+                "Blood Type": self.phye_bloodt,
+                
+                "Pale": (self.phye_pN, self.phye_pY),
+                "Yellowish": (self.phye_yN, self.phye_yY),
+                "Enlarged Thyroid": (self.phye_etN, self.phye_etY),
+                "Enlarged lymph nodes": (self.phye_elnN, self.phye_elnY),
+                "Mass": (self.phye_mN, self.phye_mY),
+                "Nipple discharge": (self.phye_ndN, self.phye_ndY),
+                "Skin-orange-peel or dimpling": (self.phye_sodN, self.phye_sodY),
+                "Enlarged axillary lymph nodes": (self.phye_ealnN, self.phye_ealnY),
+                "Abnormal heart sounds/cardiac rate": (self.phye_ahscrN, self.phye_ahscrY),
+                "Abnormal health sounds/respiratory rate": (self.phye_ahsrrN, self.phye_ahsrrY),
+                
+                "Fundic height in cms.": self.phye_fhic,
+                "Fetal heart tone": self.phye_fht,
+                "Fetal movement": self.phye_fm,
+                
+                "Fetal part in the fundus": self.phye_fpitf,
+                "Position of Fetal Back": self.phye_pofb,
+                "Presenting Part": self.phye_pp,
+                "Status of Presenting Partt": self.phye_sopp,
+                "Uterine Activity": self.phye_ua,
+                
+                "Cervix Consistency": self.phye_cc,
+                "Cervix Dilatation": self.phye_cd,
+                "Palpable Presenting Part": self.phye_ppp,
+                "Status of Bag of Water": self.phye_sobow
+            }
+            
+            for field, widget in field_to_widget.items():
+                cursor.execute("""
+                    SELECT FR.FORM_RES_VAL
+                    FROM FORM_RESPONSE FR
+                    JOIN FORM_OPTION FO ON FR.FORM_OPT_ID = FO.FORM_OPT_ID
+                    WHERE FO.FORM_OPT_LABEL = %s AND FR.PAT_ID = %s
+                """, (field, self.patient_id))
+                result = cursor.fetchone()
+                if result:
+                    value = result[0]
+                    if isinstance(widget, QSpinBox):
+                        widget.setValue(int(value))
+                    elif isinstance(widget, QDoubleSpinBox):
+                        widget.setValue(float(value))
+                    elif isinstance(widget, QComboBox):
+                        index = widget.findText(value)
+                        if index != -1:
+                            widget.setCurrentIndex(index)
+                    elif isinstance(widget, tuple):  # Checkbox pair
+                        no_cb, yes_cb = widget
+                        no_cb.setChecked(value == "No")
+                        yes_cb.setChecked(value == "Yes")
+            
+        except Exception as e:
+            print("Error loading physical examination:", e)
+            
+    def save_physicalE(self):
+        try:
+            cursor = self.conn.cursor()
+            
+            responses = {
+                "Blood Pressure: Systolic": str(self.phye_bps.value()),
+                "Blood Pressure: Diastolic": str(self.phye_bpd.value()),
+                "Weight": str(self.phye_weight.value()),
+                "Height": str(self.phye_height.value()),
+                "Blood Type": self.phye_bloodt.currentText(),
+
+                "Pale": "No" if self.phye_pN.isChecked() else "Yes",
+                "Yellowish": "No" if self.phye_yN.isChecked() else "Yes",
+                "Enlarged Thyroid": "No" if self.phye_etN.isChecked() else "Yes",
+                "Enlarged lymph nodes": "No" if self.phye_elnN.isChecked() else "Yes",
+                "Mass": "No" if self.phye_mN.isChecked() else "Yes",
+                "Nipple discharge": "No" if self.phye_ndN.isChecked() else "Yes",
+                "Skin-orange-peel or dimpling": "No" if self.phye_sodN.isChecked() else "Yes",
+                "Enlarged axillary lymph nodes": "No" if self.phye_ealnN.isChecked() else "Yes",
+                "Abnormal heart sounds/cardiac rate": "No" if self.phye_ahscrN.isChecked() else "Yes",
+                "Abnormal health sounds/respiratory rate": "No" if self.phye_ahsrrN.isChecked() else "Yes",
+
+                "Fundic height in cms.": str(self.phye_fhic.value()),
+                "Fetal heart tone": str(self.phye_fht.value()),
+                "Fetal movement": self.phye_fm.currentText(),
+
+                "Fetal part in the fundus": self.phye_fpitf.currentText(),
+                "Position of Fetal Back": self.phye_pofb.currentText(),
+                "Presenting Part": self.phye_pp.currentText(),
+                "Status of Presenting Part": self.phye_sopp.currentText(),
+                "Uterine Activity": self.phye_ua.currentText(),
+
+                "Cervix Consistency": self.phye_cc.currentText(),
+                "Cervix Dilatation": str(self.phye_cd.value()),
+                "Palpable Presenting Part": self.phye_ppp.currentText(),
+                "Status of Bag of Water": self.phye_sobow.currentText()
+            }
+
+            # Save single-option responses
+            for label, value in responses.items():
+                cursor.execute("""
+                    SELECT FORM_OPT_ID FROM FORM_OPTION
+                    WHERE FORM_OPT_LABEL = %s
+                """, (label,))
+                opt_result = cursor.fetchone()
+                if opt_result:
+                    form_opt_id = opt_result[0]
+
+                    cursor.execute("""
+                        SELECT FORM_RES_ID FROM FORM_RESPONSE
+                        WHERE FORM_OPT_ID = %s AND PAT_ID = %s
+                    """, (form_opt_id, self.patient_id))
+                    exists = cursor.fetchone()
+
+                    if exists:
+                        cursor.execute("""
+                            UPDATE FORM_RESPONSE
+                            SET FORM_RES_VAL = %s
+                            WHERE FORM_OPT_ID = %s AND PAT_ID = %s
+                        """, (value, form_opt_id, self.patient_id))
+                    else:
+                        cursor.execute("""
+                            INSERT INTO FORM_RESPONSE (FORM_RES_VAL, FORM_OPT_ID, PAT_ID)
+                            VALUES (%s, %s, %s)
+                        """, (value, form_opt_id, self.patient_id))
+                else:
+                    print(f"[Warning] FORM_OPTION not found for label: {label}")
+
+            self.conn.commit()
+        except Exception as e:
+            print("Error saving physical examination:", e)
+            self.conn.rollback()
 
     def on_save_clicked(self):
         reply = QMessageBox.question(
@@ -875,12 +1065,41 @@ class MaternalRecordsController:
         self.obs_tod.setCurrentIndex(0)
         self.obs_pmp.setDate(date.today())
         
-        # Uncheck checkboxes
         for obs_chk in [
             self.obs_pcsN, self.obs_3cmN, self.obs_ephN, self.obs_phN, self.obs_fdN, self.obs_pihN, self.obs_wobN,
             self.obs_pcsY, self.obs_3cmY, self.obs_ephY, self.obs_phY, self.obs_fdY, self.obs_pihY, self.obs_wobY
         ]:
             obs_chk.setChecked(False)
+            
+        #Physical Examination Category
+        self.phye_bps.setValue(0)
+        self.phye_bpd.setValue(0)
+        self.phye_weight.setValue(0)
+        self.phye_height.setValue(0)
+        self.phye_bloodt.setCurrentIndex(0)
+        
+        for phye_chk in [
+            self.phye_pN, self.phye_yN, self.phye_etN, self.phye_elnN, self.phye_mN, self.phye_ndN, 
+            self.phye_pY, self.phye_yY, self.phye_etY, self.phye_elnY, self.phye_mY, self.phye_ndY,
+            self.phye_sodY, self.phye_ealnY, self.phye_ahscrY, self.phye_ahsrrY,
+            self.phye_sodN, self.phye_ealnN, self.phye_ahscrN, self.phye_ahsrrN
+        ]:
+            phye_chk.setChecked(False)
+        
+        self.phye_fhic.setValue(0)
+        self.phye_fht.setValue(0)
+        self.phye_fm.setCurrentIndex(0)
+        
+        self.phye_fpitf.setCurrentIndex(0)
+        self.phye_pofb.setCurrentIndex(0)
+        self.phye_pp.setCurrentIndex(0)
+        self.phye_sopp.setCurrentIndex(0)
+        self.phye_ua.setCurrentIndex(0)
+        
+        self.phye_cc.setCurrentIndex(0)
+        self.phye_cd.setValue(0)
+        self.phye_ppp.setCurrentIndex(0)
+        self.phye_sobow.setCurrentIndex(0)
     
     def cancel_editing(self):
         self.reset_fields()
@@ -891,4 +1110,5 @@ class MaternalRecordsController:
         self.load_other_pinfo()
         self.load_medical()
         self.load_obstetrical()
+        self.load_physicalE()
     

@@ -332,7 +332,7 @@ QPushButton:hover {
     <string notr="true"/>
    </property>
    <property name="currentIndex">
-    <number>3</number>
+    <number>1</number>
    </property>
    <widget class="QWidget" name="viewPatInfo">
     <widget class="QLabel" name="label_3">
@@ -1760,7 +1760,7 @@ border-radius: 10px;</string>
 }</string>
      </property>
      <property name="currentIndex">
-      <number>0</number>
+      <number>2</number>
      </property>
      <widget class="QWidget" name="personalInfo">
       <property name="styleSheet">
@@ -2113,6 +2113,36 @@ border-radius: 2px;
          <string>--Select--</string>
         </property>
        </item>
+       <item>
+        <property name="text">
+         <string>Elementary Graduate</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Highschool Graduate</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Associate's Degree</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Bachelor's Degree</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Master's Degree</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Doctorate</string>
+        </property>
+       </item>
       </widget>
       <widget class="QLineEdit" name="PNEName">
        <property name="geometry">
@@ -2216,7 +2246,7 @@ border-radius: 2px;
         <string>Date &amp; Time of Arrival</string>
        </property>
       </widget>
-      <widget class="QDateEdit" name="dateArrival">
+      <widget class="QDateEdit" name="clientDateArrival">
        <property name="geometry">
         <rect>
          <x>180</x>
@@ -2266,7 +2296,7 @@ border-radius: 2px;
         <string>MM/dd/yyyy</string>
        </property>
       </widget>
-      <widget class="QTimeEdit" name="timeArrival">
+      <widget class="QTimeEdit" name="clientTimeArrival">
        <property name="geometry">
         <rect>
          <x>297</x>
@@ -2309,7 +2339,7 @@ border-radius: 2px;
         <string>Time of Disposition</string>
        </property>
       </widget>
-      <widget class="QTimeEdit" name="timeDisposition">
+      <widget class="QTimeEdit" name="clientTimeDis">
        <property name="geometry">
         <rect>
          <x>545</x>
@@ -2870,7 +2900,7 @@ border-radius: 2px;
         <string>MEDICAL HISTORY</string>
        </property>
       </widget>
-      <widget class="QCheckBox" name="checkBox_14">
+      <widget class="QCheckBox" name="med_ecN">
        <property name="geometry">
         <rect>
          <x>20</x>
@@ -3120,7 +3150,7 @@ border-radius: 2px;
         <string>Yes/Present</string>
        </property>
       </widget>
-      <widget class="QCheckBox" name="checkBox_15">
+      <widget class="QCheckBox" name="med_ecY">
        <property name="geometry">
         <rect>
          <x>40</x>
@@ -3160,7 +3190,7 @@ border-radius: 2px;
         <string>Epilepsy/Convulsion</string>
        </property>
       </widget>
-      <widget class="QCheckBox" name="checkBox_16">
+      <widget class="QCheckBox" name="med_shdN">
        <property name="geometry">
         <rect>
          <x>20</x>
@@ -3179,7 +3209,7 @@ border-radius: 2px;
         <string/>
        </property>
       </widget>
-      <widget class="QCheckBox" name="checkBox_17">
+      <widget class="QCheckBox" name="med_shdY">
        <property name="geometry">
         <rect>
          <x>40</x>
@@ -3198,7 +3228,7 @@ border-radius: 2px;
         <string/>
        </property>
       </widget>
-      <widget class="QCheckBox" name="checkBox_18">
+      <widget class="QCheckBox" name="med_vdN">
        <property name="geometry">
         <rect>
          <x>20</x>
@@ -3217,7 +3247,7 @@ border-radius: 2px;
         <string/>
        </property>
       </widget>
-      <widget class="QCheckBox" name="checkBox_19">
+      <widget class="QCheckBox" name="med_ydN">
        <property name="geometry">
         <rect>
          <x>20</x>
@@ -3236,7 +3266,7 @@ border-radius: 2px;
         <string/>
        </property>
       </widget>
-      <widget class="QCheckBox" name="checkBox_20">
+      <widget class="QCheckBox" name="med_etN">
        <property name="geometry">
         <rect>
          <x>20</x>
@@ -3276,7 +3306,7 @@ border-radius: 2px;
         <string>CHEST/HEART</string>
        </property>
       </widget>
-      <widget class="QCheckBox" name="checkBox_21">
+      <widget class="QCheckBox" name="med_scpN">
        <property name="geometry">
         <rect>
          <x>20</x>
@@ -3295,7 +3325,7 @@ border-radius: 2px;
         <string/>
        </property>
       </widget>
-      <widget class="QCheckBox" name="checkBox_22">
+      <widget class="QCheckBox" name="med_sobefN">
        <property name="geometry">
         <rect>
          <x>20</x>
@@ -3314,7 +3344,7 @@ border-radius: 2px;
         <string/>
        </property>
       </widget>
-      <widget class="QCheckBox" name="checkBox_23">
+      <widget class="QCheckBox" name="med_bamN">
        <property name="geometry">
         <rect>
          <x>20</x>
@@ -3333,7 +3363,7 @@ border-radius: 2px;
         <string/>
        </property>
       </widget>
-      <widget class="QCheckBox" name="checkBox_24">
+      <widget class="QCheckBox" name="med_ndN">
        <property name="geometry">
         <rect>
          <x>20</x>
@@ -3352,7 +3382,7 @@ border-radius: 2px;
         <string/>
        </property>
       </widget>
-      <widget class="QCheckBox" name="checkBox_25">
+      <widget class="QCheckBox" name="med_soaaN">
        <property name="geometry">
         <rect>
          <x>20</x>
@@ -3371,7 +3401,7 @@ border-radius: 2px;
         <string/>
        </property>
       </widget>
-      <widget class="QCheckBox" name="checkBox_26">
+      <widget class="QCheckBox" name="med_doaaN">
        <property name="geometry">
         <rect>
          <x>20</x>
@@ -3390,7 +3420,7 @@ border-radius: 2px;
         <string/>
        </property>
       </widget>
-      <widget class="QCheckBox" name="checkBox_27">
+      <widget class="QCheckBox" name="med_fhcN">
        <property name="geometry">
         <rect>
          <x>20</x>
@@ -3430,7 +3460,7 @@ border-radius: 2px;
         <string>ABDOMEN</string>
        </property>
       </widget>
-      <widget class="QCheckBox" name="checkBox_28">
+      <widget class="QCheckBox" name="med_hogdN">
        <property name="geometry">
         <rect>
          <x>20</x>
@@ -3449,7 +3479,7 @@ border-radius: 2px;
         <string/>
        </property>
       </widget>
-      <widget class="QCheckBox" name="checkBox_29">
+      <widget class="QCheckBox" name="med_holdN">
        <property name="geometry">
         <rect>
          <x>20</x>
@@ -3468,7 +3498,7 @@ border-radius: 2px;
         <string/>
        </property>
       </widget>
-      <widget class="QCheckBox" name="checkBox_30">
+      <widget class="QCheckBox" name="med_psoN">
        <property name="geometry">
         <rect>
          <x>20</x>
@@ -3487,7 +3517,7 @@ border-radius: 2px;
         <string/>
        </property>
       </widget>
-      <widget class="QCheckBox" name="checkBox_31">
+      <widget class="QCheckBox" name="med_mitaN">
        <property name="geometry">
         <rect>
          <x>20</x>
@@ -3506,7 +3536,7 @@ border-radius: 2px;
         <string/>
        </property>
       </widget>
-      <widget class="QCheckBox" name="checkBox_32">
+      <widget class="QCheckBox" name="med_vdY">
        <property name="geometry">
         <rect>
          <x>40</x>
@@ -3525,7 +3555,7 @@ border-radius: 2px;
         <string/>
        </property>
       </widget>
-      <widget class="QCheckBox" name="checkBox_33">
+      <widget class="QCheckBox" name="med_ydY">
        <property name="geometry">
         <rect>
          <x>40</x>
@@ -3544,7 +3574,7 @@ border-radius: 2px;
         <string/>
        </property>
       </widget>
-      <widget class="QCheckBox" name="checkBox_34">
+      <widget class="QCheckBox" name="med_etY">
        <property name="geometry">
         <rect>
          <x>40</x>
@@ -3563,7 +3593,7 @@ border-radius: 2px;
         <string/>
        </property>
       </widget>
-      <widget class="QCheckBox" name="checkBox_35">
+      <widget class="QCheckBox" name="med_scpY">
        <property name="geometry">
         <rect>
          <x>40</x>
@@ -3582,7 +3612,7 @@ border-radius: 2px;
         <string/>
        </property>
       </widget>
-      <widget class="QCheckBox" name="checkBox_36">
+      <widget class="QCheckBox" name="med_sobefY">
        <property name="geometry">
         <rect>
          <x>40</x>
@@ -3601,7 +3631,7 @@ border-radius: 2px;
         <string/>
        </property>
       </widget>
-      <widget class="QCheckBox" name="checkBox_37">
+      <widget class="QCheckBox" name="med_bamY">
        <property name="geometry">
         <rect>
          <x>40</x>
@@ -3620,7 +3650,7 @@ border-radius: 2px;
         <string/>
        </property>
       </widget>
-      <widget class="QCheckBox" name="checkBox_38">
+      <widget class="QCheckBox" name="med_ndY">
        <property name="geometry">
         <rect>
          <x>40</x>
@@ -3639,7 +3669,7 @@ border-radius: 2px;
         <string/>
        </property>
       </widget>
-      <widget class="QCheckBox" name="checkBox_39">
+      <widget class="QCheckBox" name="med_soaaY">
        <property name="geometry">
         <rect>
          <x>40</x>
@@ -3658,7 +3688,7 @@ border-radius: 2px;
         <string/>
        </property>
       </widget>
-      <widget class="QCheckBox" name="checkBox_40">
+      <widget class="QCheckBox" name="med_doaaY">
        <property name="geometry">
         <rect>
          <x>40</x>
@@ -3677,7 +3707,7 @@ border-radius: 2px;
         <string/>
        </property>
       </widget>
-      <widget class="QCheckBox" name="checkBox_41">
+      <widget class="QCheckBox" name="med_fhcY">
        <property name="geometry">
         <rect>
          <x>40</x>
@@ -3696,7 +3726,7 @@ border-radius: 2px;
         <string/>
        </property>
       </widget>
-      <widget class="QCheckBox" name="checkBox_42">
+      <widget class="QCheckBox" name="med_mitaY">
        <property name="geometry">
         <rect>
          <x>40</x>
@@ -3715,7 +3745,7 @@ border-radius: 2px;
         <string/>
        </property>
       </widget>
-      <widget class="QCheckBox" name="checkBox_43">
+      <widget class="QCheckBox" name="med_hogdY">
        <property name="geometry">
         <rect>
          <x>40</x>
@@ -3734,7 +3764,7 @@ border-radius: 2px;
         <string/>
        </property>
       </widget>
-      <widget class="QCheckBox" name="checkBox_44">
+      <widget class="QCheckBox" name="med_holdY">
        <property name="geometry">
         <rect>
          <x>40</x>
@@ -3753,7 +3783,7 @@ border-radius: 2px;
         <string/>
        </property>
       </widget>
-      <widget class="QCheckBox" name="checkBox_45">
+      <widget class="QCheckBox" name="med_psoY">
        <property name="geometry">
         <rect>
          <x>40</x>
@@ -4150,7 +4180,7 @@ border-radius: 2px;
         <string>Y/R</string>
        </property>
       </widget>
-      <widget class="QCheckBox" name="checkBox_46">
+      <widget class="QCheckBox" name="med_svN">
        <property name="geometry">
         <rect>
          <x>340</x>
@@ -4169,7 +4199,7 @@ border-radius: 2px;
         <string/>
        </property>
       </widget>
-      <widget class="QCheckBox" name="checkBox_47">
+      <widget class="QCheckBox" name="med_svY">
        <property name="geometry">
         <rect>
          <x>360</x>
@@ -4188,7 +4218,7 @@ border-radius: 2px;
         <string/>
        </property>
       </widget>
-      <widget class="QCheckBox" name="checkBox_48">
+      <widget class="QCheckBox" name="med_dY">
        <property name="geometry">
         <rect>
          <x>360</x>
@@ -4207,7 +4237,7 @@ border-radius: 2px;
         <string/>
        </property>
       </widget>
-      <widget class="QCheckBox" name="checkBox_49">
+      <widget class="QCheckBox" name="med_dN">
        <property name="geometry">
         <rect>
          <x>340</x>
@@ -4226,7 +4256,7 @@ border-radius: 2px;
         <string/>
        </property>
       </widget>
-      <widget class="QCheckBox" name="checkBox_50">
+      <widget class="QCheckBox" name="med_sovpN">
        <property name="geometry">
         <rect>
          <x>340</x>
@@ -4266,7 +4296,7 @@ border-radius: 2px;
         <string>SKIN</string>
        </property>
       </widget>
-      <widget class="QCheckBox" name="checkBox_52">
+      <widget class="QCheckBox" name="med_SydN">
        <property name="geometry">
         <rect>
          <x>340</x>
@@ -4306,7 +4336,7 @@ border-radius: 2px;
         <string>HISTORY OF THE FF:</string>
        </property>
       </widget>
-      <widget class="QCheckBox" name="checkBox_53">
+      <widget class="QCheckBox" name="med_sN">
        <property name="geometry">
         <rect>
          <x>340</x>
@@ -4325,7 +4355,7 @@ border-radius: 2px;
         <string/>
        </property>
       </widget>
-      <widget class="QCheckBox" name="checkBox_54">
+      <widget class="QCheckBox" name="med_aN">
        <property name="geometry">
         <rect>
          <x>340</x>
@@ -4344,7 +4374,7 @@ border-radius: 2px;
         <string/>
        </property>
       </widget>
-      <widget class="QCheckBox" name="checkBox_55">
+      <widget class="QCheckBox" name="med_diN">
        <property name="geometry">
         <rect>
          <x>340</x>
@@ -4363,7 +4393,7 @@ border-radius: 2px;
         <string/>
        </property>
       </widget>
-      <widget class="QCheckBox" name="checkBox_56">
+      <widget class="QCheckBox" name="med_daaaN">
        <property name="geometry">
         <rect>
          <x>340</x>
@@ -4382,7 +4412,7 @@ border-radius: 2px;
         <string/>
        </property>
       </widget>
-      <widget class="QCheckBox" name="checkBox_57">
+      <widget class="QCheckBox" name="med_stdmpN">
        <property name="geometry">
         <rect>
          <x>340</x>
@@ -4401,7 +4431,7 @@ border-radius: 2px;
         <string/>
        </property>
       </widget>
-      <widget class="QCheckBox" name="checkBox_58">
+      <widget class="QCheckBox" name="med_btaN">
        <property name="geometry">
         <rect>
          <x>340</x>
@@ -4420,7 +4450,7 @@ border-radius: 2px;
         <string/>
        </property>
       </widget>
-      <widget class="QCheckBox" name="checkBox_59">
+      <widget class="QCheckBox" name="med_dcaN">
        <property name="geometry">
         <rect>
          <x>340</x>
@@ -4439,7 +4469,7 @@ border-radius: 2px;
         <string/>
        </property>
       </widget>
-      <widget class="QCheckBox" name="checkBox_60">
+      <widget class="QCheckBox" name="med_sovpY">
        <property name="geometry">
         <rect>
          <x>360</x>
@@ -4458,7 +4488,7 @@ border-radius: 2px;
         <string/>
        </property>
       </widget>
-      <widget class="QCheckBox" name="checkBox_62">
+      <widget class="QCheckBox" name="med_SydY">
        <property name="geometry">
         <rect>
          <x>360</x>
@@ -4477,7 +4507,7 @@ border-radius: 2px;
         <string/>
        </property>
       </widget>
-      <widget class="QCheckBox" name="checkBox_63">
+      <widget class="QCheckBox" name="med_sY">
        <property name="geometry">
         <rect>
          <x>360</x>
@@ -4496,7 +4526,7 @@ border-radius: 2px;
         <string/>
        </property>
       </widget>
-      <widget class="QCheckBox" name="checkBox_64">
+      <widget class="QCheckBox" name="med_aY">
        <property name="geometry">
         <rect>
          <x>360</x>
@@ -4515,7 +4545,7 @@ border-radius: 2px;
         <string/>
        </property>
       </widget>
-      <widget class="QCheckBox" name="checkBox_65">
+      <widget class="QCheckBox" name="med_diY">
        <property name="geometry">
         <rect>
          <x>360</x>
@@ -4534,7 +4564,7 @@ border-radius: 2px;
         <string/>
        </property>
       </widget>
-      <widget class="QCheckBox" name="checkBox_66">
+      <widget class="QCheckBox" name="med_daaaY">
        <property name="geometry">
         <rect>
          <x>360</x>
@@ -4553,7 +4583,7 @@ border-radius: 2px;
         <string/>
        </property>
       </widget>
-      <widget class="QCheckBox" name="checkBox_67">
+      <widget class="QCheckBox" name="med_stdmpY">
        <property name="geometry">
         <rect>
          <x>360</x>
@@ -4572,7 +4602,7 @@ border-radius: 2px;
         <string/>
        </property>
       </widget>
-      <widget class="QCheckBox" name="checkBox_68">
+      <widget class="QCheckBox" name="med_btaY">
        <property name="geometry">
         <rect>
          <x>360</x>
@@ -4591,7 +4621,7 @@ border-radius: 2px;
         <string/>
        </property>
       </widget>
-      <widget class="QCheckBox" name="checkBox_69">
+      <widget class="QCheckBox" name="med_dcaY">
        <property name="geometry">
         <rect>
          <x>360</x>
@@ -4971,7 +5001,7 @@ border-radius: 2px;
         <string>4 and above/R/H</string>
        </property>
       </widget>
-      <widget class="QSpinBox" name="spinBox">
+      <widget class="QSpinBox" name="obs_ft">
        <property name="geometry">
         <rect>
          <x>650</x>
@@ -4984,7 +5014,7 @@ border-radius: 2px;
         <number>20</number>
        </property>
       </widget>
-      <widget class="QSpinBox" name="spinBox_2">
+      <widget class="QSpinBox" name="obs_pt">
        <property name="geometry">
         <rect>
          <x>650</x>
@@ -5039,7 +5069,7 @@ border-radius: 2px;
         <string>Preterm</string>
        </property>
       </widget>
-      <widget class="QSpinBox" name="spinBox_3">
+      <widget class="QSpinBox" name="obs_abort">
        <property name="geometry">
         <rect>
          <x>650</x>
@@ -5073,7 +5103,7 @@ border-radius: 2px;
         <string>Abortion</string>
        </property>
       </widget>
-      <widget class="QSpinBox" name="spinBox_4">
+      <widget class="QSpinBox" name="obs_livekids">
        <property name="geometry">
         <rect>
          <x>650</x>
@@ -5107,7 +5137,7 @@ border-radius: 2px;
         <string>Living children</string>
        </property>
       </widget>
-      <widget class="QDateEdit" name="dateEdit">
+      <widget class="QDateEdit" name="obs_dold">
        <property name="geometry">
         <rect>
          <x>650</x>
@@ -5144,7 +5174,7 @@ border-radius: 2px;
         <string>Date of last delivery</string>
        </property>
       </widget>
-      <widget class="QComboBox" name="comboBox_2">
+      <widget class="QComboBox" name="obs_tod">
        <property name="geometry">
         <rect>
          <x>650</x>
@@ -5159,6 +5189,26 @@ border-radius: 2px;
        <item>
         <property name="text">
          <string>--Select--</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Vaginal</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Assisted Vaginal</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>C-section</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>VBAC</string>
         </property>
        </item>
       </widget>
@@ -5183,7 +5233,7 @@ border-radius: 2px;
         <string>Type of Delivery</string>
        </property>
       </widget>
-      <widget class="QDateEdit" name="dateEdit_4">
+      <widget class="QDateEdit" name="obs_pmp">
        <property name="geometry">
         <rect>
          <x>650</x>
@@ -5220,7 +5270,7 @@ border-radius: 2px;
         <string>Past Menstrual Period</string>
        </property>
       </widget>
-      <widget class="QDateEdit" name="dateEdit_5">
+      <widget class="QDateEdit" name="obs_lmp">
        <property name="geometry">
         <rect>
          <x>850</x>
@@ -5236,23 +5286,7 @@ border-radius: 2px;
         <string>MM/dd/yyyy</string>
        </property>
       </widget>
-      <widget class="QDateEdit" name="dateEdit_6">
-       <property name="geometry">
-        <rect>
-         <x>850</x>
-         <y>100</y>
-         <width>81</width>
-         <height>21</height>
-        </rect>
-       </property>
-       <property name="currentSection">
-        <enum>QDateTimeEdit::MonthSection</enum>
-       </property>
-       <property name="displayFormat">
-        <string>MM/dd/yyyy</string>
-       </property>
-      </widget>
-      <widget class="QDateEdit" name="dateEdit_7">
+      <widget class="QDateEdit" name="obs_edc">
        <property name="geometry">
         <rect>
          <x>850</x>
@@ -5394,7 +5428,7 @@ border-radius: 2px;
         <string>Y/R</string>
        </property>
       </widget>
-      <widget class="QCheckBox" name="checkBox_61">
+      <widget class="QCheckBox" name="obs_pcsN">
        <property name="geometry">
         <rect>
          <x>650</x>
@@ -5413,7 +5447,7 @@ border-radius: 2px;
         <string/>
        </property>
       </widget>
-      <widget class="QCheckBox" name="checkBox_70">
+      <widget class="QCheckBox" name="obs_3cmN">
        <property name="geometry">
         <rect>
          <x>650</x>
@@ -5432,7 +5466,7 @@ border-radius: 2px;
         <string/>
        </property>
       </widget>
-      <widget class="QCheckBox" name="checkBox_71">
+      <widget class="QCheckBox" name="obs_ephN">
        <property name="geometry">
         <rect>
          <x>650</x>
@@ -5451,7 +5485,7 @@ border-radius: 2px;
         <string/>
        </property>
       </widget>
-      <widget class="QCheckBox" name="checkBox_72">
+      <widget class="QCheckBox" name="obs_phN">
        <property name="geometry">
         <rect>
          <x>650</x>
@@ -5470,7 +5504,7 @@ border-radius: 2px;
         <string/>
        </property>
       </widget>
-      <widget class="QCheckBox" name="checkBox_73">
+      <widget class="QCheckBox" name="obs_fdN">
        <property name="geometry">
         <rect>
          <x>650</x>
@@ -5489,7 +5523,7 @@ border-radius: 2px;
         <string/>
        </property>
       </widget>
-      <widget class="QCheckBox" name="checkBox_74">
+      <widget class="QCheckBox" name="obs_pihN">
        <property name="geometry">
         <rect>
          <x>650</x>
@@ -5508,7 +5542,7 @@ border-radius: 2px;
         <string/>
        </property>
       </widget>
-      <widget class="QCheckBox" name="checkBox_75">
+      <widget class="QCheckBox" name="obs_wobN">
        <property name="geometry">
         <rect>
          <x>650</x>
@@ -5527,7 +5561,7 @@ border-radius: 2px;
         <string/>
        </property>
       </widget>
-      <widget class="QCheckBox" name="checkBox_76">
+      <widget class="QCheckBox" name="obs_pcsY">
        <property name="geometry">
         <rect>
          <x>670</x>
@@ -5546,7 +5580,7 @@ border-radius: 2px;
         <string/>
        </property>
       </widget>
-      <widget class="QCheckBox" name="checkBox_77">
+      <widget class="QCheckBox" name="obs_3cmY">
        <property name="geometry">
         <rect>
          <x>670</x>
@@ -5565,7 +5599,7 @@ border-radius: 2px;
         <string/>
        </property>
       </widget>
-      <widget class="QCheckBox" name="checkBox_78">
+      <widget class="QCheckBox" name="obs_ephY">
        <property name="geometry">
         <rect>
          <x>670</x>
@@ -5584,7 +5618,7 @@ border-radius: 2px;
         <string/>
        </property>
       </widget>
-      <widget class="QCheckBox" name="checkBox_79">
+      <widget class="QCheckBox" name="obs_phY">
        <property name="geometry">
         <rect>
          <x>670</x>
@@ -5603,7 +5637,7 @@ border-radius: 2px;
         <string/>
        </property>
       </widget>
-      <widget class="QCheckBox" name="checkBox_80">
+      <widget class="QCheckBox" name="obs_fdY">
        <property name="geometry">
         <rect>
          <x>670</x>
@@ -5622,7 +5656,7 @@ border-radius: 2px;
         <string/>
        </property>
       </widget>
-      <widget class="QCheckBox" name="checkBox_81">
+      <widget class="QCheckBox" name="obs_pihY">
        <property name="geometry">
         <rect>
          <x>670</x>
@@ -5641,7 +5675,7 @@ border-radius: 2px;
         <string/>
        </property>
       </widget>
-      <widget class="QCheckBox" name="checkBox_82">
+      <widget class="QCheckBox" name="obs_wobY">
        <property name="geometry">
         <rect>
          <x>670</x>
@@ -5807,6 +5841,22 @@ border-radius: 2px;
         <string>Weight of baby &gt; 4kgs</string>
        </property>
       </widget>
+      <widget class="QSpinBox" name="obs_aog">
+       <property name="geometry">
+        <rect>
+         <x>850</x>
+         <y>100</y>
+         <width>81</width>
+         <height>21</height>
+        </rect>
+       </property>
+       <property name="suffix">
+        <string>weeks</string>
+       </property>
+       <property name="maximum">
+        <number>20</number>
+       </property>
+      </widget>
      </widget>
      <widget class="QWidget" name="phyExam">
       <property name="styleSheet">
@@ -5833,7 +5883,7 @@ border-radius: 2px;
         <string>PHYSICAL EXAMINATION</string>
        </property>
       </widget>
-      <widget class="QCheckBox" name="checkBox_51">
+      <widget class="QCheckBox" name="phye_pN">
        <property name="geometry">
         <rect>
          <x>20</x>
@@ -5852,7 +5902,7 @@ border-radius: 2px;
         <string/>
        </property>
       </widget>
-      <widget class="QComboBox" name="comboBox_3">
+      <widget class="QComboBox" name="phye_bloodt">
        <property name="geometry">
         <rect>
          <x>770</x>
@@ -5867,6 +5917,46 @@ border-radius: 2px;
        <item>
         <property name="text">
          <string>--Select--</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>A+</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>A-</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>B+</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>B-</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>AB+</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>AB-</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>O+</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>O-</string>
         </property>
        </item>
       </widget>
@@ -5996,7 +6086,7 @@ border-radius: 2px;
         <string>Weight:</string>
        </property>
       </widget>
-      <widget class="QDoubleSpinBox" name="doubleSpinBox_2">
+      <widget class="QDoubleSpinBox" name="phye_weight">
        <property name="geometry">
         <rect>
          <x>380</x>
@@ -6014,8 +6104,11 @@ border-radius: 2px;
        <property name="suffix">
         <string>kg</string>
        </property>
+       <property name="maximum">
+        <double>500.990000000000009</double>
+       </property>
       </widget>
-      <widget class="QSpinBox" name="spinBox_8">
+      <widget class="QSpinBox" name="phye_bps">
        <property name="geometry">
         <rect>
          <x>120</x>
@@ -6031,10 +6124,10 @@ border-radius: 2px;
         </font>
        </property>
        <property name="maximum">
-        <number>20</number>
+        <number>500</number>
        </property>
       </widget>
-      <widget class="QSpinBox" name="spinBox_9">
+      <widget class="QSpinBox" name="phye_bpd">
        <property name="geometry">
         <rect>
          <x>190</x>
@@ -6050,7 +6143,7 @@ border-radius: 2px;
         </font>
        </property>
        <property name="maximum">
-        <number>20</number>
+        <number>500</number>
        </property>
       </widget>
       <widget class="QLabel" name="label_129">
@@ -6095,7 +6188,7 @@ border-radius: 2px;
         <string>Height:</string>
        </property>
       </widget>
-      <widget class="QDoubleSpinBox" name="doubleSpinBox_3">
+      <widget class="QDoubleSpinBox" name="phye_height">
        <property name="geometry">
         <rect>
          <x>560</x>
@@ -6112,6 +6205,9 @@ border-radius: 2px;
        </property>
        <property name="suffix">
         <string>cm</string>
+       </property>
+       <property name="maximum">
+        <double>500.990000000000009</double>
        </property>
       </widget>
       <widget class="QLabel" name="label_131">
@@ -6156,7 +6252,7 @@ border-radius: 2px;
         <string>CONJUCTIVA</string>
        </property>
       </widget>
-      <widget class="QCheckBox" name="checkBox_83">
+      <widget class="QCheckBox" name="phye_yN">
        <property name="geometry">
         <rect>
          <x>20</x>
@@ -6175,7 +6271,7 @@ border-radius: 2px;
         <string/>
        </property>
       </widget>
-      <widget class="QCheckBox" name="checkBox_84">
+      <widget class="QCheckBox" name="phye_pY">
        <property name="geometry">
         <rect>
          <x>40</x>
@@ -6194,7 +6290,7 @@ border-radius: 2px;
         <string/>
        </property>
       </widget>
-      <widget class="QCheckBox" name="checkBox_85">
+      <widget class="QCheckBox" name="phye_yY">
        <property name="geometry">
         <rect>
          <x>40</x>
@@ -6234,7 +6330,7 @@ border-radius: 2px;
         <string>NECK</string>
        </property>
       </widget>
-      <widget class="QCheckBox" name="checkBox_86">
+      <widget class="QCheckBox" name="phye_etN">
        <property name="geometry">
         <rect>
          <x>20</x>
@@ -6253,7 +6349,7 @@ border-radius: 2px;
         <string/>
        </property>
       </widget>
-      <widget class="QCheckBox" name="checkBox_87">
+      <widget class="QCheckBox" name="phye_etY">
        <property name="geometry">
         <rect>
          <x>40</x>
@@ -6272,7 +6368,7 @@ border-radius: 2px;
         <string/>
        </property>
       </widget>
-      <widget class="QCheckBox" name="checkBox_88">
+      <widget class="QCheckBox" name="phye_elnN">
        <property name="geometry">
         <rect>
          <x>20</x>
@@ -6291,7 +6387,7 @@ border-radius: 2px;
         <string/>
        </property>
       </widget>
-      <widget class="QCheckBox" name="checkBox_89">
+      <widget class="QCheckBox" name="phye_elnY">
        <property name="geometry">
         <rect>
          <x>40</x>
@@ -6310,7 +6406,7 @@ border-radius: 2px;
         <string/>
        </property>
       </widget>
-      <widget class="QCheckBox" name="checkBox_90">
+      <widget class="QCheckBox" name="phye_mN">
        <property name="geometry">
         <rect>
          <x>20</x>
@@ -6350,7 +6446,7 @@ border-radius: 2px;
         <string>BREAST</string>
        </property>
       </widget>
-      <widget class="QCheckBox" name="checkBox_91">
+      <widget class="QCheckBox" name="phye_ndN">
        <property name="geometry">
         <rect>
          <x>20</x>
@@ -6369,7 +6465,7 @@ border-radius: 2px;
         <string/>
        </property>
       </widget>
-      <widget class="QCheckBox" name="checkBox_92">
+      <widget class="QCheckBox" name="phye_sodN">
        <property name="geometry">
         <rect>
          <x>20</x>
@@ -6388,7 +6484,7 @@ border-radius: 2px;
         <string/>
        </property>
       </widget>
-      <widget class="QCheckBox" name="checkBox_93">
+      <widget class="QCheckBox" name="phye_ealnN">
        <property name="geometry">
         <rect>
          <x>20</x>
@@ -6407,7 +6503,7 @@ border-radius: 2px;
         <string/>
        </property>
       </widget>
-      <widget class="QCheckBox" name="checkBox_94">
+      <widget class="QCheckBox" name="phye_mY">
        <property name="geometry">
         <rect>
          <x>40</x>
@@ -6426,7 +6522,7 @@ border-radius: 2px;
         <string/>
        </property>
       </widget>
-      <widget class="QCheckBox" name="checkBox_95">
+      <widget class="QCheckBox" name="phye_ndY">
        <property name="geometry">
         <rect>
          <x>40</x>
@@ -6445,7 +6541,7 @@ border-radius: 2px;
         <string/>
        </property>
       </widget>
-      <widget class="QCheckBox" name="checkBox_96">
+      <widget class="QCheckBox" name="phye_sodY">
        <property name="geometry">
         <rect>
          <x>40</x>
@@ -6464,7 +6560,7 @@ border-radius: 2px;
         <string/>
        </property>
       </widget>
-      <widget class="QCheckBox" name="checkBox_97">
+      <widget class="QCheckBox" name="phye_ealnY">
        <property name="geometry">
         <rect>
          <x>40</x>
@@ -6504,7 +6600,7 @@ border-radius: 2px;
         <string>THORAX</string>
        </property>
       </widget>
-      <widget class="QCheckBox" name="checkBox_98">
+      <widget class="QCheckBox" name="phye_ahscrN">
        <property name="geometry">
         <rect>
          <x>20</x>
@@ -6523,7 +6619,7 @@ border-radius: 2px;
         <string/>
        </property>
       </widget>
-      <widget class="QCheckBox" name="checkBox_99">
+      <widget class="QCheckBox" name="phye_ahsrrN">
        <property name="geometry">
         <rect>
          <x>20</x>
@@ -6542,7 +6638,7 @@ border-radius: 2px;
         <string/>
        </property>
       </widget>
-      <widget class="QCheckBox" name="checkBox_100">
+      <widget class="QCheckBox" name="phye_ahscrY">
        <property name="geometry">
         <rect>
          <x>40</x>
@@ -6561,7 +6657,7 @@ border-radius: 2px;
         <string/>
        </property>
       </widget>
-      <widget class="QCheckBox" name="checkBox_101">
+      <widget class="QCheckBox" name="phye_ahsrrY">
        <property name="geometry">
         <rect>
          <x>40</x>
@@ -6790,7 +6886,7 @@ border-radius: 2px;
         <string>ABDOMEN</string>
        </property>
       </widget>
-      <widget class="QDoubleSpinBox" name="doubleSpinBox_4">
+      <widget class="QDoubleSpinBox" name="phye_fhic">
        <property name="geometry">
         <rect>
          <x>340</x>
@@ -6806,29 +6902,13 @@ border-radius: 2px;
         </font>
        </property>
        <property name="suffix">
-        <string>kg</string>
+        <string>cm</string>
+       </property>
+       <property name="maximum">
+        <double>500.990000000000009</double>
        </property>
       </widget>
-      <widget class="QDoubleSpinBox" name="doubleSpinBox_5">
-       <property name="geometry">
-        <rect>
-         <x>340</x>
-         <y>130</y>
-         <width>71</width>
-         <height>21</height>
-        </rect>
-       </property>
-       <property name="font">
-        <font>
-         <family>Arial</family>
-         <pointsize>10</pointsize>
-        </font>
-       </property>
-       <property name="suffix">
-        <string>kg</string>
-       </property>
-      </widget>
-      <widget class="QComboBox" name="comboBox_4">
+      <widget class="QComboBox" name="phye_fm">
        <property name="geometry">
         <rect>
          <x>340</x>
@@ -6843,6 +6923,16 @@ border-radius: 2px;
        <item>
         <property name="text">
          <string>--Select--</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Present</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Absent</string>
         </property>
        </item>
       </widget>
@@ -6930,7 +7020,7 @@ border-radius: 2px;
         <string>LEOPOLD'S MANUEVER</string>
        </property>
       </widget>
-      <widget class="QComboBox" name="comboBox_5">
+      <widget class="QComboBox" name="phye_fpitf">
        <property name="geometry">
         <rect>
          <x>340</x>
@@ -6947,8 +7037,63 @@ border-radius: 2px;
          <string>--Select--</string>
         </property>
        </item>
+       <item>
+        <property name="text">
+         <string>Head</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Buttocks (Breech)</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Back</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Shoulder / Transverse Lie</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Not Palpable</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Cephalic Presentation</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Breech Presentation</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Transverse Lie</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Oblique Lie</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Not Determined</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Other</string>
+        </property>
+       </item>
       </widget>
-      <widget class="QComboBox" name="comboBox_6">
+      <widget class="QComboBox" name="phye_pofb">
        <property name="geometry">
         <rect>
          <x>340</x>
@@ -6965,8 +7110,43 @@ border-radius: 2px;
          <string>--Select--</string>
         </property>
        </item>
+       <item>
+        <property name="text">
+         <string>Left</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Right</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Anterior</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Posterior</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Transverse</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Not Palpable</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Other</string>
+        </property>
+       </item>
       </widget>
-      <widget class="QComboBox" name="comboBox_7">
+      <widget class="QComboBox" name="phye_pp">
        <property name="geometry">
         <rect>
          <x>340</x>
@@ -6983,32 +7163,46 @@ border-radius: 2px;
          <string>--Select--</string>
         </property>
        </item>
-      </widget>
-      <widget class="QLineEdit" name="lineEdit_13">
-       <property name="geometry">
-        <rect>
-         <x>340</x>
-         <y>300</y>
-         <width>113</width>
-         <height>20</height>
-        </rect>
-       </property>
-       <property name="styleSheet">
-        <string notr="true">border: 1px solid black;</string>
-       </property>
-      </widget>
-      <widget class="QLineEdit" name="lineEdit_14">
-       <property name="geometry">
-        <rect>
-         <x>340</x>
-         <y>330</y>
-         <width>113</width>
-         <height>20</height>
-        </rect>
-       </property>
-       <property name="styleSheet">
-        <string notr="true">border: 1px solid black;</string>
-       </property>
+       <item>
+        <property name="text">
+         <string>Head (Cephalic)</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Buttocks (Breech)</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Shoulder (Shoulder Dystocia)</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Arm / Hand</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Face / Brow</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Transverse Lie</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Not Palpable</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Other</string>
+        </property>
+       </item>
       </widget>
       <widget class="QLabel" name="label_150">
        <property name="geometry">
@@ -7049,7 +7243,7 @@ border-radius: 2px;
         </font>
        </property>
        <property name="text">
-        <string>Position of Fetal Back	</string>
+        <string>Position of Fetal Back</string>
        </property>
       </widget>
       <widget class="QLabel" name="label_152">
@@ -7070,7 +7264,7 @@ border-radius: 2px;
         </font>
        </property>
        <property name="text">
-        <string>Presenting Part	</string>
+        <string>Presenting Part</string>
        </property>
       </widget>
       <widget class="QLabel" name="label_153">
@@ -7091,7 +7285,7 @@ border-radius: 2px;
         </font>
        </property>
        <property name="text">
-        <string>Status of Presenting Part	</string>
+        <string>Status of Presenting Part</string>
        </property>
       </widget>
       <widget class="QLabel" name="label_154">
@@ -7112,7 +7306,7 @@ border-radius: 2px;
         </font>
        </property>
        <property name="text">
-        <string>Uterine Activity	</string>
+        <string>Uterine Activity</string>
        </property>
       </widget>
       <widget class="QLabel" name="label_155">
@@ -7456,12 +7650,12 @@ border-radius: 2px;
         <string>INTERNAL EXAMINATION: Cervix</string>
        </property>
       </widget>
-      <widget class="QComboBox" name="comboBox_8">
+      <widget class="QComboBox" name="phye_cc">
        <property name="geometry">
         <rect>
          <x>640</x>
          <y>280</y>
-         <width>101</width>
+         <width>121</width>
          <height>22</height>
         </rect>
        </property>
@@ -7473,11 +7667,51 @@ border-radius: 2px;
          <string>--Select--</string>
         </property>
        </item>
+       <item>
+        <property name="text">
+         <string>Firm</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Medium</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Soft</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Spongy</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Rubbery</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Firm with Central Indentation</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Not Palpable</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Other</string>
+        </property>
+       </item>
       </widget>
       <widget class="QLabel" name="label_164">
        <property name="geometry">
         <rect>
-         <x>750</x>
+         <x>770</x>
          <y>280</y>
          <width>111</width>
          <height>21</height>
@@ -7492,10 +7726,10 @@ border-radius: 2px;
         </font>
        </property>
        <property name="text">
-        <string>Cervix Consistency	</string>
+        <string>Cervix Consistency</string>
        </property>
       </widget>
-      <widget class="QSpinBox" name="spinBox_10">
+      <widget class="QSpinBox" name="phye_cd">
        <property name="geometry">
         <rect>
          <x>640</x>
@@ -7511,7 +7745,7 @@ border-radius: 2px;
         </font>
        </property>
        <property name="maximum">
-        <number>20</number>
+        <number>500</number>
        </property>
       </widget>
       <widget class="QLabel" name="label_165">
@@ -7532,10 +7766,10 @@ border-radius: 2px;
         </font>
        </property>
        <property name="text">
-        <string>Cervix Dilatation	</string>
+        <string>Cervix Dilatation</string>
        </property>
       </widget>
-      <widget class="QComboBox" name="comboBox_9">
+      <widget class="QComboBox" name="phye_ppp">
        <property name="geometry">
         <rect>
          <x>640</x>
@@ -7550,6 +7784,36 @@ border-radius: 2px;
        <item>
         <property name="text">
          <string>--Select--</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Head</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Breech</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Shoulder</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Face</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Brow</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Other</string>
         </property>
        </item>
       </widget>
@@ -7939,10 +8203,10 @@ gland discharge</string>
         </font>
        </property>
        <property name="text">
-        <string>Palpable Presenting Part	</string>
+        <string>Palpable Presenting Part</string>
        </property>
       </widget>
-      <widget class="QComboBox" name="comboBox_10">
+      <widget class="QComboBox" name="phye_sobow">
        <property name="geometry">
         <rect>
          <x>640</x>
@@ -7957,6 +8221,31 @@ gland discharge</string>
        <item>
         <property name="text">
          <string>--Select--</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Intact</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Ruptured</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Artificial Rupture</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Bulging</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Other</string>
         </property>
        </item>
       </widget>
@@ -7978,8 +8267,154 @@ gland discharge</string>
         </font>
        </property>
        <property name="text">
-        <string>Status of Bag of Water	</string>
+        <string>Status of Bag of Water</string>
        </property>
+      </widget>
+      <widget class="QSpinBox" name="phye_fht">
+       <property name="geometry">
+        <rect>
+         <x>340</x>
+         <y>130</y>
+         <width>71</width>
+         <height>21</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Arial</family>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
+       <property name="suffix">
+        <string>bpm</string>
+       </property>
+       <property name="minimum">
+        <number>0</number>
+       </property>
+       <property name="maximum">
+        <number>500</number>
+       </property>
+      </widget>
+      <widget class="QComboBox" name="phye_sopp">
+       <property name="geometry">
+        <rect>
+         <x>340</x>
+         <y>300</y>
+         <width>111</width>
+         <height>22</height>
+        </rect>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">border: 1px solid black;</string>
+       </property>
+       <item>
+        <property name="text">
+         <string>--Select--</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Engaged</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Not Engaged</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Floating</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Descended</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Fixed</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Crowning</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Not Palpable</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Other</string>
+        </property>
+       </item>
+      </widget>
+      <widget class="QComboBox" name="phye_ua">
+       <property name="geometry">
+        <rect>
+         <x>340</x>
+         <y>330</y>
+         <width>111</width>
+         <height>22</height>
+        </rect>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">border: 1px solid black;</string>
+       </property>
+       <item>
+        <property name="text">
+         <string>--Select--</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Regular</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Irregular</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Absent</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Mild</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Moderate</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Strong</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Hypertonic</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Not Palpable</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Other</string>
+        </property>
+       </item>
       </widget>
      </widget>
      <widget class="QWidget" name="BEPlan">
@@ -8962,6 +9397,111 @@ QPushButton:focus {
        <normaloff>../wfpics/backIcon.png</normaloff>../wfpics/backIcon.png</iconset>
      </property>
     </widget>
+    <widget class="QPushButton" name="btnSaveMSR">
+     <property name="geometry">
+      <rect>
+       <x>60</x>
+       <y>510</y>
+       <width>91</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Arial</family>
+       <pointsize>10</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QPushButton {
+	background-color: rgb(0, 51, 102);
+	color: white;
+	border-radius: 10px;
+}
+
+QPushButton:hover {
+    background-color: #2980b9;  
+}
+
+
+</string>
+     </property>
+     <property name="text">
+      <string>Save</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="btnEditMSR">
+     <property name="geometry">
+      <rect>
+       <x>160</x>
+       <y>510</y>
+       <width>91</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Arial</family>
+       <pointsize>10</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QPushButton {
+	background-color: rgb(0, 51, 102);
+	color: white;
+	border-radius: 10px;
+}
+
+QPushButton:hover {
+    background-color: #2980b9;  
+}
+
+
+</string>
+     </property>
+     <property name="text">
+      <string>Edit</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="btnCancelMSR">
+     <property name="geometry">
+      <rect>
+       <x>260</x>
+       <y>510</y>
+       <width>91</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Arial</family>
+       <pointsize>10</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QPushButton {
+	background-color: rgb(0, 51, 102);
+	color: white;
+	border-radius: 10px;
+}
+
+QPushButton:hover {
+    background-color: #2980b9;  
+}
+
+
+</string>
+     </property>
+     <property name="text">
+      <string>Cancel</string>
+     </property>
+    </widget>
    </widget>
    <widget class="QWidget" name="viewFPF">
     <widget class="QStackedWidget" name="stackWidFPF">
@@ -8986,7 +9526,7 @@ QPushButton:focus {
 }</string>
      </property>
      <property name="currentIndex">
-      <number>0</number>
+      <number>2</number>
      </property>
      <widget class="QWidget" name="personalInfoFPF">
       <property name="styleSheet">
