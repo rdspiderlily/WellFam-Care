@@ -24,6 +24,7 @@ class AdminAppointmentController:
             self.tableWidApp.cellClicked.disconnect()
         except TypeError:
             pass
+        
         self.tableWidApp.cellClicked.connect(self.view_appointment)
         
         self.searchApp = searchApp
@@ -35,20 +36,20 @@ class AdminAppointmentController:
 
             cursor.execute("""
                 UPDATE APPOINTMENT
-                SET app_status_id = 2
-                WHERE queue_status_id = 3
-                AND app_status_id != 2
-                AND app_isdeleted = FALSE
+                SET APP_STATUS_ID = 2
+                WHERE QUEUE_STATUS_ID = 3
+                AND APP_STATUS_ID != 2
+                AND APP_ISDELETED = FALSE
             """)
 
             today = date.today()
             cursor.execute("""
                 UPDATE APPOINTMENT
-                SET app_status_id = 4
-                WHERE app_date < %s
-                AND queue_status_id = 1
-                AND app_status_id != 4
-                AND app_isdeleted = FALSE
+                SET APP_STATUS_ID = 4
+                WHERE APP_DATE < %s
+                AND QUEUE_STATUS_ID = 1
+                AND APP_STATUS_ID != 4
+                AND APP_ISDELETED = FALSE
             """, (today,))
             
             self.conn.commit()
@@ -212,7 +213,7 @@ class AdminAppointmentController:
             if cancel_button:
                 cancel_button.clicked.connect(self.dialog.reject)
             
-        self.dialog.show()
+        self.dialog.exec_()
     
     def open_select_patient_dialog(self, addAppWidget):
         patLDialog = QDialog()

@@ -75,7 +75,8 @@ class AdminPatientController:
             # --- Required Fields Check ---
             required_fields = [
                 "lineEditPatLname", "lineEditPatFname", "datePatDOB", "lineEditPatAge",
-                "lineEditPatContact", "lineEditPatOccu", "lineEditPatAddress",
+                "lineEditPatContact", "lineEditPatOccu", 
+                "lineEditPatAddressNS", "lineEditPatAddressB", "lineEditPatAddressMC", "lineEditPatAddressP",
                 "statusPat", "pHMember", "comboPregnancyStatus"
             ]
             for field in required_fields:
@@ -97,7 +98,6 @@ class AdminPatientController:
             pat_status = addPatWidget.findChild(QComboBox, "statusPat").currentText()
             pat_contact = addPatWidget.findChild(QLineEdit, "lineEditPatContact").text()
             pat_occu = addPatWidget.findChild(QLineEdit, "lineEditPatOccu").text()
-            pat_address = addPatWidget.findChild(QLineEdit, "lineEditPatAddress").text()
             pat_phm = addPatWidget.findChild(QComboBox, "pHMember").currentText()[0]  # e.g., 'Y' or 'N'
             pat_phnum = addPatWidget.findChild(QLineEdit, "pHNum").text()
             pat_is_preg = addPatWidget.findChild(QComboBox, "comboPregnancyStatus").currentText()
@@ -105,20 +105,26 @@ class AdminPatientController:
             pat_lmp = addPatWidget.findChild(QDateEdit, "datePatLMP").date().toPyDate() if pat_is_preg == "Y" else None
             pat_edc = addPatWidget.findChild(QDateEdit, "datePatEDC").date().toPyDate() if pat_is_preg == "Y" else None
             pat_aog = addPatWidget.findChild(QSpinBox, "spinBoxAOG").value() if pat_is_preg == "Y" else None
+            pat_addressNS = addPatWidget.findChild(QLineEdit, "lineEditPatAddressNS").text()
+            pat_addressB = addPatWidget.findChild(QLineEdit, "lineEditPatAddressB").text()
+            pat_addressMC = addPatWidget.findChild(QLineEdit, "lineEditPatAddressMC").text()
+            pat_addressP = addPatWidget.findChild(QLineEdit, "lineEditPatAddressP").text()
 
             # --- Insert Patient ---
             cursor = self.conn.cursor()
             cursor.execute("""
                 INSERT INTO PATIENT (
                     PAT_LNAME, PAT_FNAME, PAT_MNAME, PAT_DOB, PAT_AGE, PAT_STATUS,
-                    PAT_CNUM, PAT_OCCU, PAT_ADDRESS, PAT_PHM, PAT_PHNUM,
-                    PAT_LMP, PAT_EDC, PAT_AOG, PAT_ISPREG
-                ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                    PAT_CNUM, PAT_OCCU, PAT_PHM, PAT_PHNUM,
+                    PAT_LMP, PAT_EDC, PAT_AOG, PAT_ISPREG, 
+                    PAT_ADDNS, PAT_ADDB, PAT_ADDMC, PAT_ADDP 
+                ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                 RETURNING PAT_ID
             """, (
                 pat_lname, pat_fname, pat_mname, pat_dob, pat_age, pat_status,
-                pat_contact, pat_occu, pat_address, pat_phm, pat_phnum,
-                pat_lmp, pat_edc, pat_aog, pat_ispreg
+                pat_contact, pat_occu, pat_phm, pat_phnum,
+                pat_lmp, pat_edc, pat_aog, pat_ispreg,
+                pat_addressNS, pat_addressB, pat_addressMC, pat_addressP
             ))
             pat_id = cursor.fetchone()[0]
 

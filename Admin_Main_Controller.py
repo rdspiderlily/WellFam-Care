@@ -107,7 +107,8 @@ class AdminMainWindow(QDialog):
         self.time_label = self.findChild(QLabel, "timeLabel")
         self.calendar_widget = self.findChild(QCalendarWidget, "adminCalendar")
         self.total_pat = self.findChild(QLabel, "NoPats")
-        self.dashboard_controller = AdminDashboardController(self.tableWidQueue, self.time_label, self.calendar_widget, self.total_pat)
+        self.total_app = self.findChild(QLabel, "NoApps")
+        self.dashboard_controller = AdminDashboardController(self.tableWidQueue, self.time_label, self.calendar_widget, self.total_pat, self.total_app)
 
     def patient(self):
         self.clear()

@@ -556,13 +556,13 @@ border-radius: 10px;</string>
      <string>MM/dd/yyyy</string>
     </property>
    </widget>
-   <widget class="QLineEdit" name="lineEditPatAddress">
+   <widget class="QLineEdit" name="lineEditPatAddressNS">
     <property name="geometry">
      <rect>
-      <x>310</x>
-      <y>110</y>
-      <width>361</width>
-      <height>25</height>
+      <x>370</x>
+      <y>90</y>
+      <width>171</width>
+      <height>21</height>
      </rect>
     </property>
     <property name="font">
@@ -573,6 +573,9 @@ border-radius: 10px;</string>
     </property>
     <property name="alignment">
      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+    </property>
+    <property name="placeholderText">
+     <string>No./Street</string>
     </property>
    </widget>
    <widget class="QLabel" name="label_14">
@@ -1365,6 +1368,72 @@ border-radius: 10px;</string>
      <string>Postpartum</string>
     </property>
    </widget>
+   <widget class="QLineEdit" name="lineEditPatAddressB">
+    <property name="geometry">
+     <rect>
+      <x>550</x>
+      <y>90</y>
+      <width>151</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Arial</family>
+      <kerning>false</kerning>
+     </font>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+    </property>
+    <property name="placeholderText">
+     <string>Barangay</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="lineEditPatAddressMC">
+    <property name="geometry">
+     <rect>
+      <x>370</x>
+      <y>115</y>
+      <width>171</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Arial</family>
+      <kerning>false</kerning>
+     </font>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+    </property>
+    <property name="placeholderText">
+     <string>Municipality/City</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="lineEditPatAddressP">
+    <property name="geometry">
+     <rect>
+      <x>550</x>
+      <y>115</y>
+      <width>151</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Arial</family>
+      <kerning>false</kerning>
+     </font>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+    </property>
+    <property name="placeholderText">
+     <string>Province</string>
+    </property>
+   </widget>
    <zorder>datePatDOB</zorder>
    <zorder>frame</zorder>
    <zorder>label_2</zorder>
@@ -1387,7 +1456,7 @@ border-radius: 10px;</string>
    <zorder>lineEditPatMname</zorder>
    <zorder>lineEditPatAge</zorder>
    <zorder>lineEditPatContact</zorder>
-   <zorder>lineEditPatAddress</zorder>
+   <zorder>lineEditPatAddressNS</zorder>
    <zorder>label_14</zorder>
    <zorder>lineEditSpoLname</zorder>
    <zorder>label_15</zorder>
@@ -1428,6 +1497,9 @@ border-radius: 10px;</string>
    <zorder>checkBoxLaborM</zorder>
    <zorder>checkBoxNSD</zorder>
    <zorder>checkBoxPostpartum</zorder>
+   <zorder>lineEditPatAddressB</zorder>
+   <zorder>lineEditPatAddressMC</zorder>
+   <zorder>lineEditPatAddressP</zorder>
   </widget>
  </widget>
  <resources/>

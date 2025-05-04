@@ -11,12 +11,14 @@ from datetime import date
 from PyQt5 import uic
 
 from Database import connect_db
+from Admin_Controllers.Admin_Patient_View.AutofillPersonalInfo import AutofillPersonalInfoController
 
 class MaternalRecordsController:
     def __init__(self, pageMSR, patient_id):
         self.conn = connect_db()
         self.pageMSR = pageMSR
         self.patient_id = patient_id
+        self.autofill = AutofillPersonalInfoController(self.conn)
         
         self.stackWidMSR = self.pageMSR.findChild(QStackedWidget, "stackWidMSR")
         
@@ -104,6 +106,10 @@ class MaternalRecordsController:
         self.clt_fname.setReadOnly(True)
         self.clt_minit.setReadOnly(True)
         self.clt_dob.setEnabled(False)
+        self.clt_NSAdd.setReadOnly(True)
+        self.clt_BarAdd.setReadOnly(True)
+        self.clt_MuniAdd.setReadOnly(True)
+        self.clt_ProvAdd.setReadOnly(True)
     
     def save_all_page(self):
         try:
@@ -124,34 +130,39 @@ class MaternalRecordsController:
         self.load_other_pinfo_widgets()
         self.load_basic_pinfo()
         self.load_other_pinfo()
-        self.prefilled_basic_pinfo()
+        self.prefilled_pinfo()
         
-    def prefilled_basic_pinfo(self):
+    def prefilled_pinfo(self):
         try:
             self.load_basic_pinfo_widgets()
+            self.load_other_pinfo_widgets()
 
-            if not all([self.clt_lname, self.clt_fname, self.clt_minit, self.clt_dob]):
+            if not all([
+                self.clt_lname, 
+                self.clt_fname, 
+                self.clt_minit, 
+                self.clt_dob,
+                self.clt_NSAdd,
+                self.clt_BarAdd,
+                self.clt_MuniAdd,
+                self.clt_ProvAdd
+                
+            ]):
                 print("Some input fields are not initialized. Please check objectNames in the UI.")
                 return
 
-            query = """
-                SELECT PAT_LNAME, PAT_FNAME, LEFT(PAT_MNAME, 1) || '.' AS MIDDLE_INITIAL, PAT_DOB
-                FROM PATIENT
-                WHERE PAT_ID = %s
-            """
-            cursor = self.conn.cursor()
-            cursor.execute(query, (self.patient_id,))
-            result = cursor.fetchone()
-
-            if result:
-                self.clt_lname.setText(result[0])
-                self.clt_fname.setText(result[1])
-                self.clt_minit.setText(result[2])
-                self.clt_dob.setDate(result[3])
-            else:
-                print("No patient found for PAT_ID:", self.patient_id)
-
-            cursor.close()
+            info = self.autofill.get_basic_info(self.patient_id)
+            if info:
+                self.clt_lname.setText(info["lname"])
+                self.clt_fname.setText(info["fname"])
+                self.clt_minit.setText(info["minit"])
+                self.clt_dob.setDate(info["dob"])
+                self.clt_NSAdd.setText(info["add_ns"])
+                self.clt_BarAdd.setText(info["add_b"])
+                self.clt_MuniAdd.setText(info["add_mc"])
+                self.clt_ProvAdd.setText(info["add_p"])
+                
+            self.autofill.close()
 
         except Exception as e:
             self.conn.rollback()
@@ -179,10 +190,6 @@ class MaternalRecordsController:
             label_to_widget = {
                 "Client No.": self.clt_no,
                 "Educational Attainment": self.clt_eduA,
-                "No/Street": self.clt_NSAdd,
-                "Barangay": self.clt_BarAdd,
-                "Municipality": self.clt_MuniAdd,
-                "Province": self.clt_ProvAdd,
                 "Name": self.clt_PNEName,
                 "Contact No.": self.clt_PNEContact,
                 "Address": self.clt_PNEAdd
@@ -298,10 +305,6 @@ class MaternalRecordsController:
             responses = {
                 "Client No.": self.clt_no.text(),
                 "Educational Attainment": self.clt_eduA.currentText(),
-                "No/Street": self.clt_NSAdd.text(),
-                "Barangay": self.clt_BarAdd.text(),
-                "Municipality": self.clt_MuniAdd.text(),
-                "Province": self.clt_ProvAdd.text(),
                 "Name": self.clt_PNEName.text(),
                 "Contact No.": self.clt_PNEContact.text(),
                 "Address": self.clt_PNEAdd.text()

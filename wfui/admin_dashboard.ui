@@ -449,7 +449,7 @@ QPushButton:hover {
      <number>0</number>
     </property>
     <property name="currentIndex">
-     <number>3</number>
+     <number>0</number>
     </property>
     <widget class="QWidget" name="pageHome">
      <widget class="QLabel" name="label_Home">
@@ -681,7 +681,7 @@ color: rgb(0, 51, 102);</string>
         <set>Qt::AlignCenter</set>
        </property>
       </widget>
-      <widget class="QLabel" name="NoPats_2">
+      <widget class="QLabel" name="NoApps">
        <property name="geometry">
         <rect>
          <x>15</x>

@@ -12,13 +12,14 @@ from datetime import datetime
 from Database import connect_db
 
 class AdminDashboardController:
-    def __init__(self, tableWidQueue: QTableWidget, time_label: QLabel, calendar_widget: QCalendarWidget, total_pat: QLabel):
+    def __init__(self, tableWidQueue: QTableWidget, time_label: QLabel, calendar_widget: QCalendarWidget, total_pat: QLabel, total_app: QLabel):
         self.conn = connect_db()
         self.tableWidQueue = tableWidQueue
         
         self.timeLabel = time_label
         self.calendar = calendar_widget
         self.totalPatLabel = total_pat
+        self.totalAppLabel = total_app
         
         try:
             self.tableWidQueue.cellClicked.disconnect()
@@ -32,6 +33,7 @@ class AdminDashboardController:
 
         self.update_time()
         self.total_patients()
+        self.total_appointments()
         self.queue_table()
 
     def update_time(self):
@@ -50,6 +52,20 @@ class AdminDashboardController:
             except Exception as e:
                 self.totalPatLabel.setText("Error loading patients")
                 print(f"Error fetching total patients: {e}")
+            finally:
+                conn.close()
+
+    def total_appointments(self):
+        conn = connect_db()
+        if conn:
+            try:
+                cur = conn.cursor()
+                cur.execute("SELECT COUNT(*) FROM APPOINTMENT")
+                count = cur.fetchone()[0]
+                self.totalAppLabel.setText(str(count))
+            except Exception as e:
+                self.totalAppLabel.setText("Error loading appointments")
+                print(f"Error fetching total appointments: {e}")
             finally:
                 conn.close()
                 
@@ -96,6 +112,7 @@ class AdminDashboardController:
                 WHERE 
                     a.APP_DATE = CURRENT_DATE 
                     AND qs.QUEUE_STATUS_NAME != 'Cancelled'
+                    AND a.APP_ISDELETED = FALSE
                 GROUP BY 
                     a.QUEUE_NUM, p.PAT_LNAME, p.PAT_FNAME, a.APP_TIME, qs.QUEUE_STATUS_NAME, stf.STAFF_LNAME, stf.STAFF_FNAME
                 ORDER BY 

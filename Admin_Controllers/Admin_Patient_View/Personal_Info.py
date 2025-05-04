@@ -15,13 +15,16 @@ class PersonalInfoController:
         self.status_edit = self.page.findChild(QComboBox, "statusPat")
         self.contact_edit = self.page.findChild(QLineEdit, "lineEditPatContact")
         self.occu_edit = self.page.findChild(QLineEdit, "lineEditPatOccu")
-        self.address_edit = self.page.findChild(QLineEdit, "lineEditPatAddress")
         self.phm_edit = self.page.findChild(QComboBox, "pHMember")
         self.phnum_edit = self.page.findChild(QLineEdit, "pHNum")
         self.pat_ispreg_edit = self.page.findChild(QComboBox, "comboPregnancyStatus")
         self.lmp_edit = self.page.findChild(QDateEdit, "datePatLMP")
         self.edc_edit = self.page.findChild(QDateEdit, "datePatEDC")
         self.aog_edit = self.page.findChild(QSpinBox, "spinBoxAOG")
+        self.addressNS_edit = self.page.findChild(QLineEdit, "lineEditPatAddressNS")
+        self.addressB_edit = self.page.findChild(QLineEdit, "lineEditPatAddressB")
+        self.addressMC_edit = self.page.findChild(QLineEdit, "lineEditPatAddressMC")
+        self.addressP_edit = self.page.findChild(QLineEdit, "lineEditPatAddressP")
         
         self.spo_lname_edit = self.page.findChild(QLineEdit, "lineEditSpoLname")
         self.spo_fname_edit = self.page.findChild(QLineEdit, "lineEditSpoFname")
@@ -69,8 +72,9 @@ class PersonalInfoController:
                 cur = conn.cursor()
                 cur.execute("""
                     SELECT PAT_LNAME, PAT_FNAME, PAT_MNAME, PAT_DOB, PAT_AGE, PAT_STATUS,
-                        PAT_CNUM, PAT_OCCU, PAT_ADDRESS, PAT_PHM, PAT_PHNUM, 
-                        PAT_ISPREG, PAT_LMP, PAT_EDC, PAT_AOG
+                        PAT_CNUM, PAT_OCCU, PAT_PHM, PAT_PHNUM, 
+                        PAT_ISPREG, PAT_LMP, PAT_EDC, PAT_AOG,
+                        PAT_ADDNS, PAT_ADDB, PAT_ADDMC, PAT_ADDP 
                     FROM PATIENT WHERE PAT_ID = %s AND PAT_ISDELETED = FALSE
                 """, (self.patient_id,))
                 result = cur.fetchone()
@@ -84,13 +88,16 @@ class PersonalInfoController:
                     self.status_edit.setCurrentText(result[5])
                     self.contact_edit.setText(result[6])
                     self.occu_edit.setText(result[7])
-                    self.address_edit.setText(result[8])
-                    self.phm_edit.setCurrentText(result[9])
-                    self.phnum_edit.setText(result[10])
-                    self.pat_ispreg_edit.setCurrentText(result[11])
-                    self.lmp_edit.setDate(result[12])
-                    self.edc_edit.setDate(result[13])
-                    self.aog_edit.setValue(result[14])
+                    self.phm_edit.setCurrentText(result[8])
+                    self.phnum_edit.setText(result[9])
+                    self.pat_ispreg_edit.setCurrentText(result[10])
+                    self.lmp_edit.setDate(result[11])
+                    self.edc_edit.setDate(result[12])
+                    self.aog_edit.setValue(result[13])
+                    self.addressNS_edit.setText(result[14])
+                    self.addressB_edit.setText(result[15])
+                    self.addressMC_edit.setText(result[16])
+                    self.addressP_edit.setText(result[17])
                     
                 cur.execute("""
                     SELECT SP_LNAME, SP_FNAME, SP_MNAME, SP_OCCU, SP_DOB, SP_CNUM
@@ -187,7 +194,8 @@ class PersonalInfoController:
     def enable_editing(self):
         editable_widgets = [
             self.lname_edit, self.fname_edit, self.mname_edit, self.dob_edit, self.age_edit,
-            self.status_edit, self.contact_edit, self.occu_edit, self.address_edit,
+            self.status_edit, self.contact_edit, self.occu_edit, 
+            self.addressNS_edit, self.addressB_edit, self.addressMC_edit, self.addressP_edit,
             self.phm_edit, self.phnum_edit, self.pat_ispreg_edit, self.lmp_edit,
             self.edc_edit, self.aog_edit,
             self.spo_lname_edit, self.spo_fname_edit, self.spo_mname_edit,
@@ -226,7 +234,8 @@ class PersonalInfoController:
     def disable_editing(self):
         readonly_widgets = [
             self.lname_edit, self.fname_edit, self.mname_edit, self.dob_edit, self.age_edit,
-            self.status_edit, self.contact_edit, self.occu_edit, self.address_edit,
+            self.status_edit, self.contact_edit, self.occu_edit, 
+            self.addressNS_edit, self.addressB_edit, self.addressMC_edit, self.addressP_edit,
             self.phm_edit, self.phnum_edit, self.pat_ispreg_edit, self.lmp_edit,
             self.edc_edit, self.aog_edit,
             self.spo_lname_edit, self.spo_fname_edit, self.spo_mname_edit,
@@ -260,9 +269,10 @@ class PersonalInfoController:
         self.lname_edit.text(), self.fname_edit.text(), self.mname_edit.text(),
         self.dob_edit.date().toString("yyyy-MM-dd"), self.age_edit.text(),
         self.status_edit.currentText(), self.contact_edit.text(), self.occu_edit.text(),
-        self.address_edit.text(), self.phm_edit.currentText(), self.phnum_edit.text(),
+        self.phm_edit.currentText(), self.phnum_edit.text(),
         self.pat_ispreg_edit.currentText(), self.lmp_edit.date().toString("yyyy-MM-dd"),
-        self.edc_edit.date().toString("yyyy-MM-dd"), self.aog_edit.value()
+        self.edc_edit.date().toString("yyyy-MM-dd"), self.aog_edit.value(),
+        self.addressNS_edit.text(), self.addressB_edit.text(), self.addressMC_edit.text(), self.addressP_edit.text()
         )
 
         spouse_values = (
@@ -284,8 +294,9 @@ class PersonalInfoController:
                 cur.execute("""
                     UPDATE PATIENT
                     SET PAT_LNAME=%s, PAT_FNAME=%s, PAT_MNAME=%s, PAT_DOB=%s, PAT_AGE=%s, 
-                        PAT_STATUS=%s, PAT_CNUM=%s, PAT_OCCU=%s, PAT_ADDRESS=%s,
-                        PAT_PHM=%s, PAT_PHNUM=%s, PAT_ISPREG=%s, PAT_LMP=%s, PAT_EDC=%s, PAT_AOG=%s
+                        PAT_STATUS=%s, PAT_CNUM=%s, PAT_OCCU=%s,
+                        PAT_PHM=%s, PAT_PHNUM=%s, PAT_ISPREG=%s, PAT_LMP=%s, PAT_EDC=%s, PAT_AOG=%s,
+                        PAT_ADDNS=%s, PAT_ADDB=%s, PAT_ADDMC=%s, PAT_ADDP=%s
                     WHERE PAT_ID=%s AND PAT_ISDELETED = FALSE
                 """, (*patient_values, self.patient_id))
 
