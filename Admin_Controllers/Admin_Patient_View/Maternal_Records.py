@@ -39,11 +39,12 @@ class MaternalRecordsController:
         self.prev_btn.clicked.connect(self.go_prev)
         self.next_btn.clicked.connect(self.go_next)
 
-        self.update_nav_buttons()  # Disable prev if on first page, etc.
+        self.stackWidMSR.setCurrentIndex(0)
         self.personal_info()
         self.medicalH_info()
         self.physicalE_info()
         self.birthEPlan_info()
+        self.update_nav_buttons()
     
     def go_prev(self):
         current_index = self.stackWidMSR.currentIndex()
@@ -125,7 +126,6 @@ class MaternalRecordsController:
             print("Error while saving:", e)
         
     def personal_info(self):
-        self.stackWidMSR.setCurrentIndex(0)
         self.load_basic_pinfo_widgets()
         self.load_other_pinfo_widgets()
         self.load_basic_pinfo()
@@ -174,21 +174,22 @@ class MaternalRecordsController:
         self.clt_minit = self.pageMSR.findChild(QLineEdit, "clientMidI")
         self.clt_dob = self.pageMSR.findChild(QDateEdit, "clientDOB")
         
-        self.clt_no = self.pageMSR.findChild(QLineEdit, "clientNoMSR")
+        self.clt_PNEName = self.pageMSR.findChild(QLineEdit, "PNEName")
+        self.clt_PNEContact = self.pageMSR.findChild(QLineEdit, "PNEContact")
+        self.clt_PNEAdd = self.pageMSR.findChild(QLineEdit, "PNEAdd")
+        
+        self.clt_num = self.pageMSR.findChild(QLineEdit, "clientNumMSR")
         self.clt_eduA = self.pageMSR.findChild(QComboBox, "clientEduAtt")
         self.clt_NSAdd = self.pageMSR.findChild(QLineEdit, "clientNSAdd")
         self.clt_BarAdd = self.pageMSR.findChild(QLineEdit, "clientBarAdd")
         self.clt_MuniAdd = self.pageMSR.findChild(QLineEdit, "clientMuniAdd")
         self.clt_ProvAdd = self.pageMSR.findChild(QLineEdit, "clientProvAdd")
-        self.clt_PNEName = self.pageMSR.findChild(QLineEdit, "PNEName")
-        self.clt_PNEContact = self.pageMSR.findChild(QLineEdit, "PNEContact")
-        self.clt_PNEAdd = self.pageMSR.findChild(QLineEdit, "PNEAdd")
     
     def load_basic_pinfo(self):
         try:
             cursor = self.conn.cursor()
             label_to_widget = {
-                "Client No.": self.clt_no,
+                "Client No.": self.clt_num,
                 "Educational Attainment": self.clt_eduA,
                 "Name": self.clt_PNEName,
                 "Contact No.": self.clt_PNEContact,
@@ -442,7 +443,6 @@ class MaternalRecordsController:
             self.conn.rollback()
             
     def medicalH_info(self):
-        self.stackWidMSR.setCurrentIndex(1)
         self.load_medical_widgets()
         self.load_obstetrical_widgets()
         self.load_medical()
@@ -638,31 +638,25 @@ class MaternalRecordsController:
         try:
             self.load_obstetrical_widgets()
 
-            if not all([self.obs_lmp, self.obs_aog, self.obs_edc]):
-                print("Some obstetrical input fields are not initialized. Please check objectNames in the UI.")
+            if not all([
+                self.obs_lmp, 
+                self.obs_aog, 
+                self.obs_edc            
+            ]):
+                print("Some input fields are not initialized. Please check objectNames in the UI.")
                 return
 
-            query = """
-                SELECT PAT_LMP, PAT_AOG, PAT_EDC
-                FROM PATIENT
-                WHERE PAT_ID = %s
-            """
-            cursor = self.conn.cursor()
-            cursor.execute(query, (self.patient_id,))
-            result = cursor.fetchone()
-
-            if result:
-                self.obs_lmp.setDate(result[0])
-                self.obs_aog.setValue(result[1])
-                self.obs_edc.setDate(result[2])
-            else:
-                print("No patient found for PAT_ID:", self.patient_id)
-
-            cursor.close()
+            info = self.autofill.get_basic_info(self.patient_id)
+            if info:
+                self.obs_lmp.setDate(info["lmp"])
+                self.obs_aog.setValue(info["aog"])
+                self.obs_edc.setDate(info["edc"])
+                
+            self.autofill.close()
 
         except Exception as e:
             self.conn.rollback()
-            print("Error in prefilled_obstetrical:", e)
+            print("Error in prefilled_basic_pinfo:", e)
             
     def load_obstetrical_widgets(self):
         self.obs_lmp = self.pageMSR.findChild(QDateEdit, "obs_lmp")
@@ -797,7 +791,6 @@ class MaternalRecordsController:
             self.conn.rollback()
     
     def physicalE_info(self):
-        self.stackWidMSR.setCurrentIndex(2)
         self.load_physicalE_widgets()
         self.load_pelvicE_widgets()
         self.load_physicalE()
@@ -1088,31 +1081,9 @@ class MaternalRecordsController:
             print("Error saving pelvic examination:", e)
             
     def birthEPlan_info(self):
-        self.stackWidMSR.setCurrentIndex(3)
         self.load_birthEPlan_widgets()
         self.load_birthEPlan()
         self.prefilled_birthEPlan()
-    
-    def prefilled_birthEPlan(self):
-        try:
-            self.load_birthEPlan_widgets()
-            self.load_basic_pinfo()
-
-            # List of fields to check and prefill
-            fields = {
-                self.clt_PNEName: self.bep_ptnn,
-                self.clt_PNEAdd: self.bep_ptna,
-                self.clt_PNEContact: self.bep_ptnc
-            }
-
-            for clt_field, bep_field in fields.items():
-                if clt_field:
-                    bep_field.setText(clt_field.text())
-                else:
-                    print(f"Warning: {clt_field} is None.")
-            
-        except Exception as e:
-            print("Error prefilling birth plan data:", e)
     
     def load_birthEPlan_widgets(self):
         self.bep_ptnn = self.pageMSR.findChild(QLineEdit, "bep_ptnn")
@@ -1134,6 +1105,27 @@ class MaternalRecordsController:
         self.bep_dn1 = self.pageMSR.findChild(QLineEdit, "bep_dn1")
         self.bep_dn2 = self.pageMSR.findChild(QLineEdit, "bep_dn2")
         self.bep_rf = self.pageMSR.findChild(QLineEdit, "bep_rf")
+    
+    def prefilled_birthEPlan(self):
+        try:
+            self.load_birthEPlan_widgets()
+            self.load_basic_pinfo()
+
+            # List of fields to check and prefill
+            fields = {
+                self.clt_PNEName: self.bep_ptnn,
+                self.clt_PNEAdd: self.bep_ptna,
+                self.clt_PNEContact: self.bep_ptnc
+            }
+
+            for clt_field, bep_field in fields.items():
+                if clt_field:
+                    bep_field.setText(clt_field.text())
+                else:
+                    print(f"Warning: {clt_field} is None.")
+            
+        except Exception as e:
+            print("Error prefilling birth plan data:", e)
         
     def load_birthEPlan(self):
         try:

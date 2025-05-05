@@ -687,7 +687,7 @@ border-radius: 10px;</string>
      <rect>
       <x>520</x>
       <y>320</y>
-      <width>101</width>
+      <width>81</width>
       <height>16</height>
      </rect>
     </property>
@@ -782,7 +782,7 @@ border-radius: 10px;</string>
      <rect>
       <x>520</x>
       <y>340</y>
-      <width>110</width>
+      <width>91</width>
       <height>25</height>
      </rect>
     </property>
@@ -1434,6 +1434,44 @@ border-radius: 10px;</string>
      <string>Province</string>
     </property>
    </widget>
+   <widget class="QLabel" name="label_22">
+    <property name="geometry">
+     <rect>
+      <x>630</x>
+      <y>320</y>
+      <width>51</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Arial</family>
+      <pointsize>10</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
+      <kerning>false</kerning>
+     </font>
+    </property>
+    <property name="text">
+     <string>Age</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="lineEditSpoAge">
+    <property name="geometry">
+     <rect>
+      <x>630</x>
+      <y>340</y>
+      <width>71</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Arial</family>
+      <kerning>false</kerning>
+     </font>
+    </property>
+   </widget>
    <zorder>datePatDOB</zorder>
    <zorder>frame</zorder>
    <zorder>label_2</zorder>
@@ -1500,6 +1538,8 @@ border-radius: 10px;</string>
    <zorder>lineEditPatAddressB</zorder>
    <zorder>lineEditPatAddressMC</zorder>
    <zorder>lineEditPatAddressP</zorder>
+   <zorder>label_22</zorder>
+   <zorder>lineEditSpoAge</zorder>
   </widget>
  </widget>
  <resources/>

@@ -6,8 +6,8 @@ def connect_db():
         return psycopg2.connect(
             dbname="clinic_testing",
             user="postgres",             
-            password="btsjk17!",     
-            host="192.168.1.2",          
+            password="btsjk17!",     #192.168.1.2 
+            host="172.16.85.104",         
             port="5432"
         )
     except Exception as e:

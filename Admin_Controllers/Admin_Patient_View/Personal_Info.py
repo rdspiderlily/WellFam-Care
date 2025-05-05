@@ -32,6 +32,7 @@ class PersonalInfoController:
         self.spo_occu_edit = self.page.findChild(QLineEdit, "lineEditSpoOccu")
         self.spo_dob_edit = self.page.findChild(QDateEdit, "dateSpoDOB")
         self.spo_contact_edit = self.page.findChild(QLineEdit, "lineEditSpoContact")
+        self.spo_age_edit = self.page.findChild(QLineEdit, "lineEditSpoAge")
         
         self.fm = self.page.findChild(QCheckBox, "checkBoxFamilyPlanning")
         self.fm_dateAvailed = self.page.findChild(QDateEdit, "dateAvailedFamPlan")
@@ -100,7 +101,7 @@ class PersonalInfoController:
                     self.addressP_edit.setText(result[17])
                     
                 cur.execute("""
-                    SELECT SP_LNAME, SP_FNAME, SP_MNAME, SP_OCCU, SP_DOB, SP_CNUM
+                    SELECT SP_LNAME, SP_FNAME, SP_MNAME, SP_OCCU, SP_DOB, SP_CNUM, SP_AGE
                     FROM SPOUSE
                     WHERE PAT_ID = %s
                 """, (self.patient_id,))
@@ -112,6 +113,7 @@ class PersonalInfoController:
                     self.spo_occu_edit.setText(spouse[3])
                     self.spo_dob_edit.setDate(spouse[4])
                     self.spo_contact_edit.setText(spouse[5])
+                    self.spo_age_edit.setText(spouse[6])
                 
                 self.load_services_and_subtypes()
 
@@ -199,7 +201,7 @@ class PersonalInfoController:
             self.phm_edit, self.phnum_edit, self.pat_ispreg_edit, self.lmp_edit,
             self.edc_edit, self.aog_edit,
             self.spo_lname_edit, self.spo_fname_edit, self.spo_mname_edit,
-            self.spo_occu_edit, self.spo_dob_edit, self.spo_contact_edit
+            self.spo_occu_edit, self.spo_dob_edit, self.spo_contact_edit, self.spo_age_edit
         ]
 
         service_widgets = [
@@ -239,7 +241,7 @@ class PersonalInfoController:
             self.phm_edit, self.phnum_edit, self.pat_ispreg_edit, self.lmp_edit,
             self.edc_edit, self.aog_edit,
             self.spo_lname_edit, self.spo_fname_edit, self.spo_mname_edit,
-            self.spo_occu_edit, self.spo_dob_edit, self.spo_contact_edit
+            self.spo_occu_edit, self.spo_dob_edit, self.spo_contact_edit, self.spo_age_edit
         ]
 
         service_widgets = [
@@ -278,7 +280,7 @@ class PersonalInfoController:
         spouse_values = (
             self.spo_lname_edit.text(), self.spo_fname_edit.text(), self.spo_mname_edit.text(),
             self.spo_occu_edit.text(), self.spo_dob_edit.date().toString("yyyy-MM-dd"),
-            self.spo_contact_edit.text()
+            self.spo_contact_edit.text(), self.spo_age_edit.text()
         )
 
         if not patient_values[0] or not patient_values[1] or not patient_values[3] or not patient_values[6] or not patient_values[7]:
@@ -305,12 +307,12 @@ class PersonalInfoController:
                 if cur.fetchone()[0] > 0:
                     cur.execute("""
                         UPDATE SPOUSE
-                        SET SP_LNAME=%s, SP_FNAME=%s, SP_MNAME=%s, SP_OCCU=%s, SP_DOB=%s, SP_CNUM=%s
+                        SET SP_LNAME=%s, SP_FNAME=%s, SP_MNAME=%s, SP_OCCU=%s, SP_DOB=%s, SP_CNUM=%s, SP_AGE=%s
                         WHERE PAT_ID=%s
                     """, (*spouse_values, self.patient_id))
                 else:
                     cur.execute("""
-                        INSERT INTO SPOUSE (SP_LNAME, SP_FNAME, SP_MNAME, SP_OCCU, SP_DOB, SP_CNUM, PAT_ID)
+                        INSERT INTO SPOUSE (SP_LNAME, SP_FNAME, SP_MNAME, SP_OCCU, SP_DOB, SP_CNUM, SP_AGE, PAT_ID)
                         VALUES (%s, %s, %s, %s, %s, %s, %s)
                     """, (*spouse_values, self.patient_id))
 

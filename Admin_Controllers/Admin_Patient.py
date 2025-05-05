@@ -134,12 +134,13 @@ class AdminPatientController:
             spouse_occu = addPatWidget.findChild(QLineEdit, "lineEditSpoOccu").text()
             spouse_dob = addPatWidget.findChild(QDateEdit, "dateSpoDOB").date().toPyDate()
             spouse_contact = addPatWidget.findChild(QLineEdit, "lineEditSpoContact").text()
+            spouse_age = addPatWidget.findChild(QLineEdit, "lineEditSpoAge").text()
 
             if spouse_fname and spouse_lname:
                 cursor.execute("""
-                    INSERT INTO SPOUSE (SP_LNAME, SP_FNAME, SP_OCCU, SP_DOB, SP_CNUM, PAT_ID)
-                    VALUES (%s, %s, %s, %s, %s, %s)
-                """, (spouse_lname, spouse_fname, spouse_occu, spouse_dob, spouse_contact, pat_id))
+                    INSERT INTO SPOUSE (SP_LNAME, SP_FNAME, SP_OCCU, SP_DOB, SP_CNUM, SP_AGE, PAT_ID)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s)
+                """, (spouse_lname, spouse_fname, spouse_occu, spouse_dob, spouse_contact, spouse_age, pat_id))
 
             # --- Service Checkboxes ---
             def insert_service(service_id, date_availed, subtypes_ids=[]):
