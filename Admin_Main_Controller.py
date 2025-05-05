@@ -1,7 +1,7 @@
 from PyQt5.QtWidgets import (
     QApplication, QDialog, QMessageBox, QStackedWidget, 
     QPushButton, QLabel, QCalendarWidget, QLineEdit, 
-    QTableWidget, QWidget
+    QTableWidget, QWidget, QComboBox
 )
 from PyQt5 import uic
 from PyQt5.QtGui import QIcon, QPixmap
@@ -27,6 +27,7 @@ class AdminMainWindow(QDialog):
         uic.loadUi("wfui/admin_dashboard.ui", self)
         self.setWindowTitle("WellFam Care")
         self.setWindowIcon(QIcon("wfpics/logo1.jpg"))
+
 
         self.admin_username = self.findChild(QLabel, "adminUName")
         if self.admin_username:
@@ -60,45 +61,80 @@ class AdminMainWindow(QDialog):
         self.logout_button = self.findChild(QPushButton, "pushBtnLogout")
         if self.logout_button:
             self.logout_button.clicked.connect(self.logout)
-
+        
         self.patient()
         self.dashboard()
+    
+    def open_admin_settings(self):
+    # Set up the controller
+        profile_controller = AdminProfileController(self, None, None, None)
+        profile_controller.set_username(self.username)
 
+        # Load dialog and wait for it to close
+        profile_controller.view_edit_dialog()
+
+        # Refresh profile picture after closing dialog
+        image_path = self.get_profile_image_path(self.username)
+        self.set_profile_picture(image_path)
+
+        
     def get_profile_image_path(self, username):
-        try:
-            conn = connect_db()
-            cursor = conn.cursor()
-            cursor.execute("SELECT STAFF_PIC_PATH FROM USER_STAFF WHERE STAFF_USN = %s", (username,))
-            result = cursor.fetchone()
-            conn.close()
+        conn = connect_db()
+        if not conn:
+            return "staff_images/default_user.png"
 
+        try:
+            cur = conn.cursor()
+            cur.execute("SELECT STAFF_PIC_PATH FROM USER_STAFF WHERE STAFF_USN = %s", (username,))
+            result = cur.fetchone()
             if result and result[0] and os.path.exists(result[0]):
                 return result[0]
             else:
                 return "staff_images/default_user.png"
-
-        except Exception as e:
-            return "staff_images/default_user.png"
+        finally:
+            conn.close()
 
     def set_profile_picture(self, image_path):
-        if not os.path.exists(image_path) or not os.path.isfile(image_path):
-            image_path = "staff_images/default_user.png"
+        if self.admin_pic:
+            pixmap = QPixmap(image_path).scaled(80, 80)
+            self.admin_pic.setPixmap(pixmap)
 
-        pixmap = QPixmap(image_path)
-        if pixmap.isNull():
-            image_path = "staff_images/default_user.png"
-            pixmap = QPixmap(image_path)
 
-        if pixmap.isNull():
-            return
+    # def get_profile_image_path(self, username):
+    #     try:
+    #         conn = connect_db()
+    #         cursor = conn.cursor()
+    #         cursor.execute("SELECT STAFF_PIC_PATH FROM USER_STAFF WHERE STAFF_USN = %s", (username,))
+    #         result = cursor.fetchone()
+    #         conn.close()
 
-        self.admin_pic.setFixedSize(130, 120)
-        scaled_pixmap = pixmap.scaled(
-            self.admin_pic.width(),
-            self.admin_pic.height(),
-            aspectRatioMode=1
-        )
-        self.admin_pic.setPixmap(scaled_pixmap)
+    #         if result and result[0] and os.path.exists(result[0]):
+    #             return result[0]
+    #         else:
+    #             return "staff_images/default_user.png"
+
+    #     except Exception as e:
+    #         return "staff_images/default_user.png"
+
+    # def set_profile_picture(self, image_path):
+    #     if not os.path.exists(image_path) or not os.path.isfile(image_path):
+    #         image_path = "staff_images/default_user.png"
+
+    #     pixmap = QPixmap(image_path)
+    #     if pixmap.isNull():
+    #         image_path = "staff_images/default_user.png"
+    #         pixmap = QPixmap(image_path)
+
+    #     if pixmap.isNull():
+    #         return
+
+    #     self.admin_pic.setFixedSize(130, 120)
+    #     scaled_pixmap = pixmap.scaled(
+    #         self.admin_pic.width(),
+    #         self.admin_pic.height(),
+    #         aspectRatioMode=1
+    #     )
+    #     self.admin_pic.setPixmap(scaled_pixmap)
 
     def dashboard(self):
         self.stackedWidget.setCurrentIndex(0)
@@ -142,7 +178,8 @@ class AdminMainWindow(QDialog):
         self.set_active_button(self.appointments_button)
         self.tableWidApp = self.findChild(QTableWidget, "tableWidgetApp")
         self.searchApp = self.findChild(QLineEdit, "lineEditSearchApp")
-        self.appointment_controller = AdminAppointmentController(self.tableWidApp, self.searchApp)
+        self.sortAppCombo = self.findChild(QComboBox, "sortAppBtn")
+        self.appointment_controller = AdminAppointmentController(self.tableWidApp, self.searchApp, self.sortAppCombo)
         
         self.addApp_button = self.findChild(QPushButton, "pushBtnAddApp")
         if self.addApp_button:

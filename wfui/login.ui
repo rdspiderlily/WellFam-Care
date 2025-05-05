@@ -69,49 +69,22 @@
    <property name="styleSheet">
     <string notr="true">background-color: rgb(246, 235, 97);</string>
    </property>
-   <widget class="QLineEdit" name="lineEditUsername">
+   <widget class="QLabel" name="appName_2">
     <property name="geometry">
      <rect>
-      <x>250</x>
-      <y>300</y>
-      <width>300</width>
-      <height>40</height>
+      <x>120</x>
+      <y>110</y>
+      <width>561</width>
+      <height>81</height>
      </rect>
     </property>
     <property name="font">
      <font>
-      <family>Arial</family>
-      <pointsize>12</pointsize>
+      <family>Cooper Black</family>
+      <pointsize>56</pointsize>
       <weight>50</weight>
+      <italic>false</italic>
       <bold>false</bold>
-     </font>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">background-color: white;</string>
-    </property>
-    <property name="maxLength">
-     <number>50</number>
-    </property>
-    <property name="placeholderText">
-     <string>Username</string>
-    </property>
-   </widget>
-   <widget class="QLabel" name="appName">
-    <property name="geometry">
-     <rect>
-      <x>140</x>
-      <y>90</y>
-      <width>511</width>
-      <height>51</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <family>Arial</family>
-      <pointsize>48</pointsize>
-      <weight>75</weight>
-      <italic>true</italic>
-      <bold>true</bold>
      </font>
     </property>
     <property name="layoutDirection">
@@ -130,79 +103,144 @@
      <set>Qt::AlignCenter</set>
     </property>
    </widget>
-   <widget class="QWidget" name="widgetUsername" native="true">
+   <widget class="QFrame" name="login">
     <property name="geometry">
      <rect>
-      <x>250</x>
-      <y>340</y>
-      <width>300</width>
-      <height>5</height>
+      <x>200</x>
+      <y>260</y>
+      <width>400</width>
+      <height>301</height>
      </rect>
     </property>
     <property name="styleSheet">
-     <string notr="true">background-color: rgb(0, 51, 102);</string>
+     <string notr="true">QFrame#login{
+	background-color: white;
+	border: 2px solid rgb(0, 51, 102);
+	border-radius: 10px;
+}</string>
     </property>
-   </widget>
-   <widget class="QLineEdit" name="lineEditPassword">
-    <property name="geometry">
-     <rect>
-      <x>250</x>
-      <y>400</y>
-      <width>300</width>
-      <height>40</height>
-     </rect>
+    <property name="frameShape">
+     <enum>QFrame::StyledPanel</enum>
     </property>
-    <property name="font">
-     <font>
-      <family>Arial</family>
-      <pointsize>12</pointsize>
-     </font>
+    <property name="frameShadow">
+     <enum>QFrame::Raised</enum>
     </property>
-    <property name="styleSheet">
-     <string notr="true">background-color: white;</string>
-    </property>
-    <property name="maxLength">
-     <number>20</number>
-    </property>
-    <property name="echoMode">
-     <enum>QLineEdit::Password</enum>
-    </property>
-    <property name="placeholderText">
-     <string>Password</string>
-    </property>
-   </widget>
-   <widget class="QWidget" name="widgetPassword" native="true">
-    <property name="geometry">
-     <rect>
-      <x>250</x>
-      <y>440</y>
-      <width>300</width>
-      <height>5</height>
-     </rect>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">background-color: rgb(0, 51, 102);</string>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="signInButton">
-    <property name="geometry">
-     <rect>
-      <x>320</x>
-      <y>500</y>
-      <width>161</width>
-      <height>30</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <family>Arial</family>
-      <pointsize>12</pointsize>
-      <weight>75</weight>
-      <bold>true</bold>
-     </font>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">QPushButton[active=&quot;true&quot;] {
+    <widget class="QLineEdit" name="lineEditUsername">
+     <property name="geometry">
+      <rect>
+       <x>50</x>
+       <y>40</y>
+       <width>300</width>
+       <height>40</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Arial</family>
+       <pointsize>12</pointsize>
+       <weight>50</weight>
+       <bold>false</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background-color: white;</string>
+     </property>
+     <property name="maxLength">
+      <number>50</number>
+     </property>
+     <property name="placeholderText">
+      <string>Username</string>
+     </property>
+    </widget>
+    <widget class="QWidget" name="widgetUsername" native="true">
+     <property name="geometry">
+      <rect>
+       <x>50</x>
+       <y>80</y>
+       <width>300</width>
+       <height>5</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background-color: rgb(0, 51, 102);</string>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="lineEditPassword">
+     <property name="geometry">
+      <rect>
+       <x>50</x>
+       <y>120</y>
+       <width>300</width>
+       <height>40</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Arial</family>
+       <pointsize>12</pointsize>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background-color: white;</string>
+     </property>
+     <property name="maxLength">
+      <number>20</number>
+     </property>
+     <property name="echoMode">
+      <enum>QLineEdit::Password</enum>
+     </property>
+     <property name="placeholderText">
+      <string>Password</string>
+     </property>
+    </widget>
+    <widget class="QWidget" name="widgetPassword" native="true">
+     <property name="geometry">
+      <rect>
+       <x>50</x>
+       <y>160</y>
+       <width>300</width>
+       <height>5</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background-color: rgb(0, 51, 102);</string>
+     </property>
+    </widget>
+    <widget class="QCheckBox" name="checkBoxShowPassword">
+     <property name="geometry">
+      <rect>
+       <x>50</x>
+       <y>170</y>
+       <width>101</width>
+       <height>17</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background-color: white;</string>
+     </property>
+     <property name="text">
+      <string>Show Password</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="signInButton">
+     <property name="geometry">
+      <rect>
+       <x>110</x>
+       <y>230</y>
+       <width>161</width>
+       <height>30</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Arial</family>
+       <pointsize>12</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QPushButton[active=&quot;true&quot;] {
 	background-color: rgb(246, 235, 97);
 	color:  rgb(0, 51, 102);
 }
@@ -217,31 +255,12 @@ QPushButton:hover {
 	background-color: #2980b9;
 }
 </string>
-    </property>
-    <property name="text">
-     <string>Sign In</string>
-    </property>
+     </property>
+     <property name="text">
+      <string>Sign In</string>
+     </property>
+    </widget>
    </widget>
-   <widget class="QCheckBox" name="checkBoxShowPassword">
-    <property name="geometry">
-     <rect>
-      <x>250</x>
-      <y>450</y>
-      <width>101</width>
-      <height>17</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Show Password</string>
-    </property>
-   </widget>
-   <zorder>appName</zorder>
-   <zorder>widgetUsername</zorder>
-   <zorder>lineEditUsername</zorder>
-   <zorder>lineEditPassword</zorder>
-   <zorder>widgetPassword</zorder>
-   <zorder>signInButton</zorder>
-   <zorder>checkBoxShowPassword</zorder>
   </widget>
  </widget>
  <resources/>

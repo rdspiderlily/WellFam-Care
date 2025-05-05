@@ -14,7 +14,7 @@ from Database import connect_db
 from Admin_Controllers.Admin_Appointment_View.Admin_Edit_App import ViewAppointmentDialog
 
 class AdminAppointmentController:
-    def __init__(self, tableWidApp: QTableWidget, searchApp: QLineEdit):
+    def __init__(self, tableWidApp: QTableWidget, searchApp: QLineEdit, sortAppCombo: QComboBox):
         self.conn = connect_db()
         self.tableWidApp = tableWidApp
         self.update_appointment_statuses()
@@ -29,6 +29,9 @@ class AdminAppointmentController:
         
         self.searchApp = searchApp
         self.searchApp.textChanged.connect(self.search_appointment)
+        
+        self.sortAppCombo = sortAppCombo
+        self.sortAppCombo.currentTextChanged.connect(self.sort_appointment_list)
     
     def update_appointment_statuses(self):
         try:
@@ -57,13 +60,84 @@ class AdminAppointmentController:
         except Exception as e:
             self.conn.rollback()
             print(f"Error updating appointment statuses: {e}")
+            
+    def search_appointment(self, text):
+        for row in range(self.tableWidApp.rowCount()):
+            match = False
+            for col in range(1, self.tableWidApp.columnCount()):
+                item = self.tableWidApp.item(row, col)
+                if item and text.lower() in item.text().lower():
+                    match = True
+                    break
+            self.tableWidApp.setRowHidden(row, not match)
+            
+    def sort_appointment_list(self, sort_option):
+        if sort_option == "Date (Ascending)":
+            sort_clause = "A.APP_DATE ASC, A.APP_TIME ASC"
+        elif sort_option == "Date (Descending)":
+            sort_clause = "A.APP_DATE DESC, A.APP_TIME DESC"
+        elif sort_option == "Time (Ascending)":
+            sort_clause = "A.APP_TIME ASC"
+        elif sort_option == "Time (Descending)":
+            sort_clause = "A.APP_TIME DESC"
+        elif sort_option == "Patient Name (A-Z)":
+            sort_clause = "P.PAT_LNAME ASC, P.PAT_FNAME ASC"
+        elif sort_option == "Patient Name (Z-A)":
+            sort_clause = "P.PAT_LNAME DESC, P.PAT_FNAME DESC"
+        elif sort_option == "Service Availed (A-Z)":
+            sort_clause = "S.SERV_NAME ASC"
+        elif sort_option == "Appointment Type (A-Z)":
+            sort_clause = "ST.SERV_TYPE_NAME ASC"
+        elif sort_option == "Attendant (A-Z)":
+            sort_clause = "U.STAFF_LNAME ASC, U.STAFF_FNAME ASC"
+        elif sort_option == "Status":
+            sort_clause = "AS1.APP_STATUS_NAME ASC"
+        else:
+            sort_clause = "A.APP_DATE ASC, A.APP_TIME ASC"  # default
+
+        try:
+            self.tableWidApp.setRowCount(0)
+            cursor = self.conn.cursor()
+            cursor.execute(f"""
+                SELECT 
+                    A.APP_ID, A.APP_DATE, 
+                    TO_CHAR(A.APP_TIME, 'HH12:MI AM') AS APP_TIME,
+                    CONCAT(P.PAT_LNAME, ', ', P.PAT_FNAME) AS PATIENT_NAME,
+                    S.SERV_NAME AS SERVICE_AVAILED,
+                    ST.SERV_TYPE_NAME AS APPOINTMENT_TYPE,
+                    CONCAT(U.STAFF_LNAME, ', ', U.STAFF_FNAME) AS ATTENDANT,
+                    AS1.APP_STATUS_NAME AS STATUS
+                FROM APPOINTMENT A
+                JOIN PATIENT P ON A.PAT_ID = P.PAT_ID
+                JOIN APPOINTMENT_SERVICE APS ON A.APP_ID = APS.APP_ID
+                JOIN PATIENT_SERVICE PS ON APS.PS_ID = PS.PS_ID
+                JOIN SERVICE S ON PS.SERV_ID = S.SERV_ID
+                JOIN APPOINTMENT_SERVICE_TYPE AST ON APS.APS_ID = AST.APS_ID
+                JOIN PATIENT_SERVICE_TYPE PST ON AST.PST_ID = PST.PST_ID
+                JOIN SERVICE_TYPE ST ON PST.SERV_TYPE_ID = ST.SERV_TYPE_ID
+                JOIN USER_STAFF U ON A.STAFF_ID = U.STAFF_ID
+                JOIN APPOINTMENT_STATUS AS1 ON A.APP_STATUS_ID = AS1.APP_STATUS_ID
+                WHERE A.APP_ISDELETED = FALSE
+                AND P.PAT_ISDELETED = FALSE
+                ORDER BY {sort_clause}
+            """)
+            rows = cursor.fetchall()
+
+            for row in rows:
+                row_position = self.tableWidApp.rowCount()
+                self.tableWidApp.insertRow(row_position)
+                for column, data in enumerate(row):
+                    self.tableWidApp.setItem(row_position, column, QTableWidgetItem(str(data)))
+
+        except Exception as e:
+            QMessageBox.critical(self.tableWidApp, "Database Error", f"Error sorting data: {e}")
 
     def appointment_list(self):
         self.tableWidApp.setRowCount(0)
         
         header = self.tableWidApp.horizontalHeader()
         header.setSectionResizeMode(QHeaderView.Fixed)
-        column_sizes = [0, 100, 100, 250, 150, 150, 100, 80]
+        column_sizes = [0, 100, 100, 250, 150, 150, 130, 88]
         for i, size in enumerate(column_sizes):
             header.resizeSection(i, size)
 
@@ -504,16 +578,6 @@ class AdminAppointmentController:
         except Exception as e:
             self.conn.rollback()
             QMessageBox.critical(dialog, "Error", f"Failed to save appointment: {e}")
-
-    def search_appointment(self, text):
-        for row in range(self.tableWidApp.rowCount()):
-            match = False
-            for col in range(1, self.tableWidApp.columnCount()):
-                item = self.tableWidApp.item(row, col)
-                if item and text.lower() in item.text().lower():
-                    match = True
-                    break
-            self.tableWidApp.setRowHidden(row, not match)
 
     def view_appointment(self, row, column):
             if column != 1:

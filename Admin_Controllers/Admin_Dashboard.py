@@ -11,7 +11,6 @@ from datetime import datetime
 from calendar import monthrange
 
 from Database import connect_db
-from Admin_Controllers.Admin_Appointment import AdminAppointmentController
 
 class AdminDashboardController:
     def __init__(self, tableWidQueue: QTableWidget, tableWidMonApp: QTableWidget, time_label: QLabel, calendar_widget: QCalendarWidget, total_pat: QLabel, total_app: QLabel, greeting_label: QLabel):
@@ -55,7 +54,6 @@ class AdminDashboardController:
         else:
             greeting = "Good Evening"
 
-        # Optional: Add user's name or a default
         self.greetingLabel.setText(greeting + "!")
 
     def update_time(self):
@@ -100,7 +98,7 @@ class AdminDashboardController:
             
         header = self.tableWidMonApp.horizontalHeader()
         header.setSectionResizeMode(QHeaderView.Fixed)
-        column_sizes = [50, 98, 200]
+        column_sizes = [50, 98, 220]
         for i, size in enumerate(column_sizes):
             header.resizeSection(i, size)
         

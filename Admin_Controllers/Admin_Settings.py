@@ -10,6 +10,7 @@ from PyQt5.QtGui import QIcon, QPixmap
 
 from Database import connect_db
 
+
 class AdminProfileController:
     def __init__(self, widget, lname_label, fname_label, contact_label):
         self.widget = widget
@@ -18,6 +19,8 @@ class AdminProfileController:
         self.contact_label = contact_label
         self.username = None
         self.current_pic_path = None
+        
+        self.load_admin_info()
 
     def set_username(self, username):
         self.username = username
@@ -62,12 +65,22 @@ class AdminProfileController:
             QMessageBox.warning(None, "Missing Info", "Username not set.")
             return
 
-        dialog = QDialog()
-        uic.loadUi("wfui/view_edit_admin.ui", dialog)
-        dialog.setWindowTitle("Edit Admin Profile")
-        dialog.setWindowIcon(QIcon("wfpics/logo1.jpg"))
+        # Prevent multiple dialogs using hasattr
+        if hasattr(self, "profile_dialog") and self.profile_dialog is not None and self.profile_dialog.isVisible():
+            self.profile_dialog.raise_()
+            self.profile_dialog.activateWindow()
+            return
 
-        widget = dialog.findChild(QWidget, "widgetAdminProfile")
+        self.profile_dialog = QDialog()
+        uic.loadUi("wfui/view_edit_admin.ui", self.profile_dialog)
+        self.profile_dialog.setWindowTitle("Edit Admin Profile")
+        self.profile_dialog.setWindowIcon(QIcon("wfpics/logo1.jpg"))
+
+        # Clean up reference when closed
+        self.profile_dialog.finished.connect(lambda: setattr(self, "profile_dialog", None))
+
+        # --- UI binding ---
+        widget = self.profile_dialog.findChild(QWidget, "widgetAdminProfile")
         pic_label = widget.findChild(QLabel, "labelAdminPic")
         username_edit = widget.findChild(QLineEdit, "lineEditUsername")
         lname_edit = widget.findChild(QLineEdit, "lineEditAdminLname")
@@ -76,12 +89,11 @@ class AdminProfileController:
         password_edit = widget.findChild(QLineEdit, "lineEditPassword")
         confirm_password_edit = widget.findChild(QLineEdit, "lineEditCPassword")
         show_pass_checkbox = widget.findChild(QCheckBox, "showPass")
-
         upload_btn = widget.findChild(QPushButton, "pushBtnUploadAdminPic")
         remove_btn = widget.findChild(QPushButton, "pushBtnRemoveAdminPic")
-        save_btn = dialog.findChild(QPushButton, "pushBtnSaveAdmin")
-        cancel_btn = dialog.findChild(QPushButton, "pushBtnCancelAdmin")
-        edit_btn = dialog.findChild(QPushButton, "pushBtnEditAdmin")
+        save_btn = self.profile_dialog.findChild(QPushButton, "pushBtnSaveAdmin")
+        cancel_btn = self.profile_dialog.findChild(QPushButton, "pushBtnCancelAdmin")
+        edit_btn = self.profile_dialog.findChild(QPushButton, "pushBtnEditAdmin")
 
         input_fields = [username_edit, lname_edit, fname_edit, contact_edit, password_edit, confirm_password_edit]
 
@@ -92,9 +104,10 @@ class AdminProfileController:
         remove_btn.setEnabled(False)
         show_pass_checkbox.setEnabled(False)
 
+        # --- Load current admin info ---
         conn = connect_db()
         if not conn:
-            QMessageBox.critical(dialog, "Error", "Failed to connect to database.")
+            QMessageBox.critical(self.profile_dialog, "Error", "Failed to connect to database.")
             return
 
         try:
@@ -106,7 +119,7 @@ class AdminProfileController:
             """, (self.username,))
             data = cur.fetchone()
             if not data:
-                QMessageBox.warning(dialog, "Not Found", "Admin not found.")
+                QMessageBox.warning(self.profile_dialog, "Not Found", "Admin not found.")
                 return
 
             if username_edit: username_edit.setText(data[0])
@@ -115,79 +128,67 @@ class AdminProfileController:
             if contact_edit: contact_edit.setText(data[3])
             self.current_pic_path = data[4]
 
-            if pic_label:
-                if self.current_pic_path and os.path.exists(self.current_pic_path):
-                    pixmap = QPixmap(self.current_pic_path).scaled(100, 100)
-                    pic_label.setPixmap(pixmap)
-                else:
-                    pic_label.clear()
+            if self.current_pic_path and os.path.exists(self.current_pic_path):
+                pic_label.setPixmap(QPixmap(self.current_pic_path).scaled(100, 100))
+            else:
+                pic_label.clear()
         finally:
             conn.close()
 
+        # --- Handlers ---
         def toggle_password_visibility(state):
             mode = QLineEdit.Normal if state else QLineEdit.Password
-            if password_edit: password_edit.setEchoMode(mode)
-            if confirm_password_edit: confirm_password_edit.setEchoMode(mode)
+            password_edit.setEchoMode(mode)
+            confirm_password_edit.setEchoMode(mode)
 
         def enable_editing():
             for field in input_fields:
-                if field:
-                    field.setReadOnly(False)
+                field.setReadOnly(False)
             upload_btn.setEnabled(True)
             remove_btn.setEnabled(True)
             show_pass_checkbox.setEnabled(True)
             edit_btn.setEnabled(False)
 
         def disable_editing():
-            if username_edit: username_edit.setReadOnly(True)
-            if lname_edit: lname_edit.setText(data[1]); lname_edit.setReadOnly(True)
-            if fname_edit: fname_edit.setText(data[2]); fname_edit.setReadOnly(True)
-            if contact_edit: contact_edit.setText(data[3]); contact_edit.setReadOnly(True)
-            if password_edit: password_edit.clear(); password_edit.setReadOnly(True)
-            if confirm_password_edit: confirm_password_edit.clear(); confirm_password_edit.setReadOnly(True)
+            for field in input_fields:
+                field.setReadOnly(True)
+            password_edit.clear()
+            confirm_password_edit.clear()
             upload_btn.setEnabled(False)
             remove_btn.setEnabled(False)
             show_pass_checkbox.setEnabled(False)
             edit_btn.setEnabled(True)
 
         def upload_photo():
-            file_path, _ = QFileDialog.getOpenFileName(dialog, "Select Photo", "", "Images (*.png *.jpg *.jpeg)")
+            file_path, _ = QFileDialog.getOpenFileName(self.profile_dialog, "Select Photo", "", "Images (*.png *.jpg *.jpeg)")
             if file_path:
-                pixmap = QPixmap(file_path).scaled(100, 100)
-                pic_label.setPixmap(pixmap)
+                pic_label.setPixmap(QPixmap(file_path).scaled(100, 100))
                 self.current_pic_path = file_path
 
         def remove_photo():
-            if pic_label:
-                pic_label.clear()
+            pic_label.clear()
             self.current_pic_path = ""
 
         def save_changes():
-            if not all([lname_edit, fname_edit, contact_edit]):
-                QMessageBox.warning(dialog, "Validation", "Some fields are missing in UI.")
-                return
-
             lname = lname_edit.text().strip()
             fname = fname_edit.text().strip()
             contact = contact_edit.text().strip()
-            password = password_edit.text() if password_edit else ""
-            confirm = confirm_password_edit.text() if confirm_password_edit else ""
+            password = password_edit.text()
+            confirm = confirm_password_edit.text()
 
             if not all([lname, fname, contact]):
-                QMessageBox.warning(dialog, "Validation", "All fields must be filled.")
+                QMessageBox.warning(self.profile_dialog, "Validation", "All fields must be filled.")
                 return
 
-            if password or confirm:
-                if password != confirm:
-                    QMessageBox.warning(dialog, "Validation", "Passwords do not match.")
-                    return
-                hashed_pw = bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode()
-            else:
-                hashed_pw = None
+            if password and password != confirm:
+                QMessageBox.warning(self.profile_dialog, "Validation", "Passwords do not match.")
+                return
+
+            hashed_pw = bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode() if password else None
 
             conn = connect_db()
             if not conn:
-                QMessageBox.critical(dialog, "Error", "Failed to connect.")
+                QMessageBox.critical(self.profile_dialog, "Error", "Database connection failed.")
                 return
 
             try:
@@ -200,7 +201,6 @@ class AdminProfileController:
                     values.append(hashed_pw)
 
                 if self.current_pic_path:
-                    # Ensure images are saved in 'staff_images' directory instead of 'saved_images'
                     if not self.current_pic_path.startswith("staff_images/"):
                         os.makedirs("staff_images", exist_ok=True)
                         new_path = os.path.join("staff_images", os.path.basename(self.current_pic_path))
@@ -217,24 +217,24 @@ class AdminProfileController:
                 """, tuple(values))
 
                 conn.commit()
-                QMessageBox.information(dialog, "Success", "Profile updated successfully.")
-                self.lname_label.setText(lname)
+                QMessageBox.information(self.profile_dialog, "Success", "Profile updated.")
                 self.fname_label.setText(fname)
+                self.lname_label.setText(lname)
                 self.contact_label.setText(contact)
                 disable_editing()
-                dialog.accept()
+                self.profile_dialog.accept()
             except Exception as e:
                 conn.rollback()
-                QMessageBox.critical(dialog, "Error", str(e))
+                QMessageBox.critical(self.profile_dialog, "Error", str(e))
             finally:
                 conn.close()
 
-        # --- Connect Signals ---
-        if show_pass_checkbox: show_pass_checkbox.stateChanged.connect(toggle_password_visibility)
-        if upload_btn: upload_btn.clicked.connect(upload_photo)
-        if remove_btn: remove_btn.clicked.connect(remove_photo)
-        if save_btn: save_btn.clicked.connect(save_changes)
-        if cancel_btn: cancel_btn.clicked.connect(lambda: disable_editing() or dialog.reject())
-        if edit_btn: edit_btn.clicked.connect(enable_editing)
+        # --- Signal connections ---
+        show_pass_checkbox.stateChanged.connect(toggle_password_visibility)
+        upload_btn.clicked.connect(upload_photo)
+        remove_btn.clicked.connect(remove_photo)
+        save_btn.clicked.connect(save_changes)
+        cancel_btn.clicked.connect(lambda: disable_editing() or self.profile_dialog.reject())
+        edit_btn.clicked.connect(enable_editing)
 
-        dialog.exec_()
+        self.profile_dialog.exec_()

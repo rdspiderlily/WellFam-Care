@@ -32,7 +32,7 @@ class AdminUserController:
 
         header = self.tableWidUser.horizontalHeader()
         header.setSectionResizeMode(QHeaderView.Fixed)
-        column_sizes = [0, 250, 250, 150, 100, 120]
+        column_sizes = [0, 230, 230, 150, 130, 110, 118]
         for i, size in enumerate(column_sizes):
             header.resizeSection(i, size)
 
@@ -44,7 +44,7 @@ class AdminUserController:
             try:
                 cur = conn.cursor()
                 cur.execute("""
-                    SELECT us.STAFF_ID, us.STAFF_LNAME, us.STAFF_FNAME, us.STAFF_CONTACT, r.ROLE_NAME, s.STATUS_NAME
+                    SELECT us.STAFF_ID, us.STAFF_LNAME, us.STAFF_FNAME, us.STAFF_CONTACT, us.STAFF_USN, r.ROLE_NAME, s.STATUS_NAME
                     FROM USER_STAFF us
                     JOIN USER_ROLE r ON us.ROLE_ID = r.ROLE_ID
                     JOIN USER_STATUS s ON us.STATUS_ID = s.STATUS_ID
@@ -63,39 +63,42 @@ class AdminUserController:
                 conn.close()
 
     def add_user_dialog(self):
-        dialog = QDialog()
-        uic.loadUi("wfui/add_user.ui", dialog)
-        dialog.setWindowTitle("Add New User")
-        dialog.setWindowIcon(QIcon("wfpics/logo1.jpg"))
+        if not hasattr(self, 'user_dialog') or not self.user_dialog.isVisible():
+            self.user_dialog = QDialog()
+            uic.loadUi("wfui/add_user.ui", self.user_dialog)
+            self.user_dialog.setWindowTitle("Add New User")
+            self.user_dialog.setWindowIcon(QIcon("wfpics/logo1.jpg"))
 
-        addUserWidget = dialog.findChild(QWidget, "widgetaddUser")
-        self.pic_label = addUserWidget.findChild(QLabel, "labelUserPic")
+            addUserWidget = self.user_dialog.findChild(QWidget, "widgetaddUser")
+            self.pic_label = addUserWidget.findChild(QLabel, "labelUserPic")
 
-        self.load_roles(addUserWidget.findChild(QComboBox, "userRole"))
-        self.load_status(addUserWidget.findChild(QComboBox, "userStatus"))
-        
-        password_edit = addUserWidget.findChild(QLineEdit, "lineEditPassword")
-        confirm_password_edit = addUserWidget.findChild(QLineEdit, "lineEditCPassword")
+            self.load_roles(addUserWidget.findChild(QComboBox, "userRole"))
+            self.load_status(addUserWidget.findChild(QComboBox, "userStatus"))
+            
+            password_edit = addUserWidget.findChild(QLineEdit, "lineEditPassword")
+            confirm_password_edit = addUserWidget.findChild(QLineEdit, "lineEditCPassword")
 
-        toggle_password_checkbox = addUserWidget.findChild(QCheckBox, "showPass")
-        
-        if toggle_password_checkbox:
-            toggle_password_checkbox.stateChanged.connect(
-                lambda: self.toggle_password_visibility(password_edit, confirm_password_edit, toggle_password_checkbox)
-            )
+            toggle_password_checkbox = addUserWidget.findChild(QCheckBox, "showPass")
+            
+            if toggle_password_checkbox:
+                toggle_password_checkbox.stateChanged.connect(
+                    lambda: self.toggle_password_visibility(password_edit, confirm_password_edit, toggle_password_checkbox)
+                )
 
-        dialog.findChild(QPushButton, "pushBtnSaveUser").clicked.connect(lambda: self.save_user(addUserWidget, dialog))
-        dialog.findChild(QPushButton, "pushBtnCancelUser").clicked.connect(dialog.reject)
+            self.user_dialog.findChild(QPushButton, "pushBtnSaveUser").clicked.connect(lambda: self.save_user(addUserWidget, self.user_dialog))
+            self.user_dialog.findChild(QPushButton, "pushBtnCancelUser").clicked.connect(self.user_dialog.reject)
 
-        upload_btn = addUserWidget.findChild(QPushButton, "pushBtnUploadUserPic")
-        remove_btn = addUserWidget.findChild(QPushButton, "pushBtnRemoveUserPic")
+            upload_btn = addUserWidget.findChild(QPushButton, "pushBtnUploadUserPic")
+            remove_btn = addUserWidget.findChild(QPushButton, "pushBtnRemoveUserPic")
 
-        if upload_btn:
-            upload_btn.clicked.connect(self.browse_user_pic)
-        if remove_btn:
-            remove_btn.clicked.connect(lambda: self.remove_user_pic(self.pic_label))
+            if upload_btn:
+                upload_btn.clicked.connect(self.browse_user_pic)
+            if remove_btn:
+                remove_btn.clicked.connect(lambda: self.remove_user_pic(self.pic_label))
 
-        dialog.exec_()
+            self.user_dialog.exec_()
+        else:
+            print("The 'Add User' dialog is already open.")
 
     def load_roles(self, comboBox):
         conn = connect_db()

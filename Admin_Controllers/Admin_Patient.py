@@ -27,7 +27,7 @@ class AdminPatientController:
         
         header = self.tableWidPat.horizontalHeader()
         header.setSectionResizeMode(QHeaderView.Fixed)
-        column_sizes = [0, 210, 210, 150, 50, 130, 120]
+        column_sizes = [0, 230, 230, 150, 80, 128, 150]
         for i, size in enumerate(column_sizes):
             header.resizeSection(i, size)
         

@@ -5,8 +5,7 @@ from PyQt5.QtCore import Qt
 import sys
 
 from Admin_Main_Controller import AdminMainWindow
-#from Midwife_Controller import MidwifeWindow
-#from Aide_Controller import AideWindow
+#from MidwifeAide_Main_Controller import MidwifeWindow
 
 from Database import check_user_credentials, get_user_role, get_user_id
 
