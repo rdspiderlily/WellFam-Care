@@ -8,18 +8,22 @@ from PyQt5 import uic
 from PyQt5.QtCore import Qt, QTime
 from PyQt5.QtGui import QIcon
 from datetime import datetime
+from calendar import monthrange
 
 from Database import connect_db
+from Admin_Controllers.Admin_Appointment import AdminAppointmentController
 
 class AdminDashboardController:
-    def __init__(self, tableWidQueue: QTableWidget, time_label: QLabel, calendar_widget: QCalendarWidget, total_pat: QLabel, total_app: QLabel):
+    def __init__(self, tableWidQueue: QTableWidget, tableWidMonApp: QTableWidget, time_label: QLabel, calendar_widget: QCalendarWidget, total_pat: QLabel, total_app: QLabel, greeting_label: QLabel):
         self.conn = connect_db()
         self.tableWidQueue = tableWidQueue
+        self.tableWidMonApp = tableWidMonApp
         
         self.timeLabel = time_label
         self.calendar = calendar_widget
         self.totalPatLabel = total_pat
         self.totalAppLabel = total_app
+        self.greetingLabel = greeting_label
         
         try:
             self.tableWidQueue.cellClicked.disconnect()
@@ -31,10 +35,28 @@ class AdminDashboardController:
         self.timer.timeout.connect(self.update_time)
         self.timer.start(1000)
 
+        self.greetings()
         self.update_time()
         self.total_patients()
         self.total_appointments()
         self.queue_table()
+        self.monApp_table()
+        
+    def greetings(self):
+        current_time = QTime.currentTime()
+        time_text = current_time.toString("hh:mm:ss AP")
+        self.timeLabel.setText(time_text)
+
+        hour = current_time.hour()
+        if 0 <= hour < 12:
+            greeting = "Good Morning"
+        elif 12 <= hour < 18:
+            greeting = "Good Afternoon"
+        else:
+            greeting = "Good Evening"
+
+        # Optional: Add user's name or a default
+        self.greetingLabel.setText(greeting + "!")
 
     def update_time(self):
         current_time = QTime.currentTime()
@@ -69,12 +91,57 @@ class AdminDashboardController:
             finally:
                 conn.close()
                 
+    def monApp_table(self):
+        self.tableWidMonApp.setRowCount(0)
+        
+        today = datetime.today()
+        year = today.year
+        month = today.month
+            
+        header = self.tableWidMonApp.horizontalHeader()
+        header.setSectionResizeMode(QHeaderView.Fixed)
+        column_sizes = [50, 98, 200]
+        for i, size in enumerate(column_sizes):
+            header.resizeSection(i, size)
+        
+        self.tableWidMonApp.verticalHeader().setVisible(False)
+            
+        try:
+            cursor = self.conn.cursor()
+            cursor.execute("""
+                SELECT 
+                    EXTRACT(DAY FROM a.APP_DATE) AS app_day,
+                    TO_CHAR(a.APP_TIME, 'HH12:MI AM') AS formatted_time,
+                    CONCAT(p.PAT_LNAME, ', ', p.PAT_FNAME) AS patient_name
+                FROM 
+                    APPOINTMENT a
+                JOIN PATIENT p ON a.PAT_ID = p.PAT_ID
+                JOIN QUEUE_STATUS qs ON a.QUEUE_STATUS_ID = qs.QUEUE_STATUS_ID
+                WHERE 
+                    EXTRACT(MONTH FROM a.APP_DATE) = %s
+                    AND EXTRACT(YEAR FROM a.APP_DATE) = %s
+                    AND qs.QUEUE_STATUS_NAME != 'Cancelled'
+                    AND a.APP_ISDELETED = FALSE
+                ORDER BY a.APP_DATE, a.APP_TIME
+            """, (month, year))
+            monthly_app = cursor.fetchall()
+
+            self.tableWidMonApp.setRowCount(0)
+            for row in monthly_app:
+                row_position = self.tableWidMonApp.rowCount()
+                self.tableWidMonApp.insertRow(row_position)
+                for column, value in enumerate(row):
+                    self.tableWidMonApp.setItem(row_position, column, QTableWidgetItem(str(value)))
+
+        except Exception as e:
+            QMessageBox.critical(self.tableWidMonApp, "Database Error", f"Error fetching monthly appointments data: {e}")
+                
     def queue_table(self):
         self.tableWidQueue.setRowCount(0)
         
         header = self.tableWidQueue.horizontalHeader()
         header.setSectionResizeMode(QHeaderView.Fixed)
-        column_sizes = [70, 200, 100, 130, 130, 100, 150]
+        column_sizes = [80, 98, 250, 160, 180, 100, 160]
         for i, size in enumerate(column_sizes):
             header.resizeSection(i, size)
         
@@ -85,8 +152,8 @@ class AdminDashboardController:
             cursor.execute("""
                 SELECT 
                     a.QUEUE_NUM,
-                    CONCAT(p.PAT_LNAME, ', ', p.PAT_FNAME) AS patient_name,
                     TO_CHAR(a.APP_TIME, 'HH12:MI AM') as app_time,
+                    CONCAT(p.PAT_LNAME, ', ', p.PAT_FNAME) AS patient_name,
                     COALESCE(string_agg(DISTINCT s.SERV_NAME, ', '), '') AS services,
                     COALESCE(string_agg(DISTINCT st.SERV_TYPE_NAME, ', '), '') AS appointment_types,
                     qs.QUEUE_STATUS_NAME,
@@ -128,7 +195,7 @@ class AdminDashboardController:
                     self.tableWidQueue.setItem(row_position, column, QTableWidgetItem(str(data)))
 
         except Exception as e:
-            QMessageBox.critical(self.tableWidQueue, "Database Error", f"Error fetching updated data: {e}")
+            QMessageBox.critical(self.tableWidQueue, "Database Error", f"Error fetching queue table data: {e}")
             
     def view_queue(self, row, column):
         if hasattr(self, 'queueDialog') and self.queueDialog is not None:

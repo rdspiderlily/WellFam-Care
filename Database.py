@@ -7,7 +7,7 @@ def connect_db():
             dbname="clinic_testing",
             user="postgres",             
             password="btsjk17!",     #192.168.1.2 
-            host="172.16.85.104",         
+            host="192.168.1.2",         
             port="5432"
         )
     except Exception as e:

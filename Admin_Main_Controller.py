@@ -103,12 +103,22 @@ class AdminMainWindow(QDialog):
     def dashboard(self):
         self.stackedWidget.setCurrentIndex(0)
         self.set_active_button(self.home_button)
+        
+        self.btnAppointments = self.findChild(QPushButton, "btnToApp")
+        if self.btnAppointments:
+            self.btnAppointments.clicked.connect(self.appointment)
+            
         self.tableWidQueue = self.findChild(QTableWidget, "tableWidQueue")
+        self.tableWidMonApp = self.findChild(QTableWidget, "tableWidMonApp")
         self.time_label = self.findChild(QLabel, "timeLabel")
         self.calendar_widget = self.findChild(QCalendarWidget, "adminCalendar")
         self.total_pat = self.findChild(QLabel, "NoPats")
         self.total_app = self.findChild(QLabel, "NoApps")
-        self.dashboard_controller = AdminDashboardController(self.tableWidQueue, self.time_label, self.calendar_widget, self.total_pat, self.total_app)
+        self.greeting_label = self.findChild(QLabel, "greetingLabel")
+        self.dashboard_controller = AdminDashboardController(
+            self.tableWidQueue, self.tableWidMonApp, self.time_label, 
+            self.calendar_widget, self.total_pat, self.total_app, self.greeting_label
+        )
 
     def patient(self):
         self.clear()
