@@ -118,7 +118,7 @@ class AdminPatientController:
                     PAT_CNUM, PAT_OCCU, PAT_PHM, PAT_PHNUM,
                     PAT_LMP, PAT_EDC, PAT_AOG, PAT_ISPREG, 
                     PAT_ADDNS, PAT_ADDB, PAT_ADDMC, PAT_ADDP 
-                ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                 RETURNING PAT_ID
             """, (
                 pat_lname, pat_fname, pat_mname, pat_dob, pat_age, pat_status,
@@ -195,10 +195,9 @@ class AdminPatientController:
                 ps_dateA = addPatWidget.findChild(QDateEdit, "dateAvailedPSmear").date().toPyDate()
                 insert_service(13, ps_dateA, [20])  # Directly referencing Pap Smear type ID
 
-            # --- Commit and Close ---
             self.conn.commit()
             cursor.close()
-
+            self.patient_list()
             QMessageBox.information(addPatWidget, "Success", "Patient added successfully.")
             dialog.accept()
 

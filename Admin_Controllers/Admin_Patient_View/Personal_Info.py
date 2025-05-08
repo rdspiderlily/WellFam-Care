@@ -92,9 +92,12 @@ class PersonalInfoController:
                     self.phm_edit.setCurrentText(result[8])
                     self.phnum_edit.setText(result[9])
                     self.pat_ispreg_edit.setCurrentText(result[10])
-                    self.lmp_edit.setDate(result[11])
-                    self.edc_edit.setDate(result[12])
-                    self.aog_edit.setValue(result[13])
+                    if result[11]:
+                        self.lmp_edit.setDate(result[11])
+                    if result[12]:
+                        self.edc_edit.setDate(result[12])
+                    if result[13] is not None:
+                        self.aog_edit.setValue(result[13])
                     self.addressNS_edit.setText(result[14])
                     self.addressB_edit.setText(result[15])
                     self.addressMC_edit.setText(result[16])

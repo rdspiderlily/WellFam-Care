@@ -4,9 +4,9 @@ from PyQt5.QtWidgets import (
     QTextEdit, QSpinBox, QDoubleSpinBox, QMessageBox
 )
 from PyQt5 import uic
-from PyQt5.QtCore import Qt, QDate, QTime
+from PyQt5.QtCore import Qt, QDate, QTime, QDateTime
 from PyQt5.QtGui import QIcon
-from datetime import date
+from datetime import date, datetime
 
 from PyQt5 import uic
 
@@ -22,16 +22,21 @@ class MaternalRecordsController:
         
         self.stackWidMSR = self.pageMSR.findChild(QStackedWidget, "stackWidMSR")
         
+        self.save_btn = self.pageMSR.findChild(QPushButton, "btnSaveMSR")
+        self.edit_btn = self.pageMSR.findChild(QPushButton, "btnEditMSR")
+        self.cancel_btn = self.pageMSR.findChild(QPushButton, "btnCancelMSR")
+        
+        if not self.has_maternal_package_service():
+            self.edit_btn.setEnabled(False)
+            self.save_btn.setEnabled(False)
+            self.cancel_btn.setEnabled(False)
+            QMessageBox.information(self.pageMSR, "Information Forms", "This patient did not avail Maternal Care Package service. Form is view-only.")
+        
         self.prev_btn = self.pageMSR.findChild(QPushButton, "pushBtnPrev")
         self.next_btn = self.pageMSR.findChild(QPushButton, "pushBtnNext")
         
-        self.save_btn = self.pageMSR.findChild(QPushButton, "btnSaveMSR")
         self.save_btn.clicked.connect(self.on_save_clicked)
-        
-        self.edit_btn = self.pageMSR.findChild(QPushButton, "btnEditMSR")
         self.edit_btn.clicked.connect(self.enable_editing_mode)
-        
-        self.cancel_btn = self.pageMSR.findChild(QPushButton, "btnCancelMSR")
         self.cancel_btn.clicked.connect(self.on_cancel_clicked)
 
         self.set_all_fields_read_only()
@@ -45,6 +50,18 @@ class MaternalRecordsController:
         self.physicalE_info()
         self.birthEPlan_info()
         self.update_nav_buttons()
+    
+    def has_maternal_package_service(self):
+        query = """
+            SELECT 1 FROM PATIENT_SERVICE ps
+            JOIN SERVICE s ON ps.SERV_ID = s.SERV_ID
+            WHERE ps.PAT_ID = %s AND s.SERV_NAME = 'Maternal Care Package'
+        """
+        cursor = self.conn.cursor()
+        cursor.execute(query, (self.patient_id,))
+        result = cursor.fetchone()
+        cursor.close()
+        return bool(result)
     
     def go_prev(self):
         current_index = self.stackWidMSR.currentIndex()
@@ -121,9 +138,60 @@ class MaternalRecordsController:
             self.save_physicalE()
             self.save_pelvicE()
             self.save_birthEPlan()
+            
+            form_id = self.get_form_id('Maternal Service Record')
+            if form_id is None:
+                print("Form ID for Maternal is not found.")
+                return
+            ps_id = self.get_patient_service_id()
+            if ps_id is None:
+                print("Patient service ID not found.")
+                return
+            
+            # Before inserting, ensure that PS_ID exists in PATIENT_SERVICE
+            cursor = self.conn.cursor()
+            cursor.execute("SELECT COUNT(*) FROM PATIENT_SERVICE WHERE PS_ID = %s", (ps_id,))
+            count = cursor.fetchone()[0]
+            cursor.close()
+            
+            if count == 0:
+                print(f"PS_ID {ps_id} not found in PATIENT_SERVICE table.")
+                return
+            
+            cursor = self.conn.cursor()
+            # Check if the form ID, patient ID, and patient service ID are correct before inserting
+            cursor.execute("""
+                INSERT INTO PATIENT_FORM (PF_DATEFILLED, FORM_ID, PAT_ID, PS_ID)
+                VALUES (CURRENT_TIMESTAMP, %s, %s, %s)
+            """, (form_id, self.patient_id, ps_id))
+            self.conn.commit()
+            cursor.close()
+            
             print("Saved successfully.")
         except Exception as e:
             print("Error while saving:", e)
+    
+    def get_form_id(self, form_name):
+        cursor = self.conn.cursor()
+        cursor.execute("SELECT FORM_ID FROM FORM WHERE FORM_NAME = %s", (form_name,))
+        form_id = cursor.fetchone()
+        cursor.close()
+        return form_id[0] if form_id else None
+    
+    def get_patient_service_id(self):
+        cursor = self.conn.cursor()
+        cursor.execute("""
+            SELECT PS_ID
+            FROM PATIENT_SERVICE
+            WHERE PAT_ID = %s AND SERV_ID = %s
+        """, (self.patient_id, 3))  # Ensure the service ID for Maternal Care Package (3)
+        ps_id = cursor.fetchone()
+        cursor.close()
+        if ps_id:
+            return ps_id[0]  # Return the PS_ID
+        else:
+            print(f"No patient service found for PAT_ID {self.patient_id} and SERV_ID 3.")
+            return None  
         
     def personal_info(self):
         self.load_basic_pinfo_widgets()
@@ -166,7 +234,7 @@ class MaternalRecordsController:
 
         except Exception as e:
             self.conn.rollback()
-            print("Error in prefilled_basic_pinfo:", e)
+            print("Error in prefilled_pinfo:", e)
 
     def load_basic_pinfo_widgets(self):
         self.clt_lname = self.pageMSR.findChild(QLineEdit, "clientLName")
@@ -304,7 +372,7 @@ class MaternalRecordsController:
             
             # Create a mapping of widget values to FORM_OPT_LABEL (you must make sure labels match)
             responses = {
-                "Client No.": self.clt_no.text(),
+                "Client No.": self.clt_num.text(),
                 "Educational Attainment": self.clt_eduA.currentText(),
                 "Name": self.clt_PNEName.text(),
                 "Contact No.": self.clt_PNEContact.text(),
@@ -648,15 +716,40 @@ class MaternalRecordsController:
 
             info = self.autofill.get_basic_info(self.patient_id)
             if info:
-                self.obs_lmp.setDate(info["lmp"])
-                self.obs_aog.setValue(info["aog"])
-                self.obs_edc.setDate(info["edc"])
-                
+                lmp = info.get("lmp")
+                edc = info.get("edc")
+                aog = info.get("aog")
+
+                # Set or clear LMP
+                if lmp:
+                    if isinstance(lmp, date):
+                        self.obs_lmp.setDate(QDate(lmp.year, lmp.month, lmp.day))
+                    elif isinstance(lmp, QDate):
+                        self.obs_lmp.setDate(lmp)
+                else:
+                    self.obs_lmp.clear()  # clears the date field
+
+                # Set or clear EDC
+                if edc:
+                    if isinstance(edc, date):
+                        self.obs_edc.setDate(QDate(edc.year, edc.month, edc.day))
+                    elif isinstance(edc, QDate):
+                        self.obs_edc.setDate(edc)
+                else:
+                    self.obs_edc.clear()
+
+                # Set or clear AOG
+                if aog is not None and isinstance(aog, int):
+                    self.obs_aog.setValue(aog)
+                else:
+                    self.obs_aog.clear()  # or setValue(0), depending on behavior you want
+
             self.autofill.close()
 
         except Exception as e:
             self.conn.rollback()
-            print("Error in prefilled_basic_pinfo:", e)
+            print("Error in prefilled_obstetrical:", e)
+
             
     def load_obstetrical_widgets(self):
         self.obs_lmp = self.pageMSR.findChild(QDateEdit, "obs_lmp")
@@ -1253,12 +1346,8 @@ class MaternalRecordsController:
 
     def reset_fields(self):
         #Basic Personal Information Category
-        self.clt_no.clear()
+        self.clt_num.clear()
         self.clt_eduA.setCurrentIndex(-1)
-        self.clt_NSAdd.clear()
-        self.clt_BarAdd.clear()
-        self.clt_MuniAdd.clear()
-        self.clt_ProvAdd.clear()
         self.clt_PNEName.clear()
         self.clt_PNEContact.clear()
         self.clt_PNEAdd.clear()
@@ -1377,7 +1466,7 @@ class MaternalRecordsController:
     def cancel_editing(self):
         self.reset_fields()
         self.set_all_fields_read_only()
-        self.prefilled_basic_pinfo()
+        self.prefilled_pinfo()
         self.prefilled_obstetrical()
         self.load_basic_pinfo()
         self.load_other_pinfo()

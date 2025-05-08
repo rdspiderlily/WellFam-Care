@@ -332,7 +332,7 @@ QPushButton:hover {
     <string notr="true"/>
    </property>
    <property name="currentIndex">
-    <number>1</number>
+    <number>2</number>
    </property>
    <widget class="QWidget" name="viewPatInfo">
     <widget class="QLabel" name="label_3">
@@ -9713,33 +9713,6 @@ border-radius: 2px;
         <string>Date of Birth</string>
        </property>
       </widget>
-      <widget class="QComboBox" name="clientFPEduAtt">
-       <property name="geometry">
-        <rect>
-         <x>650</x>
-         <y>110</y>
-         <width>141</width>
-         <height>21</height>
-        </rect>
-       </property>
-       <property name="font">
-        <font>
-         <family>Arial</family>
-         <pointsize>10</pointsize>
-        </font>
-       </property>
-       <property name="styleSheet">
-        <string notr="true">background-color: lightgray;
-border: 1px solid black;
-border-radius: 2px;
-</string>
-       </property>
-       <item>
-        <property name="text">
-         <string>--Select--</string>
-        </property>
-       </item>
-      </widget>
       <widget class="QDateEdit" name="clientFPDOB">
        <property name="geometry">
         <rect>
@@ -10468,7 +10441,7 @@ border-radius: 2px;
         <rect>
          <x>550</x>
          <y>160</y>
-         <width>131</width>
+         <width>121</width>
          <height>21</height>
         </rect>
        </property>
@@ -10493,9 +10466,9 @@ border-radius: 2px;
       <widget class="QLineEdit" name="clientFPCont">
        <property name="geometry">
         <rect>
-         <x>690</x>
+         <x>680</x>
          <y>160</y>
-         <width>111</width>
+         <width>101</width>
          <height>21</height>
         </rect>
        </property>
@@ -10520,7 +10493,7 @@ border-radius: 2px;
       <widget class="QComboBox" name="clientFPCivilStat">
        <property name="geometry">
         <rect>
-         <x>810</x>
+         <x>790</x>
          <y>160</y>
          <width>81</width>
          <height>21</height>
@@ -10541,15 +10514,40 @@ border-radius: 2px;
        <item>
         <property name="text">
          <string>--Select--</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Single</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Married</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Divorced</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Separated</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Widowed</string>
         </property>
        </item>
       </widget>
       <widget class="QComboBox" name="clientFPReligion">
        <property name="geometry">
         <rect>
-         <x>900</x>
+         <x>880</x>
          <y>160</y>
-         <width>81</width>
+         <width>101</width>
          <height>21</height>
         </rect>
        </property>
@@ -10570,11 +10568,66 @@ border-radius: 2px;
          <string>--Select--</string>
         </property>
        </item>
+       <item>
+        <property name="text">
+         <string>Roman Catholic</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Iglesia ni Cristo</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Born Again</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Muslim</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Seventh-day Adventist</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Jehovah’s Witnesses</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Mormon</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Buddhism</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Hinduism</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Judaism</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Atheist</string>
+        </property>
+       </item>
       </widget>
       <widget class="QLabel" name="label_354">
        <property name="geometry">
         <rect>
-         <x>690</x>
+         <x>680</x>
          <y>140</y>
          <width>91</width>
          <height>20</height>
@@ -10595,7 +10648,7 @@ border-radius: 2px;
       <widget class="QLabel" name="label_517">
        <property name="geometry">
         <rect>
-         <x>810</x>
+         <x>790</x>
          <y>140</y>
          <width>81</width>
          <height>20</height>
@@ -10616,9 +10669,9 @@ border-radius: 2px;
       <widget class="QLabel" name="label_518">
        <property name="geometry">
         <rect>
-         <x>900</x>
+         <x>880</x>
          <y>140</y>
-         <width>81</width>
+         <width>71</width>
          <height>20</height>
         </rect>
        </property>
@@ -11006,7 +11059,7 @@ border-radius: 2px;
         <string>AVERAGE MONTHLY INCOME:</string>
        </property>
       </widget>
-      <widget class="QLineEdit" name="monthlyIncome">
+      <widget class="QLineEdit" name="FPmonthlyIncome">
        <property name="geometry">
         <rect>
          <x>850</x>
@@ -11499,6 +11552,63 @@ border-radius: 2px;
        <property name="placeholderText">
         <string>Others:</string>
        </property>
+      </widget>
+      <widget class="QComboBox" name="clientFPEduAtt">
+       <property name="geometry">
+        <rect>
+         <x>650</x>
+         <y>110</y>
+         <width>141</width>
+         <height>21</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Arial</family>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">background-color: lightgray;
+border: 1px solid black;
+border-radius: 2px;
+</string>
+       </property>
+       <item>
+        <property name="text">
+         <string>--Select--</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Elementary Graduate</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Highschool Graduate</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Associate's Degree</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Bachelor's Degree</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Master's Degree</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Doctorate</string>
+        </property>
+       </item>
       </widget>
      </widget>
      <widget class="QWidget" name="medHis_obsHis">
@@ -16007,6 +16117,146 @@ QPushButton:hover {
      <property name="icon">
       <iconset>
        <normaloff>../wfpics/nextIcon.png</normaloff>../wfpics/nextIcon.png</iconset>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="btnSaveFP">
+     <property name="geometry">
+      <rect>
+       <x>60</x>
+       <y>510</y>
+       <width>91</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Arial</family>
+       <pointsize>10</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QPushButton {
+	background-color: rgb(0, 51, 102);
+	color: white;
+	border-radius: 10px;
+}
+
+QPushButton:hover {
+    background-color: #2980b9;  
+}
+
+
+</string>
+     </property>
+     <property name="text">
+      <string>Save</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="btnEditFP">
+     <property name="geometry">
+      <rect>
+       <x>160</x>
+       <y>510</y>
+       <width>91</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Arial</family>
+       <pointsize>10</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QPushButton {
+	background-color: rgb(0, 51, 102);
+	color: white;
+	border-radius: 10px;
+}
+
+QPushButton:hover {
+    background-color: #2980b9;  
+}
+
+
+</string>
+     </property>
+     <property name="text">
+      <string>Edit</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="btnCancelFP">
+     <property name="geometry">
+      <rect>
+       <x>260</x>
+       <y>510</y>
+       <width>91</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Arial</family>
+       <pointsize>10</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QPushButton {
+	background-color: rgb(0, 51, 102);
+	color: white;
+	border-radius: 10px;
+}
+
+QPushButton:hover {
+    background-color: #2980b9;  
+}
+
+
+</string>
+     </property>
+     <property name="text">
+      <string>Cancel</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="btnAutofillMaternal">
+     <property name="geometry">
+      <rect>
+       <x>410</x>
+       <y>510</y>
+       <width>211</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Arial</family>
+       <pointsize>10</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QPushButton {
+	background-color: rgb(0, 51, 102);
+	color: white;
+	border-radius: 10px;
+}
+
+QPushButton:hover {
+    background-color: #2980b9;  
+}
+
+
+</string>
+     </property>
+     <property name="text">
+      <string>Autofill from Maternal Form</string>
      </property>
     </widget>
    </widget>
