@@ -14,10 +14,11 @@ from Database import connect_db
 from Admin_Controllers.Admin_Patient_View.AutofillPersonalInfo import AutofillPersonalInfoController
 
 class MaternalRecordsController:
-    def __init__(self, pageMSR, patient_id):
+    def __init__(self, pageMSR, patient_id, user_id):
         self.conn = connect_db()
         self.pageMSR = pageMSR
         self.patient_id = patient_id
+        self.user_id = user_id
         self.autofill = AutofillPersonalInfoController(self.conn)
         
         self.stackWidMSR = self.pageMSR.findChild(QStackedWidget, "stackWidMSR")
@@ -97,6 +98,8 @@ class MaternalRecordsController:
                     disable_widgets(child)
 
         disable_widgets(self.pageMSR)
+        self.cancel_btn.setEnabled(False)
+        self.save_btn.setEnabled(False)
 
     def enable_editing_mode(self):
         def enable_widgets(widget):
@@ -118,6 +121,8 @@ class MaternalRecordsController:
                     enable_widgets(child)
 
         enable_widgets(self.pageMSR)
+        self.cancel_btn.setEnabled(True)
+        self.save_btn.setEnabled(True)
 
         # Keep prefilled fields disabled
         self.clt_lname.setReadOnly(True)
@@ -161,13 +166,13 @@ class MaternalRecordsController:
             cursor = self.conn.cursor()
             # Check if the form ID, patient ID, and patient service ID are correct before inserting
             cursor.execute("""
-                INSERT INTO PATIENT_FORM (PF_DATEFILLED, FORM_ID, PAT_ID, PS_ID)
-                VALUES (CURRENT_TIMESTAMP, %s, %s, %s)
-            """, (form_id, self.patient_id, ps_id))
+                INSERT INTO PATIENT_FORM (PF_DATEFILLED, FORM_ID, PAT_ID, PS_ID, PF_FILLEDBY)
+                VALUES (CURRENT_TIMESTAMP, %s, %s, %s, %s)
+            """, (form_id, self.patient_id, ps_id, self.user_id))
             self.conn.commit()
             cursor.close()
             
-            print("Saved successfully.")
+            QMessageBox.information(self.pageMSR, "Success", "Maternal record saved successfully.")
         except Exception as e:
             print("Error while saving:", e)
     
@@ -183,8 +188,8 @@ class MaternalRecordsController:
         cursor.execute("""
             SELECT PS_ID
             FROM PATIENT_SERVICE
-            WHERE PAT_ID = %s AND SERV_ID = %s
-        """, (self.patient_id, 3))  # Ensure the service ID for Maternal Care Package (3)
+            WHERE PAT_ID = %s AND SERV_ID = 3
+        """, (self.patient_id,))  # Ensure the service ID for Maternal Care Package (3)
         ps_id = cursor.fetchone()
         cursor.close()
         if ps_id:
@@ -283,6 +288,57 @@ class MaternalRecordsController:
                             
         except Exception as e:
             print("Error loading basic personal info:", e)
+    
+    def save_basic_pinfo(self):
+        try:
+            cursor = self.conn.cursor()
+            
+            # Create a mapping of widget values to FORM_OPT_LABEL (you must make sure labels match)
+            responses = {
+                "Client No.": self.clt_num.text(),
+                "Educational Attainment": self.clt_eduA.currentText(),
+                "Name": self.clt_PNEName.text(),
+                "Contact No.": self.clt_PNEContact.text(),
+                "Address": self.clt_PNEAdd.text()
+            }
+
+            for label, value in responses.items():
+                # Fetch FORM_OPT_ID based on label (and maybe category)
+                cursor.execute("""
+                    SELECT FORM_OPT_ID FROM FORM_OPTION
+                    WHERE FORM_OPT_LABEL = %s
+                """, (label,))
+                opt_result = cursor.fetchone()
+                if opt_result:
+                    form_opt_id = opt_result[0]
+
+                    # Check if response exists
+                    cursor.execute("""
+                        SELECT FORM_RES_ID FROM FORM_RESPONSE
+                        WHERE FORM_OPT_ID = %s AND PAT_ID = %s
+                    """, (form_opt_id, self.patient_id))
+                    exists = cursor.fetchone()
+
+                    if exists:
+                        # Update existing response
+                        cursor.execute("""
+                            UPDATE FORM_RESPONSE
+                            SET FORM_RES_VAL = %s
+                            WHERE FORM_OPT_ID = %s AND PAT_ID = %s
+                        """, (value, form_opt_id, self.patient_id))
+                    else:
+                        # Insert new response
+                        cursor.execute("""
+                            INSERT INTO FORM_RESPONSE (FORM_RES_VAL, FORM_OPT_ID, PAT_ID)
+                            VALUES (%s, %s, %s)
+                        """, (value, form_opt_id, self.patient_id))
+                else:
+                    print(f"[Warning] FORM_OPTION not found for label: {label}")
+
+            self.conn.commit()
+        except Exception as e:
+            print("Error saving basic personal info:", e)
+            self.conn.rollback()
 
     def load_other_pinfo_widgets(self):
         self.clt_dateArrival = self.pageMSR.findChild(QDateEdit, "clientDateArrival")
@@ -365,57 +421,6 @@ class MaternalRecordsController:
 
         except Exception as e:
             print("Error loading other personal info:", e)
-
-    def save_basic_pinfo(self):
-        try:
-            cursor = self.conn.cursor()
-            
-            # Create a mapping of widget values to FORM_OPT_LABEL (you must make sure labels match)
-            responses = {
-                "Client No.": self.clt_num.text(),
-                "Educational Attainment": self.clt_eduA.currentText(),
-                "Name": self.clt_PNEName.text(),
-                "Contact No.": self.clt_PNEContact.text(),
-                "Address": self.clt_PNEAdd.text()
-            }
-
-            for label, value in responses.items():
-                # Fetch FORM_OPT_ID based on label (and maybe category)
-                cursor.execute("""
-                    SELECT FORM_OPT_ID FROM FORM_OPTION
-                    WHERE FORM_OPT_LABEL = %s
-                """, (label,))
-                opt_result = cursor.fetchone()
-                if opt_result:
-                    form_opt_id = opt_result[0]
-
-                    # Check if response exists
-                    cursor.execute("""
-                        SELECT FORM_RES_ID FROM FORM_RESPONSE
-                        WHERE FORM_OPT_ID = %s AND PAT_ID = %s
-                    """, (form_opt_id, self.patient_id))
-                    exists = cursor.fetchone()
-
-                    if exists:
-                        # Update existing response
-                        cursor.execute("""
-                            UPDATE FORM_RESPONSE
-                            SET FORM_RES_VAL = %s
-                            WHERE FORM_OPT_ID = %s AND PAT_ID = %s
-                        """, (value, form_opt_id, self.patient_id))
-                    else:
-                        # Insert new response
-                        cursor.execute("""
-                            INSERT INTO FORM_RESPONSE (FORM_RES_VAL, FORM_OPT_ID, PAT_ID)
-                            VALUES (%s, %s, %s)
-                        """, (value, form_opt_id, self.patient_id))
-                else:
-                    print(f"[Warning] FORM_OPTION not found for label: {label}")
-
-            self.conn.commit()
-        except Exception as e:
-            print("Error saving basic personal info:", e)
-            self.conn.rollback()
             
     def save_other_pinfo(self):
         try:

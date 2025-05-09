@@ -12,10 +12,11 @@ from Database import connect_db
 from Admin_Controllers.Admin_Patient_View.View_Patient_Category import ViewPatientDialog
 
 class AdminPatientController:
-    def __init__(self, tableWidPat: QTableWidget, search: QLineEdit):
+    def __init__(self, tableWidPat: QTableWidget, search: QLineEdit, user_id):
         self.conn = connect_db()
         self.tableWidPat = tableWidPat
         self.patient_list()
+        self.user_id = user_id
         
         self.tableWidPat.cellClicked.connect(self.view_patient)
         
@@ -347,5 +348,5 @@ class AdminPatientController:
         
         pat_id = pat_id_item.text()
         
-        dialog = ViewPatientDialog(pat_id)  #Passing PAT_ID to View Patient Details and Forms
+        dialog = ViewPatientDialog(pat_id, self.user_id)  #Passing PAT_ID and STAFF_ID to View Patient Details and Forms
         dialog.exec_()

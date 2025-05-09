@@ -10,13 +10,14 @@ from Admin_Controllers.Admin_Patient_View.Appointment_History import Appointment
 
 
 class ViewPatientDialog(QDialog):
-    def __init__(self,patient_id, parent=None):
+    def __init__(self,patient_id, user_id, parent=None):
         super().__init__(parent)
         uic.loadUi("wfui/view_patient_information.ui", self)
         self.setWindowTitle("Patient Details")
         self.setWindowIcon(QIcon("wfpics/logo1.jpg"))
         
         self.patient_id = patient_id
+        self.user_id = user_id
         
         self.stackedWidget = self.findChild(QStackedWidget, "sWidgetviewPat")
         self.info_btn = self.findChild(QPushButton, "pushBtnPatInfo")
@@ -46,7 +47,7 @@ class ViewPatientDialog(QDialog):
         self.stackedWidget.setCurrentIndex(1)
         self.set_active_button(self.msr_btn)
         pageMSR = self.stackedWidget.widget(1)
-        self.maternal_records_widget = MaternalRecordsController(pageMSR, self.patient_id)
+        self.maternal_records_widget = MaternalRecordsController(pageMSR, self.patient_id, self.user_id)
         
     def fpf(self):
         self.stackedWidget.setCurrentIndex(2)

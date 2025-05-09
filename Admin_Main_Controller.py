@@ -162,7 +162,7 @@ class AdminMainWindow(QDialog):
         self.set_active_button(self.patients_button)
         self.tableWidPat = self.findChild(QTableWidget, "tableWidgetPat")
         self.searchPat = self.findChild(QLineEdit, "lineEditSearchPat")
-        self.patient_controller = AdminPatientController(self.tableWidPat, self.searchPat)
+        self.patient_controller = AdminPatientController(self.tableWidPat, self.searchPat, self.user_id)
 
         self.addPat_button = self.findChild(QPushButton, "pushBtnAddNPat")
         if self.addPat_button:

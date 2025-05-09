@@ -9614,6 +9614,41 @@ QPushButton:hover {
       <string>Cancel</string>
      </property>
     </widget>
+    <widget class="QPushButton" name="btnLoadFromFamPlan">
+     <property name="geometry">
+      <rect>
+       <x>410</x>
+       <y>510</y>
+       <width>211</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Arial</family>
+       <pointsize>10</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QPushButton {
+	background-color: rgb(0, 51, 102);
+	color: white;
+	border-radius: 10px;
+}
+
+QPushButton:hover {
+    background-color: #2980b9;  
+}
+
+
+</string>
+     </property>
+     <property name="text">
+      <string>Load from FamPlan Form</string>
+     </property>
+    </widget>
    </widget>
    <widget class="QWidget" name="viewFPF">
     <widget class="QStackedWidget" name="stackWidFPF">
@@ -9638,7 +9673,7 @@ QPushButton:hover {
 }</string>
      </property>
      <property name="currentIndex">
-      <number>0</number>
+      <number>1</number>
      </property>
      <widget class="QWidget" name="personalInfoFPF">
       <property name="styleSheet">
@@ -9793,7 +9828,7 @@ border-radius: 2px;
         <string>Reason for FP:</string>
        </property>
       </widget>
-      <widget class="QCheckBox" name="checkBox_245">
+      <widget class="QCheckBox" name="FPNA">
        <property name="geometry">
         <rect>
          <x>20</x>
@@ -9812,7 +9847,7 @@ border-radius: 2px;
         <string>New Acceptor</string>
        </property>
       </widget>
-      <widget class="QCheckBox" name="checkBox_246">
+      <widget class="QCheckBox" name="FPNAspacing">
        <property name="geometry">
         <rect>
          <x>250</x>
@@ -9831,7 +9866,7 @@ border-radius: 2px;
         <string>spacing</string>
        </property>
       </widget>
-      <widget class="QCheckBox" name="checkBox_247">
+      <widget class="QCheckBox" name="FPNAlimiting">
        <property name="geometry">
         <rect>
          <x>320</x>
@@ -10007,7 +10042,7 @@ border-radius: 2px;
          <string>PHILHEALTH NO:</string>
         </property>
        </widget>
-       <widget class="QLineEdit" name="philHealthNo">
+       <widget class="QLineEdit" name="FPphilHealthNo">
         <property name="geometry">
          <rect>
           <x>130</x>
@@ -10156,7 +10191,7 @@ border-radius: 2px;
        <zorder>clientID</zorder>
        <zorder>label_510</zorder>
        <zorder>label_511</zorder>
-       <zorder>philHealthNo</zorder>
+       <zorder>FPphilHealthNo</zorder>
        <zorder>label_512</zorder>
        <zorder>NHTSy</zorder>
        <zorder>label_513</zorder>
@@ -11086,7 +11121,7 @@ border-radius: 2px;
         <string/>
        </property>
       </widget>
-      <widget class="QCheckBox" name="checkBox_370">
+      <widget class="QCheckBox" name="FPCU">
        <property name="geometry">
         <rect>
          <x>20</x>
@@ -11105,7 +11140,7 @@ border-radius: 2px;
         <string>Current User</string>
        </property>
       </widget>
-      <widget class="QCheckBox" name="checkBox_371">
+      <widget class="QCheckBox" name="FPCUchmet">
        <property name="geometry">
         <rect>
          <x>30</x>
@@ -11124,7 +11159,7 @@ border-radius: 2px;
         <string>Changing Method</string>
        </property>
       </widget>
-      <widget class="QCheckBox" name="checkBox_372">
+      <widget class="QCheckBox" name="FPCUchclinic">
        <property name="geometry">
         <rect>
          <x>30</x>
@@ -11143,7 +11178,7 @@ border-radius: 2px;
         <string>Changing Clinic</string>
        </property>
       </widget>
-      <widget class="QCheckBox" name="checkBox_373">
+      <widget class="QCheckBox" name="FPCUdropres">
        <property name="geometry">
         <rect>
          <x>30</x>
@@ -11162,7 +11197,7 @@ border-radius: 2px;
         <string>Dropout/Restart</string>
        </property>
       </widget>
-      <widget class="QLineEdit" name="lineEdit_93">
+      <widget class="QLineEdit" name="FPNAothers">
        <property name="geometry">
         <rect>
          <x>390</x>
@@ -11210,7 +11245,7 @@ border-radius: 2px;
         <string>Reason:</string>
        </property>
       </widget>
-      <widget class="QCheckBox" name="checkBox_374">
+      <widget class="QCheckBox" name="FPCUchmetMed">
        <property name="geometry">
         <rect>
          <x>210</x>
@@ -11229,7 +11264,7 @@ border-radius: 2px;
         <string>medical condition</string>
        </property>
       </widget>
-      <widget class="QLineEdit" name="lineEdit_94">
+      <widget class="QLineEdit" name="FPCUchmetSideE">
        <property name="geometry">
         <rect>
          <x>340</x>
@@ -11277,7 +11312,7 @@ border-radius: 2px;
         <string>Method currently used (for Changing Method):</string>
        </property>
       </widget>
-      <widget class="QCheckBox" name="checkBox_375">
+      <widget class="QCheckBox" name="FPMCUcoc">
        <property name="geometry">
         <rect>
          <x>520</x>
@@ -11296,7 +11331,7 @@ border-radius: 2px;
         <string>COC</string>
        </property>
       </widget>
-      <widget class="QCheckBox" name="checkBox_376">
+      <widget class="QCheckBox" name="FPMCUpop">
        <property name="geometry">
         <rect>
          <x>520</x>
@@ -11315,7 +11350,7 @@ border-radius: 2px;
         <string>POP</string>
        </property>
       </widget>
-      <widget class="QCheckBox" name="checkBox_377">
+      <widget class="QCheckBox" name="FPMCUinj">
        <property name="geometry">
         <rect>
          <x>520</x>
@@ -11334,7 +11369,7 @@ border-radius: 2px;
         <string>Injectible</string>
        </property>
       </widget>
-      <widget class="QCheckBox" name="checkBox_378">
+      <widget class="QCheckBox" name="FPMCUimp">
        <property name="geometry">
         <rect>
          <x>520</x>
@@ -11353,7 +11388,7 @@ border-radius: 2px;
         <string>Implant</string>
        </property>
       </widget>
-      <widget class="QCheckBox" name="checkBox_379">
+      <widget class="QCheckBox" name="FPMCUiud">
        <property name="geometry">
         <rect>
          <x>610</x>
@@ -11374,7 +11409,7 @@ border-radius: 2px;
         <string>IUD</string>
        </property>
       </widget>
-      <widget class="QCheckBox" name="checkBox_380">
+      <widget class="QCheckBox" name="FPMCUiudI">
        <property name="geometry">
         <rect>
          <x>620</x>
@@ -11393,7 +11428,7 @@ border-radius: 2px;
         <string>Interval</string>
        </property>
       </widget>
-      <widget class="QCheckBox" name="checkBox_381">
+      <widget class="QCheckBox" name="FPMCUiudP">
        <property name="geometry">
         <rect>
          <x>620</x>
@@ -11412,7 +11447,7 @@ border-radius: 2px;
         <string>Postpartum</string>
        </property>
       </widget>
-      <widget class="QCheckBox" name="checkBox_382">
+      <widget class="QCheckBox" name="FPMCUcon">
        <property name="geometry">
         <rect>
          <x>610</x>
@@ -11431,7 +11466,7 @@ border-radius: 2px;
         <string>Condom</string>
        </property>
       </widget>
-      <widget class="QCheckBox" name="checkBox_383">
+      <widget class="QCheckBox" name="FPMCUbom">
        <property name="geometry">
         <rect>
          <x>720</x>
@@ -11450,7 +11485,7 @@ border-radius: 2px;
         <string>BOM/CMM</string>
        </property>
       </widget>
-      <widget class="QCheckBox" name="checkBox_384">
+      <widget class="QCheckBox" name="FPMCUbbt">
        <property name="geometry">
         <rect>
          <x>720</x>
@@ -11469,7 +11504,7 @@ border-radius: 2px;
         <string>BBT</string>
        </property>
       </widget>
-      <widget class="QCheckBox" name="checkBox_385">
+      <widget class="QCheckBox" name="FPMCUstm">
        <property name="geometry">
         <rect>
          <x>720</x>
@@ -11488,7 +11523,7 @@ border-radius: 2px;
         <string>STM</string>
        </property>
       </widget>
-      <widget class="QCheckBox" name="checkBox_386">
+      <widget class="QCheckBox" name="FPMCUsdm">
        <property name="geometry">
         <rect>
          <x>720</x>
@@ -11507,7 +11542,7 @@ border-radius: 2px;
         <string>SDM</string>
        </property>
       </widget>
-      <widget class="QCheckBox" name="checkBox_387">
+      <widget class="QCheckBox" name="FPMCUlam">
        <property name="geometry">
         <rect>
          <x>830</x>
@@ -11526,7 +11561,7 @@ border-radius: 2px;
         <string>LAM</string>
        </property>
       </widget>
-      <widget class="QLineEdit" name="lineEdit_95">
+      <widget class="QLineEdit" name="FPMCUothers">
        <property name="geometry">
         <rect>
          <x>830</x>
@@ -11635,7 +11670,7 @@ border: 2px solid rgba(0, 0, 0, .3);
        <property name="frameShadow">
         <enum>QFrame::Raised</enum>
        </property>
-       <widget class="QCheckBox" name="checkBox_289">
+       <widget class="QCheckBox" name="FPMed_svhmY">
         <property name="geometry">
          <rect>
           <x>390</x>
@@ -11682,7 +11717,7 @@ border: 2px solid rgba(0, 0, 0, .3);
          <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
         </property>
        </widget>
-       <widget class="QLineEdit" name="lineEdit_96">
+       <widget class="QLineEdit" name="FPwdisability">
         <property name="geometry">
          <rect>
           <x>50</x>
@@ -11769,7 +11804,7 @@ border-radius: 2px;
          </font>
         </property>
         <property name="text">
-         <string>history of smoke/ hypertension/heart attack</string>
+         <string>history of stroke/ hypertension/heart attack</string>
         </property>
        </widget>
        <widget class="QLabel" name="label_527">
@@ -11793,7 +11828,7 @@ border-radius: 2px;
          <string>non-traumatic hematoma/ frequent bruising/ gum bleeding</string>
         </property>
        </widget>
-       <widget class="QCheckBox" name="checkBox_291">
+       <widget class="QCheckBox" name="FPMed_svhmN">
         <property name="geometry">
          <rect>
           <x>450</x>
@@ -11812,7 +11847,7 @@ border-radius: 2px;
          <string>No</string>
         </property>
        </widget>
-       <widget class="QCheckBox" name="checkBox_290">
+       <widget class="QCheckBox" name="FPhoshhaY">
         <property name="geometry">
          <rect>
           <x>390</x>
@@ -11831,7 +11866,7 @@ border-radius: 2px;
          <string>Yes</string>
         </property>
        </widget>
-       <widget class="QCheckBox" name="checkBox_292">
+       <widget class="QCheckBox" name="FPnthY">
         <property name="geometry">
          <rect>
           <x>390</x>
@@ -11850,7 +11885,7 @@ border-radius: 2px;
          <string>Yes</string>
         </property>
        </widget>
-       <widget class="QCheckBox" name="checkBox_293">
+       <widget class="QCheckBox" name="FPhoshhaN">
         <property name="geometry">
          <rect>
           <x>450</x>
@@ -11869,7 +11904,7 @@ border-radius: 2px;
          <string>No</string>
         </property>
        </widget>
-       <widget class="QCheckBox" name="checkBox_294">
+       <widget class="QCheckBox" name="FPnthN">
         <property name="geometry">
          <rect>
           <x>450</x>
@@ -12077,7 +12112,7 @@ border-radius: 2px;
          <string>with disability?</string>
         </property>
        </widget>
-       <widget class="QCheckBox" name="checkBox_295">
+       <widget class="QCheckBox" name="FPhisbcY">
         <property name="geometry">
          <rect>
           <x>390</x>
@@ -12096,7 +12131,7 @@ border-radius: 2px;
          <string>Yes</string>
         </property>
        </widget>
-       <widget class="QCheckBox" name="checkBox_296">
+       <widget class="QCheckBox" name="FPchpainY">
         <property name="geometry">
          <rect>
           <x>390</x>
@@ -12115,7 +12150,7 @@ border-radius: 2px;
          <string>Yes</string>
         </property>
        </widget>
-       <widget class="QCheckBox" name="checkBox_297">
+       <widget class="QCheckBox" name="FPcoughY">
         <property name="geometry">
          <rect>
           <x>390</x>
@@ -12134,7 +12169,7 @@ border-radius: 2px;
          <string>Yes</string>
         </property>
        </widget>
-       <widget class="QCheckBox" name="checkBox_298">
+       <widget class="QCheckBox" name="FPjaundiceY">
         <property name="geometry">
          <rect>
           <x>390</x>
@@ -12153,7 +12188,7 @@ border-radius: 2px;
          <string>Yes</string>
         </property>
        </widget>
-       <widget class="QCheckBox" name="checkBox_299">
+       <widget class="QCheckBox" name="FPuvbY">
         <property name="geometry">
          <rect>
           <x>390</x>
@@ -12172,7 +12207,7 @@ border-radius: 2px;
          <string>Yes</string>
         </property>
        </widget>
-       <widget class="QCheckBox" name="checkBox_300">
+       <widget class="QCheckBox" name="FPavdY">
         <property name="geometry">
          <rect>
           <x>390</x>
@@ -12191,7 +12226,7 @@ border-radius: 2px;
          <string>Yes</string>
         </property>
        </widget>
-       <widget class="QCheckBox" name="checkBox_301">
+       <widget class="QCheckBox" name="FPintakeY">
         <property name="geometry">
          <rect>
           <x>390</x>
@@ -12210,7 +12245,7 @@ border-radius: 2px;
          <string>Yes</string>
         </property>
        </widget>
-       <widget class="QCheckBox" name="checkBox_302">
+       <widget class="QCheckBox" name="FPsmokerY">
         <property name="geometry">
          <rect>
           <x>390</x>
@@ -12229,7 +12264,7 @@ border-radius: 2px;
          <string>Yes</string>
         </property>
        </widget>
-       <widget class="QCheckBox" name="checkBox_303">
+       <widget class="QCheckBox" name="FPhisbcN">
         <property name="geometry">
          <rect>
           <x>450</x>
@@ -12248,7 +12283,7 @@ border-radius: 2px;
          <string>No</string>
         </property>
        </widget>
-       <widget class="QCheckBox" name="checkBox_304">
+       <widget class="QCheckBox" name="FPchpainN">
         <property name="geometry">
          <rect>
           <x>450</x>
@@ -12267,7 +12302,7 @@ border-radius: 2px;
          <string>No</string>
         </property>
        </widget>
-       <widget class="QCheckBox" name="checkBox_305">
+       <widget class="QCheckBox" name="FPcoughN">
         <property name="geometry">
          <rect>
           <x>450</x>
@@ -12286,7 +12321,7 @@ border-radius: 2px;
          <string>No</string>
         </property>
        </widget>
-       <widget class="QCheckBox" name="checkBox_306">
+       <widget class="QCheckBox" name="FPjaundiceN">
         <property name="geometry">
          <rect>
           <x>450</x>
@@ -12305,7 +12340,7 @@ border-radius: 2px;
          <string>No</string>
         </property>
        </widget>
-       <widget class="QCheckBox" name="checkBox_307">
+       <widget class="QCheckBox" name="FPuvbN">
         <property name="geometry">
          <rect>
           <x>450</x>
@@ -12324,7 +12359,7 @@ border-radius: 2px;
          <string>No</string>
         </property>
        </widget>
-       <widget class="QCheckBox" name="checkBox_308">
+       <widget class="QCheckBox" name="FPavdN">
         <property name="geometry">
          <rect>
           <x>450</x>
@@ -12343,7 +12378,7 @@ border-radius: 2px;
          <string>No</string>
         </property>
        </widget>
-       <widget class="QCheckBox" name="checkBox_309">
+       <widget class="QCheckBox" name="FPintakeN">
         <property name="geometry">
          <rect>
           <x>450</x>
@@ -12362,7 +12397,7 @@ border-radius: 2px;
          <string>No</string>
         </property>
        </widget>
-       <widget class="QCheckBox" name="checkBox_388">
+       <widget class="QCheckBox" name="FPsmokerN">
         <property name="geometry">
          <rect>
           <x>450</x>
@@ -16224,7 +16259,7 @@ QPushButton:hover {
       <string>Cancel</string>
      </property>
     </widget>
-    <widget class="QPushButton" name="btnAutofillMaternal">
+    <widget class="QPushButton" name="btnLoadFromMaternal">
      <property name="geometry">
       <rect>
        <x>410</x>
@@ -16256,7 +16291,7 @@ QPushButton:hover {
 </string>
      </property>
      <property name="text">
-      <string>Autofill from Maternal Form</string>
+      <string>Generate from Maternal Form</string>
      </property>
     </widget>
    </widget>
