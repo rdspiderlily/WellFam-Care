@@ -53,7 +53,7 @@ class ViewPatientDialog(QDialog):
         self.stackedWidget.setCurrentIndex(2)
         self.set_active_button(self.fpf_btn)
         pageFPF = self.stackedWidget.widget(2)
-        self.famplan_widget = FamPlanController(pageFPF, self.patient_id)
+        self.famplan_widget = FamPlanController(pageFPF, self.patient_id, self.user_id)
         
     def ph(self):
         self.stackedWidget.setCurrentIndex(3)

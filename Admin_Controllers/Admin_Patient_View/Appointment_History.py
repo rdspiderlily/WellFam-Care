@@ -18,12 +18,6 @@ class AppointmentHistoryController:
         
         self.tableWidAppH = self.appHpage.findChild(QTableWidget, "tableWidgetAppH")
         self.appointment_history()
-        
-        # try:
-        #     self.tableWidApp.cellClicked.disconnect()
-        # except TypeError:
-        #     pass
-        # self.tableWidApp.cellClicked.connect(self.view_appointmentH)
 
     def appointment_history(self):
         self.tableWidAppH.setRowCount(0)

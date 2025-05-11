@@ -55,6 +55,37 @@ class AutofillPersonalInfoController:
         except Exception as e:
             print("Error fetching spouse info:", e)
             return None
+        
+    def famplan_availed(self, patient_id):
+        query = """
+            SELECT 
+                ps.ps_dateavailed,
+                st.serv_type_id,
+                st.serv_type_name
+            FROM PATIENT_SERVICE ps
+            JOIN PATIENT_SERVICE_TYPE pst ON ps.ps_id = pst.ps_id
+            JOIN SERVICE_TYPE st ON pst.serv_type_id = st.serv_type_id
+            WHERE ps.pat_id = %s AND ps.serv_id = 2  -- 2 = Family Planning
+        """
+        try:
+            with self.conn.cursor() as cursor:
+                cursor.execute(query, (patient_id,))
+                rows = cursor.fetchall()
+
+            if rows:
+                # Get date from first row; assumes all rows have same date for the same ps_id
+                date_availed = rows[0][0]
+                subtypes = [row[2] for row in rows]  # serv_type_name
+                return {
+                    "date_availed": date_availed,
+                    "subtypes": subtypes
+                }
+
+            return None
+
+        except Exception as e:
+            print("Error fetching family planning services:", e)
+            return None
 
     def close(self):
         pass

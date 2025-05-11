@@ -12,6 +12,7 @@ from PyQt5 import uic
 
 from Database import connect_db
 from Admin_Controllers.Admin_Patient_View.AutofillPersonalInfo import AutofillPersonalInfoController
+from Admin_Controllers.Admin_Patient_View.AutofillMF import AutofillMatFamController
 
 class MaternalRecordsController:
     def __init__(self, pageMSR, patient_id, user_id):
@@ -20,12 +21,14 @@ class MaternalRecordsController:
         self.patient_id = patient_id
         self.user_id = user_id
         self.autofill = AutofillPersonalInfoController(self.conn)
+        self.autofillM = AutofillMatFamController(self.conn)
         
         self.stackWidMSR = self.pageMSR.findChild(QStackedWidget, "stackWidMSR")
         
         self.save_btn = self.pageMSR.findChild(QPushButton, "btnSaveMSR")
         self.edit_btn = self.pageMSR.findChild(QPushButton, "btnEditMSR")
         self.cancel_btn = self.pageMSR.findChild(QPushButton, "btnCancelMSR")
+        self.autofill_btn = self.pageMSR.findChild(QPushButton, "btnLoadFromFamPlan")
         
         if not self.has_maternal_package_service():
             self.edit_btn.setEnabled(False)
@@ -35,6 +38,8 @@ class MaternalRecordsController:
         
         self.prev_btn = self.pageMSR.findChild(QPushButton, "pushBtnPrev")
         self.next_btn = self.pageMSR.findChild(QPushButton, "pushBtnNext")
+        
+        self.autofill_btn.clicked.connect(self.on_autofill_clicked)
         
         self.save_btn.clicked.connect(self.on_save_clicked)
         self.edit_btn.clicked.connect(self.enable_editing_mode)
@@ -197,6 +202,116 @@ class MaternalRecordsController:
         else:
             print(f"No patient service found for PAT_ID {self.patient_id} and SERV_ID 3.")
             return None  
+        
+    def on_autofill_clicked(self):
+        reply = QMessageBox.question(
+            self.pageMSR,
+            "Autofill Form",
+            "Are you sure you want to autofill some fields from Maternal Service Record?",
+            QMessageBox.Yes | QMessageBox.No,
+            QMessageBox.No
+        )
+
+        if reply == QMessageBox.Yes:
+            self.autofill_famTOmat()
+            QMessageBox.information(self.pageMSR, "Success Autofill", "Some maternal data has been autofilled from family planning form.")
+            self.set_all_fields_read_only()
+            
+    def autofill_famTOmat(self):
+        try:
+            self.load_basic_pinfo_widgets()
+            self.load_other_pinfo_widgets()
+            self.load_obstetrical_widgets()
+            self.load_physicalE_widgets()
+            self.enable_editing_mode()
+            
+            if not all([
+                #Addons personal info
+                self.clt_num, self.clt_eduA, 
+                self.clt_planMKidsY, self.clt_planMKidsN,
+                
+                #Medical History
+                self.med_shdY, self.med_fhcY, self.med_scpY, self.med_ydY, self.med_sY,
+                self.med_shdN, self.med_fhcN, self.med_scpN, self.med_ydN, self.med_sN,
+                
+                #Obstetrical History
+                self.obs_ft, self.obs_pt, self.obs_abort, self.obs_livekids,
+                self.obs_dold, self.obs_tod, self.obs_pmp,
+                
+                #Physical Examination
+                self.phye_weight, self.phye_height,  self.phye_bps, self.phye_bpd,
+                self.phye_pY, self.phye_yY,
+                self.phye_pN, self.phye_yN,
+                
+                self.phye_elnY, self.phye_mY, self.phye_ndY,
+                self.phye_elnN, self.phye_mN, self.phye_ndN
+            ]):
+                print("Some client input fields are not initialized. Please check objectNames in the UI.")
+                return
+
+            info = self.autofillM.famTOmat(self.patient_id)
+            if info:
+                self.clt_num.setText(info["clientno"])
+                self.clt_eduA.setCurrentText(info["educAtt"])
+                
+                plan_moreKids = info.get("planmorekids", "").lower()
+                if plan_moreKids == "yes":
+                    self.clt_planMKidsY.setChecked(True)
+                elif plan_moreKids == "no":
+                    self.clt_planMKidsN.setChecked(True)
+                
+                #Medical History
+                fields = [
+                    ("svheadache", self.med_shdY, self.med_shdN),
+                    ("CVAhistory", self.med_fhcY, self.med_fhcN),
+                    ("svchestpain", self.med_scpY, self.med_scpN),
+                    ("yellow/jaundice", self.med_ydY, self.med_ydN),
+                    ("smoking", self.med_sY, self.med_sN),
+                ]
+
+                for key, radio_yes, radio_no in fields:
+                    value = info.get(key, "").lower()
+                    if value == "yes":
+                        radio_yes.setChecked(True)
+                    elif value == "no":
+                        radio_no.setChecked(True)
+                
+                #Obstetrical History
+                self.obs_ft.setValue(int(info["NOPfullterm"]))
+                self.obs_pt.setValue(int(info["NOPpreterm"]))
+                self.obs_abort.setValue(int(info["NOPabortion"]))
+                self.obs_livekids.setValue(int(info["nooflivkids"]))
+                self.obs_dold.setDate(QDate.fromString(info["dateOLdelivery"], "yyyy-MM-dd"))
+                self.obs_tod.setCurrentText(info["typeOLdelivery"])
+                self.obs_pmp.setDate(QDate.fromString(info["pmp"], "yyyy-MM-dd"))
+                
+                #Physical Examination
+                self.phye_weight.setValue(float(info["PEweight"]))
+                self.phye_height.setValue(float(info["PEheight"]))
+                self.phye_bps.setValue(int(info["bpS"]))
+                self.phye_bpd.setValue(int(info["bpD"]))
+                
+                fieldsPE = [
+                    ("conjuPale", self.phye_pY, self.phye_pN),
+                    ("conjuYellowish", self.phye_yY, self.phye_yN),
+                    ("neckEnNodes", self.phye_elnY, self.phye_elnN),
+                    ("breastMass", self.phye_mY, self.phye_mN),
+                    ("breastNipD", self.phye_ndY, self.phye_ndN),
+                ]
+
+                for key, radio_yes, radio_no in fieldsPE:
+                    value = info.get(key, "").lower()
+                    if value == "yes":
+                        radio_yes.setChecked(True)
+                    elif value == "no":
+                        radio_no.setChecked(True)
+                
+            else:
+                print("No data returned for autofill.")
+    
+        except Exception as e:
+            print("Error in autofill:", e)
+            self.conn.rollback()
         
     def personal_info(self):
         self.load_basic_pinfo_widgets()
