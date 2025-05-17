@@ -3,12 +3,13 @@ from PyQt5.QtWidgets import (
     QDateEdit, QComboBox, QTimeEdit, QCheckBox,
     QTextEdit, QSpinBox, QDoubleSpinBox, QMessageBox
 )
-from PyQt5 import uic
-from PyQt5.QtCore import Qt, QDate, QTime, QDateTime
-from PyQt5.QtGui import QIcon
-from datetime import date, datetime
 
-from PyQt5 import uic
+from PyQt5.QtCore import QDate, QTime
+from datetime import date, datetime
+import os
+import webbrowser
+from PyPDF2 import PdfReader, PdfWriter
+from PyPDF2.generic import NameObject, TextStringObject, NumberObject, BooleanObject
 
 from Database import connect_db
 from Admin_Controllers.Admin_Patient_View.AutofillPersonalInfo import AutofillPersonalInfoController
@@ -29,6 +30,7 @@ class MaternalRecordsController:
         self.edit_btn = self.pageMSR.findChild(QPushButton, "btnEditMSR")
         self.cancel_btn = self.pageMSR.findChild(QPushButton, "btnCancelMSR")
         self.autofill_btn = self.pageMSR.findChild(QPushButton, "btnLoadFromFamPlan")
+        self.viewPDF_btn = self.pageMSR.findChild(QPushButton, "viewMatPDF")
         
         if not self.has_maternal_package_service():
             self.edit_btn.setEnabled(False)
@@ -44,6 +46,7 @@ class MaternalRecordsController:
         self.save_btn.clicked.connect(self.on_save_clicked)
         self.edit_btn.clicked.connect(self.enable_editing_mode)
         self.cancel_btn.clicked.connect(self.on_cancel_clicked)
+        self.viewPDF_btn.clicked.connect(self.show_pdfPrint)
 
         self.set_all_fields_read_only()
         
@@ -281,9 +284,17 @@ class MaternalRecordsController:
                 self.obs_pt.setValue(int(info["NOPpreterm"]))
                 self.obs_abort.setValue(int(info["NOPabortion"]))
                 self.obs_livekids.setValue(int(info["nooflivkids"]))
-                self.obs_dold.setDate(QDate.fromString(info["dateOLdelivery"], "yyyy-MM-dd"))
-                self.obs_tod.setCurrentText(info["typeOLdelivery"])
-                self.obs_pmp.setDate(QDate.fromString(info["pmp"], "yyyy-MM-dd"))
+                self.obs_dold.setDate(QDate.fromString(info["dateOLdelivery"], "MM-dd-yyyy"))
+                vaginal = info.get("typeOLdelivery_vaginal", "No")
+                csection = info.get("typeOLdelivery_csection", "No")
+
+                if vaginal == "Yes":
+                    self.obs_tod.setCurrentText("Vaginal")
+                elif csection == "Yes":
+                    self.obs_tod.setCurrentText("Cesarean")
+                else:
+                    self.obs_tod.setCurrentText("")
+                self.obs_pmp.setDate(QDate.fromString(info["pmp"], "MM-dd-yyyy"))
                 
                 #Physical Examination
                 self.phye_weight.setValue(float(info["PEweight"]))
@@ -933,7 +944,7 @@ class MaternalRecordsController:
                     if isinstance(widget, QSpinBox):
                         widget.setValue(int(value))
                     elif isinstance(widget, QDateEdit):
-                        widget.setDate(QDate.fromString(value, "yyyy-MM-dd"))
+                        widget.setDate(QDate.fromString(value, "MM-dd-yyyy"))
                     elif isinstance(widget, QComboBox):
                         index = widget.findText(value)
                         if index != -1:
@@ -955,9 +966,9 @@ class MaternalRecordsController:
                 "Preterm": str(self.obs_pt.value()),
                 "Abortion": str(self.obs_abort.value()),
                 "Living children": str(self.obs_livekids.value()),
-                "Date of last delivery": self.obs_dold.date().toString("yyyy-MM-dd"),
+                "Date of last delivery": self.obs_dold.date().toString("MM-dd-yyyy"),
                 "Type of Delivery": self.obs_tod.currentText(), 
-                "Past Menstrual Period": self.obs_pmp.date().toString("yyyy-MM-dd"),
+                "Past Menstrual Period": self.obs_pmp.date().toString("MM-dd-yyyy"),
                 
                 "Previous Cesarean Section": "No" if self.obs_pcsN.isChecked() else "Yes",
                 "3 Consecutive Miscarriages": "No" if self.obs_3cmN.isChecked() else "Yes",
@@ -1596,3 +1607,289 @@ class MaternalRecordsController:
         self.load_pelvicE()
         self.load_birthEPlan()
     
+    def show_pdfPrint(self):
+        # Button: app → open filled PDF in browser
+        self.view_filled_pdf()
+
+    def fetch_patient_data(self):
+        # Fetch patient data from the database
+        try:
+            cursor = self.conn.cursor()
+            
+            data = {}
+            
+            cursor.execute("""
+                SELECT
+                    CONCAT(
+                        PAT_FNAME, ' ',
+                        CASE
+                            WHEN PAT_MNAME IS NOT NULL AND PAT_MNAME != ''
+                                THEN CONCAT(LEFT(PAT_MNAME, 1), '. ')
+                            ELSE ''
+                        END,
+                        PAT_LNAME
+                    ) AS PATIENT_NAME,
+                    TO_CHAR(PAT_LMP, 'MM-DD-YYYY') AS lmp, PAT_AOG, 
+                    TO_CHAR(PAT_EDC, 'MM-DD-YYYY') AS edc
+                FROM PATIENT
+                WHERE PAT_ID = %s
+            """, (self.patient_id,))
+            patient_data = cursor.fetchone()
+
+            if patient_data:
+                data["PatientName"] = (patient_data[0] or "").upper()
+                data["lmp"] = patient_data[1]
+                data["aog"] = patient_data[2] or ""
+                data["edc"] = patient_data[3]
+            else:
+                print("No data found for the patient for Maternal.")
+            
+            cursor.execute("""
+                SELECT
+                    CONCAT(
+                        COALESCE(
+                            (SELECT FR.FORM_RES_VAL FROM FORM_RESPONSE FR
+                            JOIN FORM_OPTION FO ON FR.FORM_OPT_ID = FO.FORM_OPT_ID
+                            WHERE FO.FORM_OPT_LABEL = 'Blood Pressure: Systolic' AND FR.PAT_ID = P.PAT_ID
+                            ), ''
+                        ),
+                        '/',
+                        COALESCE(
+                            (SELECT FR.FORM_RES_VAL FROM FORM_RESPONSE FR
+                            JOIN FORM_OPTION FO ON FR.FORM_OPT_ID = FO.FORM_OPT_ID
+                            WHERE FO.FORM_OPT_LABEL = 'Blood Pressure: Diastolic' AND FR.PAT_ID = P.PAT_ID
+                            ), ''
+                        )
+                    ) AS CONCATENATED_FORM_RESPONSES
+                FROM PATIENT P
+                WHERE P.PAT_ID = %s
+            """, (self.patient_id,))
+            patient_data = cursor.fetchone()
+
+            if patient_data:
+                data["bps"] = patient_data[0] or ""
+            else:
+                print("No data found for the patient for maternal.")
+
+            label_to_field = {
+                "PLANS": "plans",
+                
+                "Epilepsy/Convulsion": ("epiconvulsionY", "epiconvulsionN"),
+                "Severe Headache/Dizziness": ("svhdizzinesY", "svhdizzinesN"),
+                "Visual Disturbance": ("vdisturbanceY", "vdisturbanceN"),
+                "Yellowish discoloration": ("ydiscolorY", "ydiscolorN"),
+                "Enlarged thyroid": ("ethyroidY", "ethyroidN"),
+                "Severe chest pain": ("svcpainY", "svcpainN"),
+                "Shortness of breath, easily fatigue": ("sobefatigueY", "sobefatigueN"),
+                "Breast/axilary masses": ("bamassesY", "bamassesN"),
+                "Nipple discharge (blood or pus)": ("ndischargeY", "ndischargeN"),
+                "Systolic of 140 and above": ("systolicY", "systolicN"),
+                "Diastolic of 190 and above": ("diastolicY", "diastolicN"),
+                "Family history of CVA (strokes)": ("fhoCVAY", "fhoCVAN"),
+                "Mass in the abdomen": ("mitabdomenY", "mitabdomenN"),
+                "History of gallbladder disease": ("hogdiseaseY", "hogdiseaseN"),
+                "History of liver disease": ("holiverdiseaseY", "holiverdiseaseN"),
+                "Previous surgical operation": ("psoperationY", "psoperationN"),
+                "Severe varicosities": ("svaricositiesY", "svaricositiesN"),
+                "Deformities": ("deformitiesY", "deformitiesN"),
+                "Swelling of severe pain in the legs not related to injuries": ("sosvilnrtinjuryY", "sosvilnrtinjuryN"),
+                "Skin Yellowish discoloration": ("skinyellowishY", "skinyellowishN"),
+                "Smoking": ("smokingY", "smokingN"),
+                "Allergies": ("allergiesY", "allergiesN"),
+                "Drug intake": ("dintakeY", "dintakeN"),
+                "Drug abuse and alcoholism": ("daalcoholismY", "daalcoholismN"),
+                "STD, multiple partners":  ("stdmpartnersY", "stdmpartnersN"),
+                "Bleeding tendencies, anemia": ("btanemiaY", "btanemiaN"),
+                "Diabetes/congenital anomalies": ("dcanomaliesY", "dcanomaliesN"),
+                
+                "Full Term": "fullterm",
+                "Preterm": "preterm",
+                "Abortion": "abortion",
+                "Living children": "lchildren",
+                "Date of last delivery": "doldelivery",
+                "Type of Delivery": "todelivery",
+                "Past Menstrual Period": "pmperiod",
+                #THE LMP, AOG, AND EDC IS IN THE PATIENT TABLE
+                
+                "Previous Cesarean Section": ("pcsectionY", "pcsectionN"),
+                "3 Consecutive Miscarriages": ("threeconmisY", "threeconmisN"),
+                "Ectopic Pregnancy/H.mole": ("epreghmoleY", "epreghmoleN"),
+                "Postpartum hemorrhage": ("phemorrhageY", "phemorrhageN"),
+                "Forceps delivery": ("fdeliveryY", "fdeliveryN"),
+                "Pregnancy Induced Hypertension": ("pihypertensionY", "pihypertensionN"),
+                "Weight of baby > 4kgs": ("weightbabykgsY", "weightbabykgsN"),
+                
+                "Weight": "weight",
+                "Height": "height",
+                "Blood Type": "btype",
+                "Pale": ("phyPaleY", "phyPaleN"),
+                "Yellowish": ("phyYellowishY", "phyYellowishN"),
+                "Enlarged Thyroid": ("phyEThyroidY", "phyEThyroidN"),
+                "Enlarged lymph nodes": ("phyElnodesY", "phyElnodesN"),
+                "Mass": ("phyMassY", "phyMassN"),
+                "Nipple discharge": ("phyNdischargeY", "phyNdischargeN"),
+                "Skin-orange-peel or dimpling": ("phySordimplingY", "phySordimplingN"),
+                "Enlarged axillary lymph nodes": ("phyEalnodesY", "phyEalnodesN"),
+                "Abnormal heart sounds/cardiac rate": ("phyAhscardiacY", "phyAhscardiacN"),
+                "Abnormal health sounds/respiratory rate": ("phyAhsrespiratoryY", "phyAhsrespiratoryN"),
+                "Fundic height in cms.": "fhincms",
+                "Fetal heart tone": "fhtone",
+                "Fetal movement": "fmovement",
+                "Fetal part in the fundus": "fpitfundus",
+                "Position of Fetal Back": "pofback",
+                "Presenting Part": "ppart",
+                "Status of Presenting Part": "soppart",
+                "Uterine Activity": "uactivity",
+                
+                "Scars": ("scarsY", "scarsN"),
+                "Warts/mass": ("wartsmY", "wartsmN"),
+                "Laceration": ("lacerationY", "lacerationN"),
+                "Pelvic Severe Varicosities": ("psvaricositiesY", "psvaricositiesN"),
+                "Bartholins cyst": ("bcystY", "bcystN"),
+                "Warts/Skenes gland discharge": ("wsgdischargeY", "wsgdischargeN"),
+                "Cystocele/rectocele": ("crY", "crN"),
+                "Purulent discharge/bleeding": ("pdbleedingY", "pdbleedingN"),
+                "Erosion/polyp/foreign body": ("erosionpfbodyY", "erosionpfbodyN"),
+                "Cervix Consistency": "cervconsistency",
+                "Cervix Dilatation": "cervdilatation",
+                "Palpable Presenting Part": "palpppart",
+                "Status of Bag of Water": "sobowater",
+                
+                "BEPDelivery Attendant Name": "AttendantName",
+                "BEPDelivery Facility Name or Address": "DeliveryNameAdd",
+                "BEPDelivery Facility: PhilHealth accredited": ("phAccreditedFY", "phAccreditedFN"),
+                "BEPDelivery Facility Maternal Package Cost": "MPCost",
+                "BEPDelivery Facility Transportation": "DFTransport",
+                "BEPContact Name/Number": "ContactName",
+                "BEPCompanion Name": "CompanionName",
+                "BEPChildren Attendant Name": "ChildrenAttendantName",
+                "BEPDonor Name 1": "DonorName1",
+                "BEPDonor Name 2": "DonorName2",
+                "BEPReferred Facility": "ReferredF",
+                "Name": "PNEname",
+                "Contact No.": "PNEcontact",
+                "Address": "PNEaddress",
+            }
+        
+            for label, field_name in label_to_field.items():                  
+                cursor.execute("""
+                    SELECT FR.FORM_RES_VAL
+                    FROM FORM_RESPONSE FR
+                    JOIN FORM_OPTION FO ON FR.FORM_OPT_ID = FO.FORM_OPT_ID
+                    WHERE FO.FORM_OPT_LABEL = %s AND FR.PAT_ID = %s
+                """, (label, self.patient_id))
+                result = cursor.fetchone()
+                value = result[0] if result else ""
+
+                if isinstance(field_name, tuple):
+                    yes_field, no_field = field_name
+                    if value == "Yes":
+                        data[yes_field] = "Yes"  
+                        data[no_field] = "No"    
+                    elif value == "No":
+                        data[yes_field] = "No"   
+                        data[no_field] = "Yes"   
+                    else:
+                        data[yes_field] = ""   
+                        data[no_field] = ""
+                else:
+                    data[field_name] = value.upper() if value else ""
+
+            return data
+
+        except Exception as e:
+            print("Error fetching patient data for Maternal Record Form:", e)
+            return {}
+
+    def view_filled_pdf(self):
+        data = self.fetch_patient_data()
+        if data:
+            input_pdf = "form_templates/MaternalServiceRecordview.pdf"
+            output_pdf = f"temp/MaternalServiceRecord_{self.patient_id}.pdf"
+            self.fill_pdf_form(input_pdf, output_pdf, data)
+            webbrowser.open(f'file:///{os.path.abspath(output_pdf)}')
+        else:
+            print("No data found for the patient.")
+
+    def fill_pdf_form(self, input_path, output_path, data_dict):
+        reader = PdfReader(input_path)
+        writer = PdfWriter()
+
+        for page in reader.pages:
+            writer.add_page(page)
+
+        if "/AcroForm" in reader.trailer["/Root"]:
+            writer._root_object.update({
+                NameObject("/AcroForm"): reader.trailer["/Root"]["/AcroForm"]
+            })
+            writer._root_object["/AcroForm"].update({
+                NameObject("/NeedAppearances"): BooleanObject(True)
+            })
+        else:
+            writer._root_object.update({
+                NameObject("/AcroForm"): NameObject("/NeedAppearances")({
+                    NameObject("/NeedAppearances"): BooleanObject(True)
+                })
+            })
+
+        def safe_update_field(obj, field_name, value):
+            if value is None:
+                return
+
+            if isinstance(value, str) and value in ["Yes", "No"]:
+                checkbox_val = "/Yes" if value == "Yes" else "/Off"
+                obj.update({
+                    NameObject("/V"): NameObject(checkbox_val),
+                    NameObject("/AS"): NameObject(checkbox_val),
+                    NameObject("/Ff"): NumberObject(1)
+                })
+
+            else:
+                try:
+                    obj.update({
+                        NameObject("/V"): TextStringObject(str(value)),
+                        NameObject("/Ff"): NumberObject(1)
+                    })
+                except Exception as e:
+                    print(f"Error setting field {field_name}: {e}")
+
+        updated = False
+
+        for i, page in enumerate(writer.pages):
+            annots = page.get("/Annots")
+            if annots:
+                for annot in annots:
+                    obj = annot.get_object()
+                    if "/T" in obj:
+                        field_name = obj["/T"]
+                        if field_name in data_dict:
+                            value = data_dict[field_name]
+                            safe_update_field(obj, field_name, value)
+                            updated = True
+            else:
+                print(f"Page {i + 1} has no annotations.")
+
+        if not updated:
+            print("No fields found to update in the PDF.")
+
+        output_dir = os.path.dirname(output_path)
+        if output_dir:
+            os.makedirs(output_dir, exist_ok=True)
+
+        with open(output_path, "wb") as f:
+            writer.write(f)
+
+        print(f"PDF saved to: {output_path}")
+
+    def debug_pdf_fields(self, pdf_path):
+        reader = PdfReader(pdf_path)
+        for i, page in enumerate(reader.pages):
+            annots = page.get("/Annots")
+            if annots:
+                print(f"Page {i + 1} Annotations:")
+                for annot in annots:
+                    obj = annot.get_object()
+                    if "/T" in obj:
+                        print(f"  Field: {obj['/T']}")
+            else:
+                print(f"Page {i + 1}: No annotations")

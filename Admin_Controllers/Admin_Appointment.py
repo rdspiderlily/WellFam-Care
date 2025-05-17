@@ -1,5 +1,5 @@
 from PyQt5.QtWidgets import (
-    QComboBox, QDialog, QMessageBox, QPushButton, QListWidget,
+    QComboBox, QDialog, QMessageBox, QPushButton,
     QWidget, QDateEdit, QLineEdit, QTableWidget, QTextEdit,
     QHeaderView, QTableWidgetItem, QTimeEdit, QCheckBox
 )
@@ -93,7 +93,7 @@ class AdminAppointmentController:
         elif sort_option == "Status":
             sort_clause = "AS1.APP_STATUS_NAME ASC"
         else:
-            sort_clause = "A.APP_DATE ASC, A.APP_TIME ASC"  # default
+            sort_clause = "A.APP_DATE ASC, A.APP_TIME ASC"
 
         try:
             self.tableWidApp.setRowCount(0)
@@ -371,7 +371,6 @@ class AdminAppointmentController:
                         cb.setChecked(False)
                         cb.setEnabled(False)
 
-                # Fetch services and subservices the patient availed
                 cursor = self.conn.cursor()
                 cursor.execute("""
                     SELECT s.SERV_NAME, st.SERV_TYPE_NAME
@@ -384,7 +383,6 @@ class AdminAppointmentController:
                 services_availed = cursor.fetchall()
 
                 for service, subservice in services_availed:
-                    # Check main service
                     main_cb = service_cb.get(service)
                     if main_cb:
                         main_cb = addAppWidget.findChild(QCheckBox, main_cb)
@@ -392,7 +390,6 @@ class AdminAppointmentController:
                             main_cb.setChecked(True)
                             main_cb.setEnabled(False)
 
-                    # Check sub-service
                     if subservice:
                         sub_cb = subservice_cb.get(subservice)
                         if sub_cb:
@@ -444,7 +441,7 @@ class AdminAppointmentController:
         def search_patient_selection(text):
             for row in range(tableWidPatA.rowCount()):
                 match = False
-                for col in range(1, tableWidPatA.columnCount()):  # skip hidden PAT_ID
+                for col in range(1, tableWidPatA.columnCount()):
                     item = tableWidPatA.item(row, col)
                     if item and text.lower() in item.text().lower():
                         match = True
@@ -496,7 +493,6 @@ class AdminAppointmentController:
             """, (patient_id, staff_id, app_date, app_time, default_status_id, queue_number, app_notes))
             app_id = cursor.fetchone()[0]
 
-            # Insert services and subservices
             service_map = {
                 "groupBoxFamPlan": "Family Planning",
                 "groupBoxMatCare": "Maternal Care Package",
@@ -507,11 +503,9 @@ class AdminAppointmentController:
                 groupbox = addAppWidget.findChild(QWidget, groupbox_name)
                 checkbox = addAppWidget.findChild(QCheckBox, service_name)
                 
-                # Hide the groupbox if the checkbox is not checked
                 if groupbox and checkbox and not checkbox.isChecked():
                     groupbox.setVisible(False)
                 
-                # If checked, make subservices visible
                 elif groupbox and checkbox and checkbox.isChecked():
                     groupbox.setVisible(True)
 
@@ -533,14 +527,12 @@ class AdminAppointmentController:
             for sub_cb_name, sub_name in subservice_map.items():
                 cb = addAppWidget.findChild(QCheckBox, sub_cb_name)
                 if cb and cb.isChecked():
-                    # 3.1 Get SERV_TYPE_ID
                     cursor.execute("SELECT SERV_TYPE_ID, SERV_ID FROM SERVICE_TYPE WHERE SERV_TYPE_NAME = %s", (sub_name,))
                     sub_res = cursor.fetchone()
                     if not sub_res:
                         continue
                     serv_type_id, serv_id = sub_res
 
-                    # 3.2 Get PATIENT_SERVICE_TYPE (to get PSERV_TYPE_ID and PSERV_ID)
                     cursor.execute("""
                         SELECT PST.PST_ID, PS.PS_ID
                         FROM PATIENT_SERVICE_TYPE PST
@@ -552,7 +544,6 @@ class AdminAppointmentController:
                         continue
                     pserv_type_id, pserv_id = pserv_type_res
 
-                    # 3.3 Check if APPOINTMENT_SERVICE already exists
                     if pserv_id not in app_service_map:
                         cursor.execute("""
                             INSERT INTO APPOINTMENT_SERVICE (APP_ID, PS_ID)
@@ -564,7 +555,6 @@ class AdminAppointmentController:
                     else:
                         app_serv_id = app_service_map[pserv_id]
 
-                    # 3.4 Insert into APPOINTMENT_SERVICE_TYPE
                     cursor.execute("""
                         INSERT INTO APPOINTMENT_SERVICE_TYPE (APS_ID, PST_ID)
                         VALUES (%s, %s)
@@ -621,7 +611,7 @@ class AdminAppointmentController:
             for i, size in enumerate(column_sizes):
                 header.resizeSection(i, size)
 
-            self.trashTable.setColumnHidden(0, True)  # Hide the first column (APP_ID)
+            self.trashTable.setColumnHidden(0, True)
             self.trashTable.verticalHeader().setVisible(False)
 
             if self.searchTrash:
@@ -635,7 +625,7 @@ class AdminAppointmentController:
     def search_trash(self, text, trashTable):
         for row in range(trashTable.rowCount()):
             match = False
-            for col in range(trashTable.columnCount()):  # Skip hidden ID column
+            for col in range(trashTable.columnCount()):
                 item = trashTable.item(row, col)
                 if item and text.lower() in item.text().lower():
                     match = True
@@ -645,7 +635,7 @@ class AdminAppointmentController:
     def restore_or_delete_appointment(self, row, column, trashTable):
         app_id = trashTable.item(row, 0).text()
 
-        msg_box = QMessageBox(self.trashDialog)  # Proper parent to avoid closing
+        msg_box = QMessageBox(self.trashDialog)
         msg_box.setWindowTitle("Restore or Delete")
         msg_box.setText("Do you want to restore or permanently delete this appointment?")
         msg_box.setIcon(QMessageBox.Question)

@@ -265,7 +265,6 @@ class AdminUserController:
         userWidget = dialog.findChild(QWidget, "widgetviewUser")
         self.pic_label = userWidget.findChild(QLabel, "labelUserPic")
 
-        # Inputs
         lname_edit = userWidget.findChild(QLineEdit, "lineEditUserLname")
         fname_edit = userWidget.findChild(QLineEdit, "lineEditUserFname")
         contact_edit = userWidget.findChild(QLineEdit, "lineEditUserContact")
@@ -276,7 +275,6 @@ class AdminUserController:
         confirm_password_edit = userWidget.findChild(QLineEdit, "lineEditCPassword")
         show_password_checkbox = userWidget.findChild(QCheckBox, "showPass")
 
-        # Buttons
         edit_btn = dialog.findChild(QPushButton, "pushBtnEditUser")
         save_btn = dialog.findChild(QPushButton, "pushBtnSaveUser")
         cancel_btn = dialog.findChild(QPushButton, "pushBtnCancelUser")
@@ -286,11 +284,9 @@ class AdminUserController:
 
         self.current_pic_path = None
 
-        # Load roles
         self.load_roles(role_combo)
         self.load_status(status_combo)
 
-        # Fetch and display user data
         conn = connect_db()
         if not conn:
             QMessageBox.critical(dialog, "Error", "Database connection failed.")
@@ -332,7 +328,6 @@ class AdminUserController:
         finally:
             conn.close()
 
-        # Disable editing initially
         for widget in [lname_edit, fname_edit, contact_edit, username_edit, password_edit, confirm_password_edit, role_combo, status_combo]:
             widget.setEnabled(False)
         password_edit.setEchoMode(QLineEdit.Password)
@@ -402,41 +397,33 @@ class AdminUserController:
             try:
                 cur = conn.cursor()
 
-                # Fetch current user data from the database to compare changes
                 cur.execute("SELECT STAFF_LNAME, STAFF_FNAME, STAFF_CONTACT, STAFF_USN, STAFF_PASS, STAFF_PIC_PATH, ROLE_ID, STATUS_ID FROM USER_STAFF WHERE STAFF_ID = %s", (staff_id,))
                 data = cur.fetchone()
 
-                # Prepare the values to update
                 update_fields = []
                 update_values = []
 
-                # Check if last name is changed
                 if new_lname != data[0]:
                     update_fields.append("STAFF_LNAME")
                     update_values.append(new_lname)
 
-                # Check if first name is changed
                 if new_fname != data[1]:
                     update_fields.append("STAFF_FNAME")
                     update_values.append(new_fname)
 
-                # Check if contact is changed
                 if new_contact != data[2]:
                     update_fields.append("STAFF_CONTACT")
                     update_values.append(new_contact)
 
-                # Check if username is changed
                 if new_username != data[3]:
                     update_fields.append("STAFF_USN")
                     update_values.append(new_username)
                     
-                # Check if password is changed
                 if new_password:
                     hashed_password = bcrypt.hashpw(new_password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
                     update_fields.append("STAFF_PASS")
                     update_values.append(hashed_password)
 
-                # Check if role is changed
                 cur.execute("SELECT ROLE_NAME FROM USER_ROLE WHERE ROLE_ID = %s", (data[6],))
                 current_role = cur.fetchone()[0]
                 if new_role != current_role:
@@ -445,7 +432,6 @@ class AdminUserController:
                     update_fields.append("ROLE_ID")
                     update_values.append(new_role_id)
                 
-                # Check if status is changed
                 cur.execute("SELECT STATUS_NAME FROM USER_STATUS WHERE STATUS_ID = %s", (data[7],))
                 current_status = cur.fetchone()[0]
                 if new_status != current_status:
@@ -454,10 +440,8 @@ class AdminUserController:
                     update_fields.append("STATUS_ID")
                     update_values.append(new_status_id)
 
-                # Check if the profile picture is changed
                 image_path = self.current_pic_path
 
-                # Only update the image if it's different from the existing one
                 if image_path and image_path != data[5]:
                     if not image_path.startswith("saved_images/"):
                         os.makedirs("saved_images", exist_ok=True)
@@ -467,12 +451,10 @@ class AdminUserController:
                     update_fields.append("STAFF_PIC_PATH")
                     update_values.append(image_path)
 
-                # If no changes were made, skip the update
                 if not update_fields:
                     QMessageBox.information(dialog, "No Changes", "No changes were made to the user info.")
                     return
 
-                # Update the fields that have changed
                 update_query = f"""
                     UPDATE USER_STAFF
                     SET {', '.join([f"{field} = %s" for field in update_fields])}

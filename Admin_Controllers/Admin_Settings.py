@@ -65,7 +65,6 @@ class AdminProfileController:
             QMessageBox.warning(None, "Missing Info", "Username not set.")
             return
 
-        # Prevent multiple dialogs using hasattr
         if hasattr(self, "profile_dialog") and self.profile_dialog is not None and self.profile_dialog.isVisible():
             self.profile_dialog.raise_()
             self.profile_dialog.activateWindow()
@@ -76,10 +75,8 @@ class AdminProfileController:
         self.profile_dialog.setWindowTitle("Edit Admin Profile")
         self.profile_dialog.setWindowIcon(QIcon("wfpics/logo1.jpg"))
 
-        # Clean up reference when closed
         self.profile_dialog.finished.connect(lambda: setattr(self, "profile_dialog", None))
 
-        # --- UI binding ---
         widget = self.profile_dialog.findChild(QWidget, "widgetAdminProfile")
         pic_label = widget.findChild(QLabel, "labelAdminPic")
         username_edit = widget.findChild(QLineEdit, "lineEditUsername")
@@ -104,7 +101,6 @@ class AdminProfileController:
         remove_btn.setEnabled(False)
         show_pass_checkbox.setEnabled(False)
 
-        # --- Load current admin info ---
         conn = connect_db()
         if not conn:
             QMessageBox.critical(self.profile_dialog, "Error", "Failed to connect to database.")
@@ -135,7 +131,6 @@ class AdminProfileController:
         finally:
             conn.close()
 
-        # --- Handlers ---
         def toggle_password_visibility(state):
             mode = QLineEdit.Normal if state else QLineEdit.Password
             password_edit.setEchoMode(mode)
@@ -229,7 +224,6 @@ class AdminProfileController:
             finally:
                 conn.close()
 
-        # --- Signal connections ---
         show_pass_checkbox.stateChanged.connect(toggle_password_visibility)
         upload_btn.clicked.connect(upload_photo)
         remove_btn.clicked.connect(remove_photo)

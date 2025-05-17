@@ -6,7 +6,6 @@ from PyQt5.QtWidgets import (
 from PyQt5 import uic
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QIcon
-import sys
 
 from Database import connect_db
 from Admin_Controllers.Admin_Patient_View.View_Patient_Category import ViewPatientDialog
@@ -73,7 +72,6 @@ class AdminPatientController:
 
     def save_patient(self, addPatWidget, dialog):
         try:
-            # --- Required Fields Check ---
             required_fields = [
                 "lineEditPatLname", "lineEditPatFname", "datePatDOB", "lineEditPatAge",
                 "lineEditPatContact", "lineEditPatOccu", 
@@ -90,7 +88,6 @@ class AdminPatientController:
                     QMessageBox.warning(addPatWidget, "Validation Error", f"Field '{field}' is required.")
                     return
 
-            # --- Collect Patient Data ---
             pat_lname = addPatWidget.findChild(QLineEdit, "lineEditPatLname").text()
             pat_fname = addPatWidget.findChild(QLineEdit, "lineEditPatFname").text()
             pat_mname = addPatWidget.findChild(QLineEdit, "lineEditPatMname").text()
@@ -111,7 +108,6 @@ class AdminPatientController:
             pat_addressMC = addPatWidget.findChild(QLineEdit, "lineEditPatAddressMC").text()
             pat_addressP = addPatWidget.findChild(QLineEdit, "lineEditPatAddressP").text()
 
-            # --- Insert Patient ---
             cursor = self.conn.cursor()
             cursor.execute("""
                 INSERT INTO PATIENT (
@@ -129,7 +125,6 @@ class AdminPatientController:
             ))
             pat_id = cursor.fetchone()[0]
 
-            # --- Optional Spouse Data ---
             spouse_fname = addPatWidget.findChild(QLineEdit, "lineEditSpoFname").text()
             spouse_lname = addPatWidget.findChild(QLineEdit, "lineEditSpoLname").text()
             spouse_occu = addPatWidget.findChild(QLineEdit, "lineEditSpoOccu").text()
@@ -265,7 +260,7 @@ class AdminPatientController:
     def search_trash(self, text, trashTable):
         for row in range(trashTable.rowCount()):
             match = False
-            for col in range(trashTable.columnCount()):  # Skip hidden ID column
+            for col in range(trashTable.columnCount()):
                 item = trashTable.item(row, col)
                 if item and text.lower() in item.text().lower():
                     match = True
@@ -275,7 +270,7 @@ class AdminPatientController:
     def restore_or_delete_patient(self, row, column, trashTable):
         patient_id = trashTable.item(row, 0).text()
 
-        msg_box = QMessageBox(self.trashDialog)  # Proper parent to avoid closing
+        msg_box = QMessageBox(self.trashDialog)
         msg_box.setWindowTitle("Restore or Delete")
         msg_box.setText("Do you want to restore or permanently delete this patient?")
         msg_box.setIcon(QMessageBox.Question)

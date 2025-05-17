@@ -103,7 +103,9 @@ class AutofillMatFamController:
                 'FP: severe chest pain',
                 'FP: Is the client a SMOKER?',
                 'FP: Full Term', 'FP: Premature', 'FP: Abortion',
-                'FP: Date of Last Delivery', 'FP: Type of Last Delivery', 'FP: Previous Menstrual Period (PMP)',
+                'FP: Date of Last Delivery', 
+                'FP: Type of Last Delivery - Vagina', 'FP: Type of Last Delivery - CSection'
+                'FP: Previous Menstrual Period (PMP)',
                 'FP: Weight', 'FP: Height', 'FP: Blood Pressure (S)', 'FP: Blood Pressure (D)',
                 'FP: C - Pale', 'FP: C - Yellowish',
                 'FP: N - Enlarged lymph nodes', 'FP: B - Mass', 'FP: B - Nipple discharge'
@@ -135,7 +137,8 @@ class AutofillMatFamController:
                     "FP: Premature": "NOPpreterm", 
                     "FP: Abortion": "NOPabortion",
                     "FP: Date of Last Delivery": "dateOLdelivery",
-                    "FP: Type of Last Delivery": "typeOLdelivery",
+                    "FP: Type of Last Delivery - Vagina": "typeOLdelivery_vaginal",
+                    "FP: Type of Last Delivery - CSection": "typeOLdelivery_csection",
                     "FP: Previous Menstrual Period (PMP)": "pmp",
                     #PhyExamination
                     "FP: Weight": "PEweight",

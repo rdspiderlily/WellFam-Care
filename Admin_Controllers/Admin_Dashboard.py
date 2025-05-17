@@ -8,7 +8,6 @@ from PyQt5 import uic
 from PyQt5.QtCore import Qt, QTime
 from PyQt5.QtGui import QIcon
 from datetime import datetime
-from calendar import monthrange
 
 from Database import connect_db
 
@@ -279,7 +278,6 @@ class AdminDashboardController:
             if result:
                 queue_status_name, app_actual_start, app_actual_end = result
 
-                # Default disable all first
                 self.checkboxYes.setEnabled(False)
                 self.checkboxNo.setEnabled(False)
                 self.comboStatusNo.setEnabled(False)
@@ -288,7 +286,6 @@ class AdminDashboardController:
                 self.timeEditEnd.setEnabled(False)
 
                 if queue_status_name == "Being Attended":
-                    # Already being attended
                     self.checkboxYes.setChecked(True)
                     self.checkboxYes.setEnabled(False)
                     self.checkboxNo.setEnabled(False)
@@ -337,7 +334,6 @@ class AdminDashboardController:
                         self.timeEditEnd.setTime(end_time)
 
                 elif queue_status_name == "Skipped":
-                    # Still waiting or skipped
                     self.checkboxNo.setChecked(True)
                     self.checkboxYes.setEnabled(False)
                     self.checkboxNo.setEnabled(False)
@@ -364,7 +360,7 @@ class AdminDashboardController:
     def yes_checked(self, checked):
         if checked:
             self.timeEditStart.setEnabled(True)
-            self.checkboxNo.setChecked(False)  # Uncheck No
+            self.checkboxNo.setChecked(False)  
             self.comboStatusNo.setEnabled(False)
         else:
             self.timeEditStart.setEnabled(False)
@@ -372,7 +368,7 @@ class AdminDashboardController:
     def no_checked(self, checked):
         if checked:
             self.comboStatusNo.setEnabled(True)
-            self.checkboxYes.setChecked(False)  # Uncheck Yes
+            self.checkboxYes.setChecked(False)  
             self.timeEditStart.setEnabled(False)
         else:
             self.comboStatusNo.setEnabled(False)
@@ -432,7 +428,6 @@ class AdminDashboardController:
         try:
             cursor = self.conn.cursor()
 
-            # Get queue_status_id
             cursor.execute(
                 "SELECT QUEUE_STATUS_ID FROM QUEUE_STATUS WHERE QUEUE_STATUS_NAME = %s",
                 (queue_status,)
@@ -444,7 +439,6 @@ class AdminDashboardController:
 
             queue_status_id = result[0]
 
-            # Update the selected appointment
             update_query = """
                 UPDATE APPOINTMENT
                 SET 
@@ -459,7 +453,6 @@ class AdminDashboardController:
 
             # If served, update earlier skipped patients
             if queue_status == "Served":
-                # Update all skipped patients with smaller queue_num to Waiting
                 update_skipped_query = """
                     UPDATE APPOINTMENT
                     SET QUEUE_STATUS_ID = (SELECT QUEUE_STATUS_ID FROM QUEUE_STATUS WHERE QUEUE_STATUS_NAME = 'Waiting')
@@ -473,7 +466,7 @@ class AdminDashboardController:
 
             QMessageBox.information(self.queueDialog, "Success", "Queue updated successfully.")
 
-            self.queue_table()  # Refresh the table
+            self.queue_table()
             self.queueDialog.close()
 
         except Exception as e:

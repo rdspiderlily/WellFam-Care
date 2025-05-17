@@ -23,7 +23,6 @@ class ViewPatientDialog(QDialog):
         self.info_btn = self.findChild(QPushButton, "pushBtnPatInfo")
         self.msr_btn = self.findChild(QPushButton, "pushBtnMSR")
         self.fpf_btn = self.findChild(QPushButton, "pushBtnFPF")
-        self.ph_btn = self.findChild(QPushButton, "pushBtnPH")
         self.wfar_btn = self.findChild(QPushButton, "pushBtnAR")
         self.ah_btn = self.findChild(QPushButton, "pushBtnAH")
 
@@ -31,7 +30,6 @@ class ViewPatientDialog(QDialog):
         self.info_btn.clicked.connect(self.pat_info)
         self.msr_btn.clicked.connect(self.msr)
         self.fpf_btn.clicked.connect(self.fpf)
-        self.ph_btn.clicked.connect(lambda: self.stackedWidget.setCurrentIndex(3))
         self.wfar_btn.clicked.connect(self.wfar)
         self.ah_btn.clicked.connect(self.ah)
         
@@ -55,24 +53,20 @@ class ViewPatientDialog(QDialog):
         pageFPF = self.stackedWidget.widget(2)
         self.famplan_widget = FamPlanController(pageFPF, self.patient_id, self.user_id)
         
-    def ph(self):
-        self.stackedWidget.setCurrentIndex(3)
-        self.set_active_button(self.ph_btn)
-        
     def wfar(self):
-        self.stackedWidget.setCurrentIndex(4)
+        self.stackedWidget.setCurrentIndex(3)
         self.set_active_button(self.wfar_btn)
-        pageWFAR = self.stackedWidget.widget(4)
-        self.admission_widget = AdmissionController(pageWFAR, self.patient_id)
+        pageWFAR = self.stackedWidget.widget(3)
+        self.admission_widget = AdmissionController(pageWFAR, self.patient_id, self.user_id)
 
     def ah(self):
-        self.stackedWidget.setCurrentIndex(5)
+        self.stackedWidget.setCurrentIndex(4)
         self.set_active_button(self.ah_btn)
-        appHpage = self.stackedWidget.widget(5)
+        appHpage = self.stackedWidget.widget(4)
         self.app_history_widget = AppointmentHistoryController(appHpage, self.patient_id)
     
     def set_active_button(self, active_button):
-        for btn in [self.info_btn, self.msr_btn, self.fpf_btn, self.ph_btn, self.wfar_btn, self.ah_btn]:
+        for btn in [self.info_btn, self.msr_btn, self.fpf_btn, self.wfar_btn, self.ah_btn]:
             btn.setProperty("active", btn == active_button)
             btn.style().unpolish(btn)
             btn.style().polish(btn)

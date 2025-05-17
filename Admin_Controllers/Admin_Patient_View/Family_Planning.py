@@ -3,14 +3,16 @@ from PyQt5.QtWidgets import (
     QCheckBox, QComboBox, QDateEdit, QTimeEdit,
     QTextEdit, QSpinBox, QDoubleSpinBox,
     QMessageBox, QTableWidget, QTableWidgetItem,
-    QHeaderView, QDialog, QWidget
+    QHeaderView, QDialog
 )
 from PyQt5 import uic
-from PyQt5.QtCore import Qt, QDate, QTime
+from PyQt5.QtCore import QDate, QTime
 from PyQt5.QtGui import QIcon
-from datetime import date
-
-from PyQt5 import uic
+from datetime import date, datetime
+import os
+import webbrowser
+from PyPDF2 import PdfReader, PdfWriter
+from PyPDF2.generic import NameObject, TextStringObject, NumberObject, BooleanObject
 
 from Database import connect_db
 from Admin_Controllers.Admin_Patient_View.AutofillPersonalInfo import AutofillPersonalInfoController
@@ -31,6 +33,7 @@ class FamPlanController:
         self.edit_btn = self.pageFPF.findChild(QPushButton, "btnEditFP")
         self.cancel_btn = self.pageFPF.findChild(QPushButton, "btnCancelFP")
         self.autofill_btn = self.pageFPF.findChild(QPushButton, "btnLoadFromMaternal")
+        self.viewPDF_btn = self.pageFPF.findChild(QPushButton, "viewFamPlanPDF")
         
         if not self.has_family_planning_service():
             self.edit_btn.setEnabled(False)
@@ -46,6 +49,7 @@ class FamPlanController:
         self.save_btn.clicked.connect(self.on_save_clicked)
         self.edit_btn.clicked.connect(self.enable_editing_mode)
         self.cancel_btn.clicked.connect(self.on_cancel_clicked)
+        self.viewPDF_btn.clicked.connect(self.show_pdfPrint)
         
         self.set_all_fields_read_only()
 
@@ -163,7 +167,6 @@ class FamPlanController:
             self.save_rfVAW()
             self.save_phyE()
             self.save_pelvicE()
-            self.save_ackN()
             self.save_cltNpreg()
             
             form_id = self.get_form_id('Family Planning Form (FP) 1')
@@ -253,7 +256,7 @@ class FamPlanController:
                 
                 #Obstetrical History
                 self.obsH_ft, self.obsH_premature, self.obsH_abort, self.obsH_livkids,
-                self.obsH_dold, self.obsH_told, self.obsH_pmp,
+                self.obsH_dold, self.obsH_toldV, self.obsH_toldC, self.obsH_pmp,
                 
                 #Physical Examination
                 self.phyE_weight, self.phyE_height,  self.phyE_bpS, self.phyE_bpD,
@@ -296,9 +299,12 @@ class FamPlanController:
                 self.obsH_premature.setValue(int(info["NOPpreterm"]))
                 self.obsH_abort.setValue(int(info["NOPabortion"]))
                 self.obsH_livkids.setValue(int(info["nooflivkids"]))
-                self.obsH_dold.setDate(QDate.fromString(info["dateOLdelivery"], "yyyy-MM-dd"))
-                self.obsH_told.setCurrentText(info["typeOLdelivery"])
-                self.obsH_pmp.setDate(QDate.fromString(info["pmp"], "yyyy-MM-dd"))
+                self.obsH_dold.setDate(QDate.fromString(info["dateOLdelivery"], "MM-dd-yyyy"))
+                type_delivery = info.get("typeOLdelivery", "").strip()
+                self.obsH_toldV.setChecked(type_delivery == "Vaginal")
+                self.obsH_toldC.setChecked(type_delivery == "Cesarean section")
+
+                self.obsH_pmp.setDate(QDate.fromString(info["pmp"], "MM-dd-yyyy"))
                 
                 #Physical Examination
                 self.phyE_weight.setValue(float(info["PEweight"]))
@@ -342,6 +348,8 @@ class FamPlanController:
             ]):
                 print("Some client input fields are not initialized. Please check objectNames in the UI.")
                 return
+            
+            safe_set_date = lambda widget, date: widget.setDate(date) if date else None
 
             info = self.autofill.get_basic_info(self.patient_id)
             if info:
@@ -349,7 +357,7 @@ class FamPlanController:
                 self.clt_lname.setText(info["lname"])
                 self.clt_fname.setText(info["fname"])
                 self.clt_minit.setText(info["minit"])
-                self.clt_dob.setDate(info["dob"])
+                safe_set_date(self.clt_dob, info.get("dob"))
                 age = int(info["age"])
                 self.clt_age.setText(str(age))
                 self.clt_contact.setText(info["contact"])
@@ -359,11 +367,9 @@ class FamPlanController:
                 self.clt_MuniAdd.setText(info["add_mc"])
                 self.clt_ProvAdd.setText(info["add_p"])
                 
-                self.obsH_lmp.setDate(info["lmp"])
-                
+                safe_set_date(self.obsH_lmp, info.get("lmp")) 
                 if age <= 18:
-                    self.ackN_client.setText(f"{info['fname']} {info['minit']} {info['lname']}")
-                    
+                    self.ackN_client.setText(f"{info['fname']} {info['minit']} {info['lname']}")     
                     
             if not all([
                 self.ackN_method, self.ackN_methodDate
@@ -375,7 +381,7 @@ class FamPlanController:
             if info:
                 subtypes_str = ", ".join(info["subtypes"])
                 self.ackN_method.setText(subtypes_str)
-                self.ackN_methodDate.setDate(info["date_availed"])
+                safe_set_date(self.ackN_methodDate, info.get("date_availed"))
 
 
             if not all([
@@ -390,7 +396,7 @@ class FamPlanController:
                 self.spo_lname.setText(spouse_info["spo_lname"])
                 self.spo_fname.setText(spouse_info["spo_fname"])
                 self.spo_minit.setText(spouse_info["spo_minit"])
-                self.spo_dob.setDate(spouse_info["spo_dob"])
+                safe_set_date(self.spo_dob, spouse_info.get("spo_dob"))
                 self.spo_age.setText(spouse_info["spo_age"])
                 self.spo_occupation.setText(spouse_info["spo_occupation"])
 
@@ -489,7 +495,6 @@ class FamPlanController:
             }
 
             for label, value in responses.items():
-                # Fetch FORM_OPT_ID based on label (and maybe category)
                 cursor.execute("""
                     SELECT FORM_OPT_ID FROM FORM_OPTION
                     WHERE FORM_OPT_LABEL = %s
@@ -498,7 +503,6 @@ class FamPlanController:
                 if opt_result:
                     form_opt_id = opt_result[0]
 
-                    # Check if response exists
                     cursor.execute("""
                         SELECT FORM_RES_ID FROM FORM_RESPONSE
                         WHERE FORM_OPT_ID = %s AND PAT_ID = %s
@@ -506,14 +510,12 @@ class FamPlanController:
                     exists = cursor.fetchone()
 
                     if exists:
-                        # Update existing response
                         cursor.execute("""
                             UPDATE FORM_RESPONSE
                             SET FORM_RES_VAL = %s
                             WHERE FORM_OPT_ID = %s AND PAT_ID = %s
                         """, (value, form_opt_id, self.patient_id))
                     else:
-                        # Insert new response
                         cursor.execute("""
                             INSERT INTO FORM_RESPONSE (FORM_RES_VAL, FORM_OPT_ID, PAT_ID)
                             VALUES (%s, %s, %s)
@@ -558,7 +560,6 @@ class FamPlanController:
         try:
             cursor = self.conn.cursor()
 
-            # Load FP Methods Used (multiple checkboxes)
             multi_fp_methods = {
                 "FP: New Acceptor": self.FPNA,
                 "FP: N - Spacing": self.FPNAspacing,
@@ -597,9 +598,9 @@ class FamPlanController:
                 result = cursor.fetchone()
                 if result:
                     value = result[0]
-                    if isinstance(widget, QCheckBox):  # It's a QCheckBox
+                    if isinstance(widget, QCheckBox):  
                         widget.setChecked(value == "Yes")
-                    elif isinstance(widget, QLineEdit):  # It's a QLineEdit
+                    elif isinstance(widget, QLineEdit): 
                         widget.setText(value)
 
         except Exception as e:
@@ -778,7 +779,6 @@ class FamPlanController:
                 if opt_result:
                     form_opt_id = opt_result[0]
 
-                    # Check if response exists
                     cursor.execute("""
                         SELECT FORM_RES_ID FROM FORM_RESPONSE
                         WHERE FORM_OPT_ID = %s AND PAT_ID = %s
@@ -786,14 +786,12 @@ class FamPlanController:
                     exists = cursor.fetchone()
 
                     if exists:
-                        # Update existing response
                         cursor.execute("""
                             UPDATE FORM_RESPONSE
                             SET FORM_RES_VAL = %s
                             WHERE FORM_OPT_ID = %s AND PAT_ID = %s
                         """, (value, form_opt_id, self.patient_id))
                     else:
-                        # Insert new response
                         cursor.execute("""
                             INSERT INTO FORM_RESPONSE (FORM_RES_VAL, FORM_OPT_ID, PAT_ID)
                             VALUES (%s, %s, %s)
@@ -815,7 +813,8 @@ class FamPlanController:
         self.obsH_livkids = self.pageFPF.findChild(QSpinBox, "FPlivkids")
         
         self.obsH_dold = self.pageFPF.findChild(QDateEdit, "FPdold")
-        self.obsH_told = self.pageFPF.findChild(QComboBox, "FPtold")
+        self.obsH_toldV = self.pageFPF.findChild(QCheckBox, "FPtoldV")
+        self.obsH_toldC = self.pageFPF.findChild(QCheckBox, "FPtoldC")
         self.obsH_lmp = self.pageFPF.findChild(QDateEdit, "FPlmp")
         self.obsH_pmp = self.pageFPF.findChild(QDateEdit, "FPpmp")
         
@@ -831,7 +830,6 @@ class FamPlanController:
         try:
             cursor = self.conn.cursor()
 
-            # Map form labels to widgets
             obs_fields = {
                 "FP: No. of Pregnancies (G)": self.obsH_nopG,
                 "FP: No. of Deliveries (P)": self.obsH_nopP,
@@ -840,7 +838,8 @@ class FamPlanController:
                 "FP: Abortion": self.obsH_abort,
                 "FP: Living Children": self.obsH_livkids,
                 "FP: Date of Last Delivery": self.obsH_dold,
-                "FP: Type of Last Delivery": self.obsH_told,
+                "FP: Type of Last Delivery - Vagina": self.obsH_toldV,
+                "FP: Type of Last Delivery - CSection": self.obsH_toldC,
                 "FP: Last Menstrual Period (LMP)": self.obsH_lmp,
                 "FP: Previous Menstrual Period (PMP)": self.obsH_pmp,
                 "FP: Scanty": self.obsH_scanty,
@@ -861,17 +860,17 @@ class FamPlanController:
                 result = cursor.fetchone()
                 if result:
                     value = result[0]
-                    if isinstance(widget, QLineEdit):  # It's a QLineEdit
+                    if isinstance(widget, QLineEdit): 
                         widget.setText(value)
                     elif isinstance(widget, QSpinBox):
                         widget.setValue(int(value))
                     elif isinstance(widget, QDateEdit):
-                        widget.setDate(QDate.fromString(value, "yyyy-MM-dd"))
+                        widget.setDate(QDate.fromString(value, "MM-dd-yyyy"))
                     elif isinstance(widget, QComboBox):
                         index = widget.findText(value)
                         if index != -1:
                             widget.setCurrentIndex(index)
-                    elif isinstance(widget, QCheckBox):  # It's a QCheckBox
+                    elif isinstance(widget, QCheckBox):  
                         widget.setChecked(value == "Yes")
 
         except Exception as e:
@@ -881,7 +880,6 @@ class FamPlanController:
         try:
             cursor = self.conn.cursor()
             
-            # Create a mapping of widget values to FORM_OPT_LABEL (you must make sure labels match)
             responses = {
                 "FP: No. of Pregnancies (G)": self.obsH_nopG.text(),
                 "FP: No. of Deliveries (P)": self.obsH_nopP.text(),
@@ -889,10 +887,11 @@ class FamPlanController:
                 "FP: Premature": str(self.obsH_premature.value()),
                 "FP: Abortion": str(self.obsH_abort.value()),
                 "FP: Living Children": str(self.obsH_livkids.value()),
-                "FP: Date of Last Delivery": self.obsH_dold.date().toString("yyyy-MM-dd"),
-                "FP: Type of Last Delivery": self.obsH_told.currentText(),
-                "FP: Last Menstrual Period (LMP)": self.obsH_lmp.date().toString("yyyy-MM-dd"),
-                "FP: Previous Menstrual Period (PMP)": self.obsH_pmp.date().toString("yyyy-MM-dd"),
+                "FP: Date of Last Delivery": self.obsH_dold.date().toString("MM-dd-yyyy"),
+                "FP: Type of Last Delivery - Vagina": "Yes" if self.obsH_toldV.isChecked() else "No",
+                "FP: Type of Last Delivery - CSection": "Yes" if self.obsH_toldC.isChecked() else "No",
+                "FP: Last Menstrual Period (LMP)": self.obsH_lmp.date().toString("MM-dd-yyyy"),
+                "FP: Previous Menstrual Period (PMP)": self.obsH_pmp.date().toString("MM-dd-yyyy"),
                 "FP: Scanty": "Yes" if self.obsH_scanty.isChecked() else "No",
                 "FP: Moderate": "Yes" if self.obsH_moderate.isChecked() else "No",
                 "FP: Heavy": "Yes" if self.obsH_heavy.isChecked() else "No",
@@ -902,7 +901,6 @@ class FamPlanController:
             }
 
             for label, value in responses.items():
-                # Fetch FORM_OPT_ID based on label (and maybe category)
                 cursor.execute("""
                     SELECT FORM_OPT_ID FROM FORM_OPTION
                     WHERE FORM_OPT_LABEL = %s
@@ -911,7 +909,6 @@ class FamPlanController:
                 if opt_result:
                     form_opt_id = opt_result[0]
 
-                    # Check if response exists
                     cursor.execute("""
                         SELECT FORM_RES_ID FROM FORM_RESPONSE
                         WHERE FORM_OPT_ID = %s AND PAT_ID = %s
@@ -919,14 +916,12 @@ class FamPlanController:
                     exists = cursor.fetchone()
 
                     if exists:
-                        # Update existing response
                         cursor.execute("""
                             UPDATE FORM_RESPONSE
                             SET FORM_RES_VAL = %s
                             WHERE FORM_OPT_ID = %s AND PAT_ID = %s
                         """, (value, form_opt_id, self.patient_id))
                     else:
-                        # Insert new response
                         cursor.execute("""
                             INSERT INTO FORM_RESPONSE (FORM_RES_VAL, FORM_OPT_ID, PAT_ID)
                             VALUES (%s, %s, %s)
@@ -967,7 +962,6 @@ class FamPlanController:
         try:
             cursor = self.conn.cursor()
 
-            # Map form labels to widgets
             obs_fields = {
                 "FP: abnormal discharge from the genital area": (self.rfSTI_adgaY, self.rfSTI_adgaN),
                 "FP: abnormal discharge from the genital area (V)": self.rfSTI_adgaVag,
@@ -1002,7 +996,6 @@ class FamPlanController:
         try:
             cursor = self.conn.cursor()
             
-            # Create a mapping of widget values to FORM_OPT_LABEL (you must make sure labels match)
             responses = {
                 "FP: abnormal discharge from the genital area": "Yes" if self.rfSTI_adgaY.isChecked() else "No",
                 "FP: abnormal discharge from the genital area (V)": "Yes" if self.rfSTI_adgaVag.isChecked() else "No",
@@ -1014,7 +1007,6 @@ class FamPlanController:
             }
 
             for label, value in responses.items():
-                # Fetch FORM_OPT_ID based on label (and maybe category)
                 cursor.execute("""
                     SELECT FORM_OPT_ID FROM FORM_OPTION
                     WHERE FORM_OPT_LABEL = %s
@@ -1023,7 +1015,6 @@ class FamPlanController:
                 if opt_result:
                     form_opt_id = opt_result[0]
 
-                    # Check if response exists
                     cursor.execute("""
                         SELECT FORM_RES_ID FROM FORM_RESPONSE
                         WHERE FORM_OPT_ID = %s AND PAT_ID = %s
@@ -1031,14 +1022,12 @@ class FamPlanController:
                     exists = cursor.fetchone()
 
                     if exists:
-                        # Update existing response
                         cursor.execute("""
                             UPDATE FORM_RESPONSE
                             SET FORM_RES_VAL = %s
                             WHERE FORM_OPT_ID = %s AND PAT_ID = %s
                         """, (value, form_opt_id, self.patient_id))
                     else:
-                        # Insert new response
                         cursor.execute("""
                             INSERT INTO FORM_RESPONSE (FORM_RES_VAL, FORM_OPT_ID, PAT_ID)
                             VALUES (%s, %s, %s)
@@ -1067,7 +1056,6 @@ class FamPlanController:
         try:
             cursor = self.conn.cursor()
 
-            # Map form labels to widgets
             obs_fields = {
                 "FP: unpleasant relationship with the partner": (self.rfVAW_urpY, self.rfVAW_urpN),
                 "FP: partner do not approve to visit FP Clinic": (self.rfVAW_pdfpcY, self.rfVAW_pdfpcN),
@@ -1094,7 +1082,7 @@ class FamPlanController:
                         no_widget.setChecked(value == "No")
                     elif isinstance(widget, QCheckBox):
                         widget.setChecked(value == "Yes")
-                    elif isinstance(widget, QLineEdit):  # It's a QLineEdit
+                    elif isinstance(widget, QLineEdit):
                         widget.setText(value)
 
         except Exception as e:
@@ -1104,7 +1092,6 @@ class FamPlanController:
         try:
             cursor = self.conn.cursor()
             
-            # Create a mapping of widget values to FORM_OPT_LABEL (you must make sure labels match)
             responses = {
                 "FP: unpleasant relationship with the partner": "Yes" if self.rfVAW_urpY.isChecked() else "No",
                 "FP: partner do not approve to visit FP Clinic": "Yes" if self.rfVAW_pdfpcY.isChecked() else "No",
@@ -1116,7 +1103,6 @@ class FamPlanController:
             }
 
             for label, value in responses.items():
-                # Fetch FORM_OPT_ID based on label (and maybe category)
                 cursor.execute("""
                     SELECT FORM_OPT_ID FROM FORM_OPTION
                     WHERE FORM_OPT_LABEL = %s
@@ -1125,7 +1111,6 @@ class FamPlanController:
                 if opt_result:
                     form_opt_id = opt_result[0]
 
-                    # Check if response exists
                     cursor.execute("""
                         SELECT FORM_RES_ID FROM FORM_RESPONSE
                         WHERE FORM_OPT_ID = %s AND PAT_ID = %s
@@ -1133,14 +1118,12 @@ class FamPlanController:
                     exists = cursor.fetchone()
 
                     if exists:
-                        # Update existing response
                         cursor.execute("""
                             UPDATE FORM_RESPONSE
                             SET FORM_RES_VAL = %s
                             WHERE FORM_OPT_ID = %s AND PAT_ID = %s
                         """, (value, form_opt_id, self.patient_id))
                     else:
-                        # Insert new response
                         cursor.execute("""
                             INSERT INTO FORM_RESPONSE (FORM_RES_VAL, FORM_OPT_ID, PAT_ID)
                             VALUES (%s, %s, %s)
@@ -1245,7 +1228,6 @@ class FamPlanController:
         try:
             cursor = self.conn.cursor()
             
-            # Create a mapping of widget values to FORM_OPT_LABEL (you must make sure labels match)
             responses = {
                 "FP: Weight": str(self.phyE_weight.value()),
                 "FP: Height": str(self.phyE_height.value()),
@@ -1280,7 +1262,6 @@ class FamPlanController:
             }
 
             for label, value in responses.items():
-                # Fetch FORM_OPT_ID based on label (and maybe category)
                 cursor.execute("""
                     SELECT FORM_OPT_ID FROM FORM_OPTION
                     WHERE FORM_OPT_LABEL = %s
@@ -1289,7 +1270,6 @@ class FamPlanController:
                 if opt_result:
                     form_opt_id = opt_result[0]
 
-                    # Check if response exists
                     cursor.execute("""
                         SELECT FORM_RES_ID FROM FORM_RESPONSE
                         WHERE FORM_OPT_ID = %s AND PAT_ID = %s
@@ -1297,14 +1277,12 @@ class FamPlanController:
                     exists = cursor.fetchone()
 
                     if exists:
-                        # Update existing response
                         cursor.execute("""
                             UPDATE FORM_RESPONSE
                             SET FORM_RES_VAL = %s
                             WHERE FORM_OPT_ID = %s AND PAT_ID = %s
                         """, (value, form_opt_id, self.patient_id))
                     else:
-                        # Insert new response
                         cursor.execute("""
                             INSERT INTO FORM_RESPONSE (FORM_RES_VAL, FORM_OPT_ID, PAT_ID)
                             VALUES (%s, %s, %s)
@@ -1393,7 +1371,6 @@ class FamPlanController:
         try:
             cursor = self.conn.cursor()
             
-            # Create a mapping of widget values to FORM_OPT_LABEL (you must make sure labels match)
             responses = {
                 "FP: Normal Pelvic": "Yes" if self.pelvicE_normal.isChecked() else "No",
                 "FP: Mass Pelvic": "Yes" if self.pelvicE_mass.isChecked() else "No",
@@ -1421,7 +1398,6 @@ class FamPlanController:
             }
 
             for label, value in responses.items():
-                # Fetch FORM_OPT_ID based on label (and maybe category)
                 cursor.execute("""
                     SELECT FORM_OPT_ID FROM FORM_OPTION
                     WHERE FORM_OPT_LABEL = %s
@@ -1430,7 +1406,6 @@ class FamPlanController:
                 if opt_result:
                     form_opt_id = opt_result[0]
 
-                    # Check if response exists
                     cursor.execute("""
                         SELECT FORM_RES_ID FROM FORM_RESPONSE
                         WHERE FORM_OPT_ID = %s AND PAT_ID = %s
@@ -1438,14 +1413,12 @@ class FamPlanController:
                     exists = cursor.fetchone()
 
                     if exists:
-                        # Update existing response
                         cursor.execute("""
                             UPDATE FORM_RESPONSE
                             SET FORM_RES_VAL = %s
                             WHERE FORM_OPT_ID = %s AND PAT_ID = %s
                         """, (value, form_opt_id, self.patient_id))
                     else:
-                        # Insert new response
                         cursor.execute("""
                             INSERT INTO FORM_RESPONSE (FORM_RES_VAL, FORM_OPT_ID, PAT_ID)
                             VALUES (%s, %s, %s)
@@ -1460,87 +1433,11 @@ class FamPlanController:
             
     def famplan_page3(self):
         self.load_ackN_widgets()
-        self.load_ackN()
         
     def load_ackN_widgets(self):
         self.ackN_method = self.pageFPF.findChild(QLineEdit, "FPaMethod")
         self.ackN_methodDate = self.pageFPF.findChild(QDateEdit, "FPaMethodDate")
         self.ackN_client = self.pageFPF.findChild(QLineEdit, "FPaClient")
-        self.ackN_clientDate = self.pageFPF.findChild(QDateEdit, "FPaDate")
-    
-    def load_ackN(self):
-        try:
-            cursor = self.conn.cursor()
-
-            # Map form labels to widgets
-            obs_fields = {
-                "FP: Client Date": self.ackN_clientDate
-            }
-            
-            for label, widget in obs_fields.items():
-                cursor.execute("""
-                    SELECT FR.FORM_RES_VAL
-                    FROM FORM_RESPONSE FR
-                    JOIN FORM_OPTION FO ON FR.FORM_OPT_ID = FO.FORM_OPT_ID
-                    WHERE FO.FORM_OPT_LABEL = %s AND FR.PAT_ID = %s
-                """, (label, self.patient_id))
-                result = cursor.fetchone()
-                if result:
-                    value = result[0]
-                    if isinstance(widget, QLineEdit):  # It's a QLineEdit
-                        widget.setText(value)
-                    elif isinstance(widget, QDateEdit):
-                        widget.setDate(QDate.fromString(value, "yyyy-MM-dd"))
-
-        except Exception as e:
-            print("Error loading FP acknowledgement:", e)
-    
-    def save_ackN(self):
-        try:
-            cursor = self.conn.cursor()
-            
-            # Create a mapping of widget values to FORM_OPT_LABEL (you must make sure labels match)
-            responses = {
-                "FP: Client Date": self.ackN_clientDate.date().toString("yyyy-MM-dd")
-            }
-
-            for label, value in responses.items():
-                # Fetch FORM_OPT_ID based on label (and maybe category)
-                cursor.execute("""
-                    SELECT FORM_OPT_ID FROM FORM_OPTION
-                    WHERE FORM_OPT_LABEL = %s
-                """, (label,))
-                opt_result = cursor.fetchone()
-                if opt_result:
-                    form_opt_id = opt_result[0]
-
-                    # Check if response exists
-                    cursor.execute("""
-                        SELECT FORM_RES_ID FROM FORM_RESPONSE
-                        WHERE FORM_OPT_ID = %s AND PAT_ID = %s
-                    """, (form_opt_id, self.patient_id))
-                    exists = cursor.fetchone()
-
-                    if exists:
-                        # Update existing response
-                        cursor.execute("""
-                            UPDATE FORM_RESPONSE
-                            SET FORM_RES_VAL = %s
-                            WHERE FORM_OPT_ID = %s AND PAT_ID = %s
-                        """, (value, form_opt_id, self.patient_id))
-                    else:
-                        # Insert new response
-                        cursor.execute("""
-                            INSERT INTO FORM_RESPONSE (FORM_RES_VAL, FORM_OPT_ID, PAT_ID)
-                            VALUES (%s, %s, %s)
-                        """, (value, form_opt_id, self.patient_id))
-                else:
-                    print(f"[Warning] FORM_OPTION not found for label: {label}")
-
-            self.conn.commit()
-        except Exception as e:
-            print("Error saving FP acknowledgement:", e)
-            self.conn.rollback()
             
     def famplan_page4(self):
         self.ARtable = self.pageFPF.findChild(QTableWidget, "tableWidFamPlanAR")
@@ -1672,7 +1569,6 @@ class FamPlanController:
             QMessageBox.critical(dialog, "Error", f"Database error: {e}")
             return
 
-        # Disable fields initially
         for w in [methodUsed, dateVisited, staffName, dateFvisit, medFindings]:
             w.setEnabled(False)
         save_btn.setEnabled(False)
@@ -1780,7 +1676,6 @@ class FamPlanController:
         try:
             cursor = self.conn.cursor()
             
-            # Create a mapping of widget values to FORM_OPT_LABEL (you must make sure labels match)
             responses = {
                 "FP: Baby less than 6 months ago": "Yes" if self.cnp_b6Y.isChecked() else "No",
                 "FP: Abstained intercourse since lmp": "Yes" if self.cnp_asiY.isChecked() else "No",
@@ -1791,7 +1686,6 @@ class FamPlanController:
             }
 
             for label, value in responses.items():
-                # Fetch FORM_OPT_ID based on label (and maybe category)
                 cursor.execute("""
                     SELECT FORM_OPT_ID FROM FORM_OPTION
                     WHERE FORM_OPT_LABEL = %s
@@ -1800,7 +1694,6 @@ class FamPlanController:
                 if opt_result:
                     form_opt_id = opt_result[0]
 
-                    # Check if response exists
                     cursor.execute("""
                         SELECT FORM_RES_ID FROM FORM_RESPONSE
                         WHERE FORM_OPT_ID = %s AND PAT_ID = %s
@@ -1808,14 +1701,12 @@ class FamPlanController:
                     exists = cursor.fetchone()
 
                     if exists:
-                        # Update existing response
                         cursor.execute("""
                             UPDATE FORM_RESPONSE
                             SET FORM_RES_VAL = %s
                             WHERE FORM_OPT_ID = %s AND PAT_ID = %s
                         """, (value, form_opt_id, self.patient_id))
                     else:
-                        # Insert new response
                         cursor.execute("""
                             INSERT INTO FORM_RESPONSE (FORM_RES_VAL, FORM_OPT_ID, PAT_ID)
                             VALUES (%s, %s, %s)
@@ -1905,13 +1796,13 @@ class FamPlanController:
         self.obsH_livkids.setValue(0)
         
         self.obsH_dold.setDate(date.today())
-        self.obsH_told.setCurrentIndex(0)
         self.obsH_lmp.setDate(date.today())
         self.obsH_pmp.setDate(date.today())
         
         for obs_chk in [
             self.obsH_scanty, self.obsH_moderate, self.obsH_heavy, 
-            self.obsH_dysmen, self.obsH_hmole, self.obsH_ectopicp
+            self.obsH_dysmen, self.obsH_hmole, self.obsH_ectopicp,
+            self.obsH_toldV, self.obsH_toldC
         ]:
             obs_chk.setChecked(False)
             
@@ -1986,5 +1877,485 @@ class FamPlanController:
         self.load_rfVAW()
         self.load_phyE()
         self.load_pelvicE()
-        self.load_ackN()
         self.load_cltNpreg()
+    
+    def show_pdfPrint(self):
+        # Button: app → open filled PDF in browser
+        self.view_filled_pdf()
+
+    def fetch_patient_data(self):
+        # Fetch patient data from the database
+        try:
+            cursor = self.conn.cursor()
+            
+            data = {}
+            
+            cursor.execute("""
+                SELECT
+                    PAT_LNAME || ',' as LAST_NAME, PAT_FNAME, LEFT(PAT_MNAME, 1) || '.' AS MIDDLE_INITIAL,
+                    TO_CHAR(PAT_DOB, 'MM') AS patDm, TO_CHAR(PAT_DOB, 'DD') AS patDd, TO_CHAR(PAT_DOB, 'YYYY') AS patDy,
+                    PAT_AGE, PAT_OCCU,
+                    CONCAT (PAT_ADDNS, ', ', PAT_ADDB, ', ', PAT_ADDMC, ', ', PAT_ADDP) AS PATIENT_ADD,
+                    PAT_CNUM, PAT_PHNUM,
+                    CASE
+                        WHEN CAST(PAT_AGE AS INTEGER) <= 18 THEN
+                            PAT_FNAME || ' ' || LEFT(PAT_MNAME, 1) || '.' || ' ' || PAT_LNAME
+                        ELSE NULL
+                    END AS minor_name
+                FROM PATIENT
+                WHERE PAT_ID = %s
+            """, (self.patient_id,))
+            patient_data = cursor.fetchone()
+
+            if patient_data:
+                data["patLname"] = (patient_data[0] or "").upper()
+                data["patFname"] = (patient_data[1] or "").upper()
+                data["patMname"] = (patient_data[2] or "").upper()
+                data["patDOBm"] = patient_data[3]
+                data["patDOBd"] = patient_data[4]
+                data["patDOBy"] = patient_data[5]
+                data["patAge"] = patient_data[6]
+                data["patOccu"] = (patient_data[7] or "").upper()
+                data["patAddress"] = (patient_data[8] or "").upper()
+                data["patContact"] = patient_data[9]
+                data["patPhilNum"] = patient_data[10]
+                data["ackClient"] = (patient_data[11] or "").upper()
+            else:
+                print("No data found for the patient for Family Planning.")
+            
+            cursor.execute("""
+                SELECT
+                    SP_LNAME || ',' as LAST_NAME, SP_FNAME, LEFT(SP_MNAME, 1) || '.' AS MIDDLE_INITIAL,
+                    TO_CHAR(SP_DOB, 'MM') AS spoDm, TO_CHAR(SP_DOB, 'DD') AS spoDd, TO_CHAR(SP_DOB, 'YYYY') AS spoDy,
+                    SP_AGE, SP_OCCU
+                FROM SPOUSE
+                WHERE PAT_ID = %s
+            """, (self.patient_id,))
+            patient_data = cursor.fetchone()
+
+            if patient_data:
+                data["spoLname"] = (patient_data[0] or "").upper()
+                data["spoFname"] = (patient_data[1] or "").upper()
+                data["spoMname"] = (patient_data[2] or "").upper()
+                data["spoDOBm"] = patient_data[3]
+                data["spoDOBd"] = patient_data[4]
+                data["spoDOBy"] = patient_data[5]
+                data["spoAge"] = patient_data[6]
+                data["spoOccu"] = (patient_data[7] or "").upper()
+            else:
+                print("No data found for the patient's spouse for Family Planning.")
+            
+            cursor.execute("""
+                SELECT
+                    CONCAT(
+                        COALESCE(
+                            (SELECT FR.FORM_RES_VAL FROM FORM_RESPONSE FR
+                            JOIN FORM_OPTION FO ON FR.FORM_OPT_ID = FO.FORM_OPT_ID
+                            WHERE FO.FORM_OPT_LABEL = 'FP: Blood Pressure (S)' AND FR.PAT_ID = P.PAT_ID
+                            ), ''
+                        ),
+                        '/',
+                        COALESCE(
+                            (SELECT FR.FORM_RES_VAL FROM FORM_RESPONSE FR
+                            JOIN FORM_OPTION FO ON FR.FORM_OPT_ID = FO.FORM_OPT_ID
+                            WHERE FO.FORM_OPT_LABEL = 'FP: Blood Pressure (D)' AND FR.PAT_ID = P.PAT_ID
+                            ), ''
+                        )
+                    ) AS CONCATENATED_FORM_RESPONSES
+                FROM PATIENT P
+                WHERE P.PAT_ID = %s
+            """, (self.patient_id,))
+            patient_data = cursor.fetchone()
+
+            if patient_data:
+                data["phyBP"] = patient_data[0] or ""
+            else:
+                print("No data found for the patient for famplan.")
+                
+            cursor.execute("""
+                SELECT
+                    SERVICE_TYPE.SERV_TYPE_NAME,
+                    PATIENT_SERVICE.PS_DATEAVAILED
+                FROM PATIENT_SERVICE
+                JOIN PATIENT_SERVICE_TYPE ON PATIENT_SERVICE.PS_ID = PATIENT_SERVICE_TYPE.PS_ID
+                JOIN SERVICE_TYPE ON PATIENT_SERVICE_TYPE.SERV_TYPE_ID = SERVICE_TYPE.SERV_TYPE_ID
+                JOIN SERVICE ON PATIENT_SERVICE.SERV_ID = SERVICE.SERV_ID
+                WHERE PATIENT_SERVICE.PAT_ID = %s
+                AND SERVICE.SERV_NAME = 'Family Planning'
+                AND PATIENT_SERVICE.PS_DATEAVAILED = (
+                    SELECT MAX(PS2.PS_DATEAVAILED)
+                    FROM PATIENT_SERVICE PS2
+                    WHERE PS2.PAT_ID = %s
+                        AND PS2.SERV_ID = SERVICE.SERV_ID
+                )
+            """, (self.patient_id, self.patient_id))
+
+            patient_data = cursor.fetchall()
+
+            if patient_data:
+                methods = [row[0] for row in patient_data]
+                latest_date = patient_data[0][1]
+
+                data["ackMethod"] = ", ".join(methods)
+                data["ackMdate"] = latest_date
+            else:
+                print("No data found for the patient availed methods for Family Planning.")
+                
+            cursor.execute("""
+                SELECT 
+                    A.APP_ID, 
+                    A.APP_DATE,
+                    
+                    -- Subquery: Medical Findings
+                    (SELECT FR.FORM_RES_VAL 
+                    FROM FORM_RESPONSE FR
+                    JOIN FORM_OPTION FO ON FR.FORM_OPT_ID = FO.FORM_OPT_ID
+                    WHERE FR.PAT_ID = P.PAT_ID AND FO.FORM_OPT_LABEL = 'FP: Medical Findings'
+                    LIMIT 1) AS MEDICAL_FINDINGS,
+                     
+                    ST.SERV_TYPE_NAME AS APPOINTMENT_TYPE,  
+                    CONCAT(U.STAFF_LNAME, ', ', U.STAFF_FNAME) AS ATTENDANT,
+                    
+                    -- Subquery: Date of Follow-up Visit
+                    (SELECT FR.FORM_RES_VAL 
+                    FROM FORM_RESPONSE FR
+                    JOIN FORM_OPTION FO ON FR.FORM_OPT_ID = FO.FORM_OPT_ID
+                    WHERE FR.PAT_ID = P.PAT_ID AND FO.FORM_OPT_LABEL = 'FP: Date of Follow up Visit'
+                    LIMIT 1) AS FOLLOWUP_DATE
+
+                FROM APPOINTMENT A
+                JOIN PATIENT P ON A.PAT_ID = P.PAT_ID
+                JOIN APPOINTMENT_SERVICE APS ON A.APP_ID = APS.APP_ID
+                JOIN PATIENT_SERVICE PS ON APS.PS_ID = PS.PS_ID
+                JOIN SERVICE S ON PS.SERV_ID = S.SERV_ID
+                JOIN APPOINTMENT_SERVICE_TYPE AST ON APS.APS_ID = AST.APS_ID
+                JOIN PATIENT_SERVICE_TYPE PST ON AST.PST_ID = PST.PST_ID
+                JOIN SERVICE_TYPE ST ON PST.SERV_TYPE_ID = ST.SERV_TYPE_ID
+                JOIN USER_STAFF U ON A.STAFF_ID = U.STAFF_ID
+                WHERE P.PAT_ID = %s
+                ORDER BY A.APP_DATE ASC
+            """, (self.patient_id,))
+
+            patient_data = cursor.fetchall()
+            
+            if patient_data:
+                app_dates = [str(row[1]) for row in patient_data]
+                medical_findings = [row[2] or '' for row in patient_data]
+                appointment_types = [row[3] or '' for row in patient_data]
+                attendants = [row[4] or '' for row in patient_data]
+                followup_dates = [row[5] or '' for row in patient_data]
+
+                data["appDates"] = "\n\n\n".join(app_dates)
+                data["medicalFindings"] = "\n\n\n".join(medical_findings)
+                data["appointmentTypes"] = "\n\n\n".join(appointment_types)
+                data["attendants"] = "\n\n\n".join(attendants)
+                data["followUpDates"] = "\n\n\n".join(followup_dates)
+                
+            else:
+                print("No data found for appointment history for Family Planning.")
+                
+            label_to_field = {
+                "FP: Client ID": "patClientID",
+                "FP: NHTS": ("nhtsY", "nhtsN"),
+                "FP: Pantawid 4Ps": ("4psY", "4psN"),
+                "FP: Educational Attainment": "patEducA",
+                "FP: Civil Status": "patCstatus",
+                "FP: Religion": "patReligion",
+                "FP: No. of Living Children": "noLKids",
+                "FP: Plan to have more children": ("planKidY", "planKidN"),
+                "FP: Average monthly income": "AVGmonIncome",
+                
+                "FP: New Acceptor": "nAcceptor",
+                "FP: N - Spacing": "spacing",
+                "FP: N - Limiting": "limiting",
+                "FP: N - Others": "cOthers",
+                "FP: Current User": "cUser",
+                "FP: C - Changing Methods": "cMethod",
+                "FP: C - CM - Med Condition": "mCondition",
+                "FP: C - CM - Side Effects": "sEffects",
+                "FP: Changing Clinic": "cClinic",
+                "FP: Dropout/Restart": "dRestart",
+                
+                "FP: MetUsed - COC": "mCOC",
+                "FP: MetUsed - POP": "mPOP",
+                "FP: MetUsed - Injectible": "mInjectible",
+                "FP: MetUsed - Implant": "mImplant",
+                "FP: MetUsed - IUD": "mIUD",
+                "FP: MetUsed - IUD Interval": "mInterval",
+                "FP: MetUsed - IUD Postpartum": "mPostpartum",
+                "FP: MetUsed - Condom": "mCondom",
+                "FP: MetUsed - BOM/CMM": "mBOM",
+                "FP: MetUsed - BBT": "mBBT",
+                "FP: MetUsed - STM": "mSTM",
+                "FP: MetUsed - SDM": "mSDM",
+                "FP: MetUsed - LAM": "mLAM",
+                "FP: MetUsed - Others": "mOthers",
+                
+                "FP: severe headaches/migraine": ("medSHMy", "medSHMn"),
+                "FP: history of stroke/hypertension/heart attack": ("medHOSHAHy", "medHOSHAHn"),
+                "FP: non-traumatic hematoma/frequent bruising/ gum bleeding": ("medNTHFBGBy", "medNTHFBGBn"),
+                "FP: current or history of breast cancer/breast mass": ("medCHBCBMy", "medCHBCBMn"),
+                "FP: severe chest pain": ("medSCPy", "medSCPn"),
+                "FP: cough for more than 14 days": ("medC14Dy", "medC14Dn"),
+                "FP: jaundice": ("medJy", "medJn"),
+                "FP: unexplained vaginal bleeding": ("medUVBy", "medUVBn"),
+                "FP: abnormal vaginal discharge": ("medAVDy", "medAVDn"),
+                "FP: intake of (anti-seizure) or (anti-TB)": ("medIPRy", "medIPRn"),
+                "FP: Is the client a SMOKER?": ("medSMKRy", "medSMKRn"),
+                "FP: with disability?": "medWDisability",
+                
+                "FP: No. of Pregnancies (G)": "obsG",
+                "FP: No. of Deliveries (P)": "obsP",
+                "FP: Full Term": "obsFT",
+                "FP: Premature": "obsPREM",
+                "FP: Abortion": "obsABORTION",
+                "FP: Living Children": "obsLC",
+                "FP: Date of Last Delivery": ("obsDOLDm", "obsDOLDd", "obsDOLDy"),
+                "FP: Type of Last Delivery - Vagina": "obsV",
+                "FP: Type of Last Delivery - CSection": "obsCS",
+                "FP: Last Menstrual Period (LMP)": ("obsLMPm", "obsLMPd", "obsLMPy"),
+                "FP: Previous Menstrual Period (PMP)": ("obsPMPm", "obsPMPd", "obsPMPy"),
+                "FP: Scanty": "obsSCANTY",
+                "FP: Moderate": "obsMOD",
+                "FP: Heavy": "obsHEAVY",
+                "FP: Dysmenorrhea": "obsDYS",
+                "FP: H. Mole": "obsHMOLE",
+                "FP: Ectopic Pregnancy": "obsEPREG",
+                
+                "FP: abnormal discharge from the genital area": ("stiADGAy", "stiADGAn"),
+                "FP: abnormal discharge from the genital area (V)": "stiVAGINA",
+                "FP: abnormal discharge from the genital area (P)": "stiPENIS",
+                "FP: sores or ulcers in genital area": ("stiSUGAy", "stiSUGAn"),
+                "FP: pain or burning sensation in the genital area": ("stiPBSGAy", "stiPBSGAn"),
+                "FP: history of treatment for STI": ("stiHTSTIy", "stiHTSTIn"),
+                "FP: HIV/ AIDS/ PI Disease": ("stiHIVy", "stiHIVn"),
+                
+                "FP: unpleasant relationship with the partner": ("vawURPy", "vawURPn"),
+                "FP: partner do not approve to visit FP Clinic": ("vawPDFPy", "vawPDFPn"),
+                "FP: history of VAW": ("vawHDVy", "vawHDVn"),
+                "FP: DSWD": "vawDSWD",
+                "FP: WCPU": "vawWCPU",
+                "FP: NGOs": "vawNGO",
+                "FP: VAW Others": "vawOTHERS",
+                
+                "FP: Weight": "phyWeight",
+                "FP: Height": "phyHeight",
+                "FP: Pulse Rate": "phyPulseRate",
+                "FP: S - Normal": "phySKINnorm",
+                "FP: S - Pale": "phySKINpale",
+                "FP: S - Yellowish": "phySKINyell",
+                "FP: S - Hematoma": "phySKINhema",
+                "FP: C - Normal": "phyCONJnorm",
+                "FP: C - Pale": "phyCONJpale",
+                "FP: C - Yellowish": "phyCONJyello",
+                "FP: N - Normal": "phyNECKnorm",
+                "FP: N - Neck mass": "phyNECKmass",
+                "FP: N - Enlarged lymph nodes": "phyNECKlnodes",
+                "FP: B - Normal": "phyBREASTnorm",
+                "FP: B - Mass": "phyBREASTmass",
+                "FP: B - Nipple discharge": "phyBREASTnipdis",
+                "FP: A - Normal": "phyABDnorm",
+                "FP: A - Abdominal Mass": "phyABDmass",
+                "FP: A - Varicosities": "phyABDvaric",
+                "FP: E - Normal": "phyEXTnorm",
+                "FP: E - Edema": "phyEXTedema",
+                "FP: E - Varicosities": "phyEXTvaric",
+                
+                "FP: Normal Pelvic": "pelvNormal",
+                "FP: Mass Pelvic": "pelvMass",
+                "FP: Abdominal Discharge Pelvic": "pelvAdischarge",
+                "FP: Cervical Tenderness Pelvic": "pelvCtender",
+                "FP: Adnexal Mass/ Tender Pelvic": "pelvAmass",
+                
+                "FP: Cervical Abnormalities": "pelvCabnormal",
+                "FP: CA - warts": "pelvWarts",
+                "FP: CA - cyst": "pelvPcyst",
+                "FP: CA - inflammation": "pelvIerosion",
+                "FP: CA - bloody discharge": "pelvBdisharge",
+                
+                "FP: Cervical Consistency": "pelvCconsistency",
+                "FP: CC - firm": "pelvFirm",
+                "FP: CC - soft": "pelvSoft",
+                
+                "FP: Uterine position": "pelvUposition",
+                "FP: UP - mid": "pelvMid",
+                "FP: UP - anteflexed": "pelvAnte",
+                "FP: UP - retroflexed": "pelvRetro",
+                
+                "FP: Uterine depth": "pelvUdepth",
+                "FP: Uterine depth: depth": "pelvUdepthCM",
+                
+                "FP: Baby less than 6 months ago": ("b6Y", "b6N"),
+                "FP: Abstained intercourse since lmp": ("almpY", "almpN"),
+                "FP: Baby in the last 4 weeks": ("b4Y", "b4N"),
+                "FP: LMP within the past 7 days": ("lmp7Y", "lmp7N"),
+                "FP: Miscarriage or abortion in last 7 days": ("mis7Y", "mis7N"),
+                "FP: Using reliable contraceptive consistently": ("contraY", "contraN"),
+            }
+        
+            for label, field_name in label_to_field.items():                  
+                cursor.execute("""
+                    SELECT FR.FORM_RES_VAL
+                    FROM FORM_RESPONSE FR
+                    JOIN FORM_OPTION FO ON FR.FORM_OPT_ID = FO.FORM_OPT_ID
+                    WHERE FO.FORM_OPT_LABEL = %s AND FR.PAT_ID = %s
+                """, (label, self.patient_id))
+                result = cursor.fetchone()
+                value = result[0] if result else ""
+
+                if isinstance(field_name, tuple) and len(field_name) == 3:
+                    month_field, day_field, year_field = field_name
+                    try:
+                        parsed_date = None
+                        for fmt in ("%Y-%m-%d", "%m/%d/%Y", "%d-%m-%Y"):
+                            try:
+                                parsed_date = datetime.strptime(value, fmt)
+                                break
+                            except ValueError:
+                                continue
+
+                        if parsed_date:
+                            data[month_field] = parsed_date.strftime("%m")
+                            data[day_field] = parsed_date.strftime("%d")
+                            data[year_field] = parsed_date.strftime("%Y")
+                        else:
+                            data[month_field] = ""
+                            data[day_field] = ""
+                            data[year_field] = ""
+                    except Exception:
+                        data[month_field] = ""
+                        data[day_field] = ""
+                        data[year_field] = ""
+                elif isinstance(field_name, tuple):
+                    yes_field, no_field = field_name
+                    if value == "Yes":
+                        data[yes_field] = "Yes"  
+                        data[no_field] = "No"    
+                    elif value == "No":
+                        data[yes_field] = "No"   
+                        data[no_field] = "Yes"   
+                    else:
+                        data[yes_field] = ""   
+                        data[no_field] = ""
+                else:
+                    if value == "Yes":
+                        data[field_name] = "Yes"
+                    elif value == "No":
+                        data[field_name] = "No"
+                    else:
+                        data[field_name] = value.upper() if value else ""
+
+            return data
+
+        except Exception as e:
+            print("Error fetching patient data for Family Planning Form:", e)
+            return {}
+
+    def view_filled_pdf(self):
+        data = self.fetch_patient_data()
+        if data:
+            input_pdf = "form_templates/FamilyPlanningFormview.pdf"
+            output_pdf = f"temp/FamilyPlanning_{self.patient_id}.pdf"
+            self.fill_pdf_form(input_pdf, output_pdf, data)
+            webbrowser.open(f'file:///{os.path.abspath(output_pdf)}')
+        else:
+            print("No data found for the patient.")
+
+    def fill_pdf_form(self, input_path, output_path, data_dict):
+        reader = PdfReader(input_path)
+        writer = PdfWriter()
+
+        for page in reader.pages:
+            writer.add_page(page)
+
+        if "/AcroForm" in reader.trailer["/Root"]:
+            writer._root_object.update({
+                NameObject("/AcroForm"): reader.trailer["/Root"]["/AcroForm"]
+            })
+            acroform = writer._root_object["/AcroForm"]
+            # Set NeedAppearances to True
+            acroform.update({
+                NameObject("/NeedAppearances"): BooleanObject(True)
+            })
+
+            # Set /DA to use Helvetica 12pt black text
+            # You can replace "/Helv" with the font name your PDF uses for Unicode
+            acroform.update({
+                NameObject("/DA"): TextStringObject("/Helv 12 Tf 0 g")
+            })
+        else:
+            # If no AcroForm, create minimal with NeedAppearances True and DA string
+            writer._root_object.update({
+                NameObject("/AcroForm"): writer._add_object({
+                    NameObject("/NeedAppearances"): BooleanObject(True),
+                    NameObject("/DA"): TextStringObject("/Helv 12 Tf 0 g")
+                })
+            })
+
+        READONLY_FLAG = 1
+        MULTILINE_FLAG = 4096
+        
+        def safe_update_field(obj, field_name, value):
+            if value is None:
+                return
+
+            if isinstance(value, str) and value in ["Yes", "No"]:
+                checkbox_val = "/Yes" if value == "Yes" else "/Off"
+                obj.update({
+                    NameObject("/V"): NameObject(checkbox_val),
+                    NameObject("/AS"): NameObject(checkbox_val),
+                    NameObject("/Ff"): NumberObject(1)
+                })
+
+            else:
+                try:
+                    # Enable multiline flag for text fields
+                    current_ff = obj.get("/Ff", NumberObject(0))
+                    new_ff = NumberObject(int(current_ff) | MULTILINE_FLAG | READONLY_FLAG)
+                    obj.update({
+                        NameObject("/V"): TextStringObject(str(value)),
+                        NameObject("/Ff"): new_ff
+                    })
+                except Exception as e:
+                    print(f"Error setting field {field_name}: {e}")
+
+        updated = False
+
+        for i, page in enumerate(writer.pages):
+            annots = page.get("/Annots")
+            if annots:
+                for annot in annots:
+                    obj = annot.get_object()
+                    if "/T" in obj:
+                        field_name = obj["/T"]
+                        if field_name in data_dict:
+                            value = data_dict[field_name]
+                            safe_update_field(obj, field_name, value)
+                            updated = True
+            else:
+                print(f"Page {i + 1} has no annotations.")
+
+        if not updated:
+            print("No fields found to update in the PDF.")
+
+        output_dir = os.path.dirname(output_path)
+        if output_dir:
+            os.makedirs(output_dir, exist_ok=True)
+
+        with open(output_path, "wb") as f:
+            writer.write(f)
+
+        print(f"PDF saved to: {output_path}")
+
+    def debug_pdf_fields(self, pdf_path):
+        reader = PdfReader(pdf_path)
+        for i, page in enumerate(reader.pages):
+            annots = page.get("/Annots")
+            if annots:
+                print(f"Page {i + 1} Annotations:")
+                for annot in annots:
+                    obj = annot.get_object()
+                    if "/T" in obj:
+                        print(f"  Field: {obj['/T']}")
+            else:
+                print(f"Page {i + 1}: No annotations")
