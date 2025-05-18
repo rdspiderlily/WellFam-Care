@@ -8,8 +8,6 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QIcon
 from datetime import date
 
-from PyQt5 import uic
-
 from Database import connect_db
 from Admin_Controllers.Admin_Appointment_View.Admin_Edit_App import ViewAppointmentDialog
 
@@ -72,6 +70,8 @@ class AdminAppointmentController:
             self.tableWidApp.setRowHidden(row, not match)
             
     def sort_appointment_list(self, sort_option):
+        self.sortAppCombo.setCurrentIndex(0)
+        
         if sort_option == "Date (Ascending)":
             sort_clause = "A.APP_DATE ASC, A.APP_TIME ASC"
         elif sort_option == "Date (Descending)":
@@ -570,8 +570,6 @@ class AdminAppointmentController:
             QMessageBox.critical(dialog, "Error", f"Failed to save appointment: {e}")
 
     def view_appointment(self, row, column):
-            if column != 1:
-                return
             app_id_item = self.tableWidApp.item(row, 0)
             
             if app_id_item is None:
@@ -580,6 +578,7 @@ class AdminAppointmentController:
             app_id = app_id_item.text()
             
             dialog = ViewAppointmentDialog(app_id)  #Passing PAT_ID to View Patient Details and Forms
+            dialog.appointment_updated.connect(self.appointment_list)
             dialog.exec_()
       
     def trashAppointment_list(self):

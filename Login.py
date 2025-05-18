@@ -7,7 +7,7 @@ import sys
 from Admin_Main_Controller import AdminMainWindow
 #from MidwifeAide_Main_Controller import MidwifeWindow
 
-from Database import check_user_credentials, get_user_role, get_user_id
+from Database import connect_db, check_user_credentials, get_user_role, get_user_id
 
 class LoginWindow(QDialog):
     def __init__(self):
@@ -68,6 +68,14 @@ class LoginWindow(QDialog):
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
+    
+    test_conn = connect_db()
+    if not test_conn:
+        QMessageBox.critical(None, "Database Error", "Could not connect to the database.\nPlease check your db_config.py or network settings.")
+        sys.exit()
+    else:
+        test_conn.close()
+    
     window = LoginWindow()
     window.show()
     sys.exit(app.exec_())

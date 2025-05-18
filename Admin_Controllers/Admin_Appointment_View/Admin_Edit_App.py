@@ -1,11 +1,11 @@
 from PyQt5.QtWidgets import (
     QDialog, QLineEdit, QPushButton, QDateEdit,
-    QTimeEdit, QMessageBox, QTextEdit, QTableWidget,
+    QTimeEdit, QMessageBox, QTextEdit,
     QComboBox, QCheckBox, QGroupBox, QWidget
 )
 from PyQt5 import uic
 from PyQt5.QtGui import QIcon
-from PyQt5.QtCore import QDate, QTime
+from PyQt5.QtCore import QDate, QTime, pyqtSignal
 from datetime import datetime, time
 
 from Database import connect_db
@@ -423,6 +423,8 @@ class ViewAppointmentDialog(QDialog):
                     conn.commit()
 
                     QMessageBox.information(self, "Deleted", "Appointment has been moved to trash successfully.")
+                    self.appointment_updated.emit()
+                    self.accept()
                     self.window().close()
 
                 except Exception as e:
@@ -430,3 +432,5 @@ class ViewAppointmentDialog(QDialog):
                     QMessageBox.critical(self, "Error", f"Failed to move appointment to trash: {e}")
                 finally:
                     conn.close()
+                    
+    appointment_updated = pyqtSignal()

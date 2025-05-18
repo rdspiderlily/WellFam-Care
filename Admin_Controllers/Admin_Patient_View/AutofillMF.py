@@ -34,12 +34,11 @@ class AutofillMatFamController:
         try:
             with self.conn.cursor() as cursor:
                 cursor.execute(query, (patient_id,))
-                result = cursor.fetchall()  # Fetch all matching rows
+                result = cursor.fetchall()  
 
             if result:
-                data = {label: value for label, value in result}  # Create a dictionary of labels to values
+                data = {label: value for label, value in result}  
 
-                # Map the labels to the required keys
                 keys = {
                     "Client No.": "clientno",
                     "Educational Attainment": "educAtt",
@@ -71,7 +70,6 @@ class AutofillMatFamController:
                     "Nipple discharge": "breastNipD",   
                 }
 
-                # Prepare the final result by mapping labels to keys
                 mapped_result = {keys[label]: data[label] for label in keys if label in data}
 
                 return mapped_result
@@ -115,12 +113,11 @@ class AutofillMatFamController:
         try:
             with self.conn.cursor() as cursor:
                 cursor.execute(query, (patient_id,))
-                result = cursor.fetchall()  # Fetch all matching rows
+                result = cursor.fetchall()  
 
             if result:
-                data = {label: value for label, value in result}  # Create a dictionary of labels to values
+                data = {label: value for label, value in result}  
 
-                # Map the labels to the required keys
                 keys = {
                     "FP: Client ID": "clientno",
                     "FP: Educational Attainment": "educAtt",
@@ -152,7 +149,6 @@ class AutofillMatFamController:
                     "FP: B - Nipple discharge": "breastNipD",   
                 }
 
-                # Prepare the final result by mapping labels to keys
                 mapped_result = {keys[label]: data[label] for label in keys if label in data}
 
                 return mapped_result

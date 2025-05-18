@@ -63,8 +63,16 @@ class AdminUserController:
                 conn.close()
 
     def add_user_dialog(self):
-        if not hasattr(self, 'user_dialog') or not self.user_dialog.isVisible():
+        if hasattr(self, 'user_dialog') and self.user_dialog is not None:
+            if self.user_dialog.isVisible():
+                self.user_dialog.raise_()
+                self.user_dialog.activateWindow()
+                return
+        else:
             self.user_dialog = QDialog()
+            self.user_dialog.setAttribute(Qt.WA_DeleteOnClose)
+            self.user_dialog.destroyed.connect(lambda: setattr(self, 'user_dialog', None))
+            
             uic.loadUi("wfui/add_user.ui", self.user_dialog)
             self.user_dialog.setWindowTitle("Add New User")
             self.user_dialog.setWindowIcon(QIcon("wfpics/logo1.jpg"))
@@ -96,9 +104,8 @@ class AdminUserController:
             if remove_btn:
                 remove_btn.clicked.connect(lambda: self.remove_user_pic(self.pic_label))
 
-            self.user_dialog.exec_()
-        else:
-            print("The 'Add User' dialog is already open.")
+        self.refresh_trash_table()
+        self.trashDialog.show()
 
     def load_roles(self, comboBox):
         conn = connect_db()
@@ -248,85 +255,91 @@ class AdminUserController:
             self.tableWidUser.setRowHidden(row, not match)
 
     def view_user_dialog(self, row, column):
-        if column != 1:
-            return
-
-        staff_id_item = self.tableWidUser.item(row, 0)
-        if not staff_id_item:
-            return
-
-        staff_id = staff_id_item.text()
-
-        dialog = QDialog()
-        uic.loadUi("wfui/view_edit_user.ui", dialog)
-        dialog.setWindowTitle("View User Information")
-        dialog.setWindowIcon(QIcon("wfpics/logo1.jpg"))
-
-        userWidget = dialog.findChild(QWidget, "widgetviewUser")
-        self.pic_label = userWidget.findChild(QLabel, "labelUserPic")
-
-        lname_edit = userWidget.findChild(QLineEdit, "lineEditUserLname")
-        fname_edit = userWidget.findChild(QLineEdit, "lineEditUserFname")
-        contact_edit = userWidget.findChild(QLineEdit, "lineEditUserContact")
-        username_edit = userWidget.findChild(QLineEdit, "lineEditUsername")
-        role_combo = userWidget.findChild(QComboBox, "userRole")
-        status_combo = userWidget.findChild(QComboBox, "userStatus")
-        password_edit = userWidget.findChild(QLineEdit, "lineEditPassword")
-        confirm_password_edit = userWidget.findChild(QLineEdit, "lineEditCPassword")
-        show_password_checkbox = userWidget.findChild(QCheckBox, "showPass")
-
-        edit_btn = dialog.findChild(QPushButton, "pushBtnEditUser")
-        save_btn = dialog.findChild(QPushButton, "pushBtnSaveUser")
-        cancel_btn = dialog.findChild(QPushButton, "pushBtnCancelUser")
-        trash_btn = dialog.findChild(QPushButton, "pushBtnTrashUser")
-        upload_btn = dialog.findChild(QPushButton, "pushBtnUploadUserPic")
-        remove_btn = dialog.findChild(QPushButton, "pushBtnRemoveUserPic")
-
-        self.current_pic_path = None
-
-        self.load_roles(role_combo)
-        self.load_status(status_combo)
-
-        conn = connect_db()
-        if not conn:
-            QMessageBox.critical(dialog, "Error", "Database connection failed.")
-            return
-
-        try:
-            cur = conn.cursor()
-            cur.execute("""
-                SELECT us.STAFF_LNAME, us.STAFF_FNAME, us.STAFF_CONTACT,
-                    us.STAFF_USN, r.ROLE_NAME, s.STATUS_NAME, us.STAFF_PIC_PATH
-                FROM USER_STAFF us
-                JOIN USER_ROLE r ON us.ROLE_ID = r.ROLE_ID
-                JOIN USER_STATUS s ON us.STATUS_ID = s.STATUS_ID
-                WHERE us.STAFF_ID = %s
-            """, (staff_id,))
-            data = cur.fetchone()
-
-            if not data:
-                QMessageBox.warning(dialog, "Not Found", "User not found.")
+        if hasattr(self, 'user_dialog') and self.user_dialog is not None:
+            if self.user_dialog.isVisible():
+                self.user_dialog.raise_()
+                self.user_dialog.activateWindow()
+                return
+        else:
+            staff_id_item = self.tableWidUser.item(row, 0)
+            if not staff_id_item:
                 return
 
-            lname_edit.setText(data[0])
-            fname_edit.setText(data[1])
-            contact_edit.setText(data[2])
-            username_edit.setText(data[3])
-            role_combo.setCurrentText(data[4])
-            status_combo.setCurrentText(data[5])
-            self.current_pic_path = data[6]
+            staff_id = staff_id_item.text()
 
-            if self.current_pic_path and os.path.exists(self.current_pic_path):
-                pixmap = QPixmap(self.current_pic_path).scaled(100, 100)
-                self.pic_label.setPixmap(pixmap)
-            else:
-                self.pic_label.clear()
+            self.user_dialog = QDialog()
+            self.user_dialog.setAttribute(Qt.WA_DeleteOnClose)
+            self.user_dialog.destroyed.connect(lambda: setattr(self, 'user_dialog', None))
+            
+            uic.loadUi("wfui/view_edit_user.ui", self.user_dialog)
+            self.user_dialog.setWindowTitle("View User Information")
+            self.user_dialog.setWindowIcon(QIcon("wfpics/logo1.jpg"))
 
-        except Exception as e:
-            QMessageBox.critical(dialog, "Error", f"Database error: {e}")
-            return
-        finally:
-            conn.close()
+            userWidget = self.user_dialog.findChild(QWidget, "widgetviewUser")
+            self.pic_label = userWidget.findChild(QLabel, "labelUserPic")
+
+            lname_edit = userWidget.findChild(QLineEdit, "lineEditUserLname")
+            fname_edit = userWidget.findChild(QLineEdit, "lineEditUserFname")
+            contact_edit = userWidget.findChild(QLineEdit, "lineEditUserContact")
+            username_edit = userWidget.findChild(QLineEdit, "lineEditUsername")
+            role_combo = userWidget.findChild(QComboBox, "userRole")
+            status_combo = userWidget.findChild(QComboBox, "userStatus")
+            password_edit = userWidget.findChild(QLineEdit, "lineEditPassword")
+            confirm_password_edit = userWidget.findChild(QLineEdit, "lineEditCPassword")
+            show_password_checkbox = userWidget.findChild(QCheckBox, "showPass")
+
+            edit_btn = self.user_dialog.findChild(QPushButton, "pushBtnEditUser")
+            save_btn = self.user_dialog.findChild(QPushButton, "pushBtnSaveUser")
+            cancel_btn = self.user_dialog.findChild(QPushButton, "pushBtnCancelUser")
+            trash_btn = self.user_dialog.findChild(QPushButton, "pushBtnTrashUser")
+            upload_btn = self.user_dialog.findChild(QPushButton, "pushBtnUploadUserPic")
+            remove_btn = self.user_dialog.findChild(QPushButton, "pushBtnRemoveUserPic")
+
+            self.current_pic_path = None
+
+            self.load_roles(role_combo)
+            self.load_status(status_combo)
+
+            conn = connect_db()
+            if not conn:
+                QMessageBox.critical(self.user_dialog, "Error", "Database connection failed.")
+                return
+
+            try:
+                cur = conn.cursor()
+                cur.execute("""
+                    SELECT us.STAFF_LNAME, us.STAFF_FNAME, us.STAFF_CONTACT,
+                        us.STAFF_USN, r.ROLE_NAME, s.STATUS_NAME, us.STAFF_PIC_PATH
+                    FROM USER_STAFF us
+                    JOIN USER_ROLE r ON us.ROLE_ID = r.ROLE_ID
+                    JOIN USER_STATUS s ON us.STATUS_ID = s.STATUS_ID
+                    WHERE us.STAFF_ID = %s
+                """, (staff_id,))
+                data = cur.fetchone()
+
+                if not data:
+                    QMessageBox.warning(self.user_dialog, "Not Found", "User not found.")
+                    return
+
+                lname_edit.setText(data[0])
+                fname_edit.setText(data[1])
+                contact_edit.setText(data[2])
+                username_edit.setText(data[3])
+                role_combo.setCurrentText(data[4])
+                status_combo.setCurrentText(data[5])
+                self.current_pic_path = data[6]
+
+                if self.current_pic_path and os.path.exists(self.current_pic_path):
+                    pixmap = QPixmap(self.current_pic_path).scaled(100, 100)
+                    self.pic_label.setPixmap(pixmap)
+                else:
+                    self.pic_label.clear()
+
+            except Exception as e:
+                QMessageBox.critical(self.user_dialog, "Error", f"Database error: {e}")
+                return
+            finally:
+                conn.close()
 
         for widget in [lname_edit, fname_edit, contact_edit, username_edit, password_edit, confirm_password_edit, role_combo, status_combo]:
             widget.setEnabled(False)
@@ -360,7 +373,7 @@ class AdminUserController:
             confirm_password_edit.setEchoMode(echo_mode)
 
         def upload_photo():
-            file_path, _ = QFileDialog.getOpenFileName(dialog, "Select Photo", "", "Image Files (*.png *.jpg *.jpeg)")
+            file_path, _ = QFileDialog.getOpenFileName(self.user_dialog, "Select Photo", "", "Image Files (*.png *.jpg *.jpeg)")
             if file_path:
                 pixmap = QPixmap(file_path).scaled(100, 100)
                 self.pic_label.setPixmap(pixmap)
@@ -381,17 +394,17 @@ class AdminUserController:
             new_status = status_combo.currentText()
 
             if not all([new_lname, new_fname, new_contact, new_username]):
-                QMessageBox.warning(dialog, "Validation", "Please fill in all required fields.")
+                QMessageBox.warning(self.user_dialog, "Validation", "Please fill in all required fields.")
                 return
 
             if new_password or confirm_password:
                 if new_password != confirm_password:
-                    QMessageBox.warning(dialog, "Password Mismatch", "Passwords do not match.")
+                    QMessageBox.warning(self.user_dialog, "Password Mismatch", "Passwords do not match.")
                     return
 
             conn = connect_db()
             if not conn:
-                QMessageBox.critical(dialog, "Error", "Failed to connect to DB.")
+                QMessageBox.critical(self.user_dialog, "Error", "Failed to connect to DB.")
                 return
 
             try:
@@ -452,7 +465,7 @@ class AdminUserController:
                     update_values.append(image_path)
 
                 if not update_fields:
-                    QMessageBox.information(dialog, "No Changes", "No changes were made to the user info.")
+                    QMessageBox.information(self.user_dialog, "No Changes", "No changes were made to the user info.")
                     return
 
                 update_query = f"""
@@ -464,19 +477,19 @@ class AdminUserController:
                 cur.execute(update_query, tuple(update_values))
 
                 conn.commit()
-                QMessageBox.information(dialog, "Updated", "User info saved successfully.")
+                QMessageBox.information(self.user_dialog, "Updated", "User info saved successfully.")
                 self.user_list()
                 toggle_edit_mode(False)
 
             except Exception as e:
                 conn.rollback()
-                QMessageBox.critical(dialog, "Error", str(e))
+                QMessageBox.critical(self.user_dialog, "Error", str(e))
             finally:
                 conn.close()
 
         def move_to_trash():
             confirm = QMessageBox.question(
-                dialog, "Confirm Deletion", "Are you sure you want to move this user to trash?",
+                self.user_dialog, "Confirm Deletion", "Are you sure you want to move this user to trash?",
                 QMessageBox.Yes | QMessageBox.No
             )
             if confirm == QMessageBox.Yes:
@@ -486,12 +499,12 @@ class AdminUserController:
                         cur = conn.cursor()
                         cur.execute("UPDATE USER_STAFF SET STAFF_ISDELETED = TRUE WHERE STAFF_ID = %s", (staff_id,))
                         conn.commit()
-                        QMessageBox.information(dialog, "Moved", "User moved to trash.")
+                        QMessageBox.information(self.user_dialog, "Moved", "User moved to trash.")
                         self.user_list()
-                        dialog.accept()
+                        self.user_dialog.accept()
                     except Exception as e:
                         conn.rollback()
-                        QMessageBox.critical(dialog, "Error", str(e))
+                        QMessageBox.critical(self.user_dialog, "Error", str(e))
                     finally:
                         conn.close()
 
@@ -503,8 +516,7 @@ class AdminUserController:
         remove_btn.clicked.connect(remove_photo)
         show_password_checkbox.stateChanged.connect(show_password_toggled)
 
-        dialog.exec_()
-
+        self.user_dialog.show()
 
     def trashUser_list(self):
         if hasattr(self, 'trashDialog') and self.trashDialog is not None:

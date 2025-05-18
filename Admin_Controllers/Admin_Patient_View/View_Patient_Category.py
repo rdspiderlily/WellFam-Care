@@ -8,6 +8,7 @@ from Admin_Controllers.Admin_Patient_View.Family_Planning import FamPlanControll
 from Admin_Controllers.Admin_Patient_View.Admission import AdmissionController
 from Admin_Controllers.Admin_Patient_View.Appointment_History import AppointmentHistoryController
 
+from PyQt5.QtCore import pyqtSignal
 
 class ViewPatientDialog(QDialog):
     def __init__(self,patient_id, user_id, parent=None):

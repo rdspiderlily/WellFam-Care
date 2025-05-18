@@ -1,15 +1,10 @@
 import psycopg2
 import bcrypt
+from db_config import DB_SETTINGS
 
 def connect_db():
     try:
-        return psycopg2.connect(
-            dbname="clinic_testing",
-            user="postgres",             
-            password="btsjk17!",     #192.168.1.2 
-            host="192.168.1.2",         
-            port="5432"
-        )
+        return psycopg2.connect(**DB_SETTINGS)
     except Exception as e:
         print(f"Connection failed: {e}")
         return None

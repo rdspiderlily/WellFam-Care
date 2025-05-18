@@ -73,7 +73,6 @@ class AutofillPersonalInfoController:
                 rows = cursor.fetchall()
 
             if rows:
-                # Get date from first row; assumes all rows have same date for the same ps_id
                 date_availed = rows[0][0]
                 subtypes = [row[2] for row in rows]  # serv_type_name
                 return {

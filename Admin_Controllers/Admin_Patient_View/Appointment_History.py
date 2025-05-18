@@ -1,12 +1,7 @@
 from PyQt5.QtWidgets import (
     QMessageBox, QHeaderView, QTableWidgetItem, QTableWidget
 )
-from PyQt5 import uic
 from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QIcon
-from datetime import date
-
-from PyQt5 import uic
 
 from Database import connect_db
 

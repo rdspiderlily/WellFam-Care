@@ -11,6 +11,7 @@ import os
 from Admin_Controllers.Admin_Dashboard import AdminDashboardController
 from Admin_Controllers.Admin_Patient import AdminPatientController
 from Admin_Controllers.Admin_Appointment import AdminAppointmentController
+from Admin_Controllers.Admin_Files import AdminFilesController
 from Admin_Controllers.Admin_Staff import AdminUserController
 from Admin_Controllers.Admin_Settings import AdminProfileController
 
@@ -66,14 +67,11 @@ class AdminMainWindow(QDialog):
         self.dashboard()
     
     def open_admin_settings(self):
-    # Set up the controller
         profile_controller = AdminProfileController(self, None, None, None)
         profile_controller.set_username(self.username)
 
-        # Load dialog and wait for it to close
         profile_controller.view_edit_dialog()
 
-        # Refresh profile picture after closing dialog
         image_path = self.get_profile_image_path(self.username)
         self.set_profile_picture(image_path)
 
@@ -98,43 +96,6 @@ class AdminMainWindow(QDialog):
         if self.admin_pic:
             pixmap = QPixmap(image_path).scaled(80, 80)
             self.admin_pic.setPixmap(pixmap)
-
-
-    # def get_profile_image_path(self, username):
-    #     try:
-    #         conn = connect_db()
-    #         cursor = conn.cursor()
-    #         cursor.execute("SELECT STAFF_PIC_PATH FROM USER_STAFF WHERE STAFF_USN = %s", (username,))
-    #         result = cursor.fetchone()
-    #         conn.close()
-
-    #         if result and result[0] and os.path.exists(result[0]):
-    #             return result[0]
-    #         else:
-    #             return "staff_images/default_user.png"
-
-    #     except Exception as e:
-    #         return "staff_images/default_user.png"
-
-    # def set_profile_picture(self, image_path):
-    #     if not os.path.exists(image_path) or not os.path.isfile(image_path):
-    #         image_path = "staff_images/default_user.png"
-
-    #     pixmap = QPixmap(image_path)
-    #     if pixmap.isNull():
-    #         image_path = "staff_images/default_user.png"
-    #         pixmap = QPixmap(image_path)
-
-    #     if pixmap.isNull():
-    #         return
-
-    #     self.admin_pic.setFixedSize(130, 120)
-    #     scaled_pixmap = pixmap.scaled(
-    #         self.admin_pic.width(),
-    #         self.admin_pic.height(),
-    #         aspectRatioMode=1
-    #     )
-    #     self.admin_pic.setPixmap(scaled_pixmap)
 
     def dashboard(self):
         self.stackedWidget.setCurrentIndex(0)
@@ -193,7 +154,18 @@ class AdminMainWindow(QDialog):
         self.clear()
         self.stackedWidget.setCurrentIndex(3)
         self.set_active_button(self.files_button)
-        self.tableWidFolder = self.findChild(QTableWidget, "")
+        self.tableWidFiles = self.findChild(QTableWidget, "tableWidgetFile")
+        self.searchFiles = self.findChild(QLineEdit, "lineEditSearchFile")
+        self.sortFilesCombo = self.findChild(QComboBox, "sortFilesBtn")
+        self.files_controller = AdminFilesController(self.tableWidFiles, self.searchFiles, self.sortFilesCombo, self.user_id)
+        
+        self.uploadFile_button = self.findChild(QPushButton, "pushBtnUploadFile")
+        if self.uploadFile_button:
+            self.uploadFile_button.clicked.connect(self.files_controller.upload_file_dialog)
+        
+        self.trashFile_button = self.findChild(QPushButton, "pushBtnTrashFile")
+        if self.trashFile_button:
+            self.trashFile_button.clicked.connect(self.files_controller.file_trash_dialog)
 
     def staff(self):
         self.clear()

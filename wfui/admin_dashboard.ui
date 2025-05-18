@@ -1742,160 +1742,11 @@ border-radius: 5px;</string>
        <string>Clinic File Handler</string>
       </property>
      </widget>
-     <widget class="QLabel" name="label_Appointments_4">
+     <widget class="QPushButton" name="pushBtnUploadFile">
       <property name="geometry">
        <rect>
-        <x>50</x>
-        <y>130</y>
-        <width>281</width>
-        <height>30</height>
-       </rect>
-      </property>
-      <property name="font">
-       <font>
-        <family>Arial Black</family>
-        <pointsize>16</pointsize>
-        <weight>75</weight>
-        <bold>true</bold>
-       </font>
-      </property>
-      <property name="styleSheet">
-       <string notr="true">background-color: rgb(0, 51, 102);
-color: white;
-border-radius: 10px;</string>
-      </property>
-      <property name="text">
-       <string>List of Patient Folders</string>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignCenter</set>
-      </property>
-      <property name="indent">
-       <number>20</number>
-      </property>
-     </widget>
-     <widget class="QTableWidget" name="tableWidgetApp_2">
-      <property name="geometry">
-       <rect>
-        <x>50</x>
-        <y>229</y>
-        <width>521</width>
-        <height>391</height>
-       </rect>
-      </property>
-      <property name="styleSheet">
-       <string notr="true">QTableWidget {
-    border: 1px solid  rgb(0, 51, 102);
-    background-color: white;
-    gridline-color: #dcdcdc;
-}
-
-QHeaderView::section {
-    background-color: rgb(0, 51, 102);
-    color: white;
-    padding: 2px;
-}
-
-QTableWidget::item {
-    font-size: 10px;
-	padding-left: 2px;
-}
-</string>
-      </property>
-      <column>
-       <property name="text">
-        <string>Folder ID</string>
-       </property>
-       <property name="font">
-        <font>
-         <family>Arial</family>
-         <pointsize>10</pointsize>
-         <weight>75</weight>
-         <bold>true</bold>
-        </font>
-       </property>
-       <property name="textAlignment">
-        <set>AlignLeading|AlignVCenter</set>
-       </property>
-      </column>
-      <column>
-       <property name="text">
-        <string>Patient Name</string>
-       </property>
-       <property name="font">
-        <font>
-         <family>Arial</family>
-         <pointsize>10</pointsize>
-         <weight>75</weight>
-         <bold>true</bold>
-        </font>
-       </property>
-       <property name="textAlignment">
-        <set>AlignLeading|AlignVCenter</set>
-       </property>
-      </column>
-      <column>
-       <property name="text">
-        <string>Date Modified</string>
-       </property>
-       <property name="font">
-        <font>
-         <family>Arial</family>
-         <pointsize>10</pointsize>
-         <weight>75</weight>
-         <bold>true</bold>
-        </font>
-       </property>
-       <property name="textAlignment">
-        <set>AlignLeading|AlignVCenter</set>
-       </property>
-      </column>
-     </widget>
-     <widget class="QLineEdit" name="lineEditSearchApp_2">
-      <property name="geometry">
-       <rect>
-        <x>50</x>
-        <y>180</y>
-        <width>241</width>
-        <height>30</height>
-       </rect>
-      </property>
-      <property name="font">
-       <font>
-        <family>Arial</family>
-        <pointsize>12</pointsize>
-       </font>
-      </property>
-      <property name="toolTipDuration">
-       <number>-1</number>
-      </property>
-      <property name="styleSheet">
-       <string notr="true">background-color: white;
-color:  rgb(0, 51, 102);
-border: 2px solid rgb(0, 51, 102);
-border-radius: 5px;</string>
-      </property>
-      <property name="cursorPosition">
-       <number>0</number>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-      </property>
-      <property name="placeholderText">
-       <string>Search Patient</string>
-      </property>
-      <property name="cursorMoveStyle">
-       <enum>Qt::LogicalMoveStyle</enum>
-      </property>
-      <property name="clearButtonEnabled">
-       <bool>false</bool>
-      </property>
-     </widget>
-     <widget class="QPushButton" name="pushBtnAddApp_2">
-      <property name="geometry">
-       <rect>
-        <x>950</x>
-        <y>180</y>
+        <x>890</x>
+        <y>110</y>
         <width>131</width>
         <height>31</height>
        </rect>
@@ -1924,13 +1775,13 @@ border-radius: 10px;</string>
        <bool>false</bool>
       </property>
      </widget>
-     <widget class="QPushButton" name="pushBtnTrashUser_3">
+     <widget class="QPushButton" name="pushBtnTrashFile">
       <property name="geometry">
        <rect>
-        <x>950</x>
-        <y>630</y>
-        <width>131</width>
-        <height>23</height>
+        <x>900</x>
+        <y>640</y>
+        <width>121</width>
+        <height>30</height>
        </rect>
       </property>
       <property name="font">
@@ -1957,14 +1808,19 @@ border-radius: 10px;</string>
        <bool>false</bool>
       </property>
      </widget>
-     <widget class="QTableWidget" name="tableWidgetApp_3">
+     <widget class="QTableWidget" name="tableWidgetFile">
       <property name="geometry">
        <rect>
-        <x>600</x>
-        <y>230</y>
-        <width>481</width>
-        <height>391</height>
+        <x>50</x>
+        <y>170</y>
+        <width>970</width>
+        <height>450</height>
        </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>9</pointsize>
+       </font>
       </property>
       <property name="styleSheet">
        <string notr="true">QTableWidget {
@@ -2019,7 +1875,55 @@ QTableWidget::item {
       </column>
       <column>
        <property name="text">
+        <string>Category</string>
+       </property>
+       <property name="font">
+        <font>
+         <family>Arial</family>
+         <pointsize>10</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="textAlignment">
+        <set>AlignLeading|AlignVCenter</set>
+       </property>
+      </column>
+      <column>
+       <property name="text">
         <string>Date Uploaded</string>
+       </property>
+       <property name="font">
+        <font>
+         <family>Arial</family>
+         <pointsize>10</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="textAlignment">
+        <set>AlignLeading|AlignVCenter</set>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>Type</string>
+       </property>
+       <property name="font">
+        <font>
+         <family>Arial</family>
+         <pointsize>10</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="textAlignment">
+        <set>AlignLeading|AlignVCenter</set>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>Size</string>
        </property>
        <property name="font">
         <font>
@@ -2049,61 +1953,13 @@ QTableWidget::item {
         <set>AlignLeading|AlignVCenter</set>
        </property>
       </column>
-      <column>
-       <property name="text">
-        <string>File Type</string>
-       </property>
-       <property name="font">
-        <font>
-         <family>Arial</family>
-         <pointsize>10</pointsize>
-         <weight>75</weight>
-         <bold>true</bold>
-        </font>
-       </property>
-       <property name="textAlignment">
-        <set>AlignLeading|AlignVCenter</set>
-       </property>
-      </column>
      </widget>
-     <widget class="QLabel" name="label_Appointments_5">
+     <widget class="QLineEdit" name="lineEditSearchFile">
       <property name="geometry">
        <rect>
-        <x>600</x>
-        <y>130</y>
-        <width>231</width>
-        <height>30</height>
-       </rect>
-      </property>
-      <property name="font">
-       <font>
-        <family>Arial Black</family>
-        <pointsize>16</pointsize>
-        <weight>75</weight>
-        <bold>true</bold>
-       </font>
-      </property>
-      <property name="styleSheet">
-       <string notr="true">background-color: rgb(0, 51, 102);
-color: white;
-border-radius: 10px;</string>
-      </property>
-      <property name="text">
-       <string>List of Clinic Files</string>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignCenter</set>
-      </property>
-      <property name="indent">
-       <number>20</number>
-      </property>
-     </widget>
-     <widget class="QLineEdit" name="lineEditSearchApp_3">
-      <property name="geometry">
-       <rect>
-        <x>600</x>
-        <y>180</y>
-        <width>231</width>
+        <x>50</x>
+        <y>110</y>
+        <width>350</width>
         <height>30</height>
        </rect>
       </property>
@@ -2137,6 +1993,78 @@ border-radius: 5px;</string>
       <property name="clearButtonEnabled">
        <bool>false</bool>
       </property>
+     </widget>
+     <widget class="QComboBox" name="sortFilesBtn">
+      <property name="geometry">
+       <rect>
+        <x>410</x>
+        <y>110</y>
+        <width>211</width>
+        <height>30</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Arial</family>
+        <pointsize>10</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="autoFillBackground">
+       <bool>false</bool>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background-color: rgb(0, 51, 102);
+color: white;
+border-radius: 5px;</string>
+      </property>
+      <property name="editable">
+       <bool>false</bool>
+      </property>
+      <property name="currentText">
+       <string>--Sort table by--</string>
+      </property>
+      <item>
+       <property name="text">
+        <string>--Sort table by--</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Date Uploaded (Ascending)</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Date Uploaded (Descending)</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>File Name (A-Z)</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>File Name (Z-A)</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Category (A-Z)</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>File Type (A-Z)</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Uploaded By (A-Z)</string>
+       </property>
+      </item>
      </widget>
     </widget>
     <widget class="QWidget" name="pageStaffs">

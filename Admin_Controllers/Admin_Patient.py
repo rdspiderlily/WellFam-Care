@@ -334,8 +334,6 @@ class AdminPatientController:
             cursor.close()
 
     def view_patient(self, row, column):
-        if column != 1:
-            return
         pat_id_item = self.tableWidPat.item(row, 0)
         
         if pat_id_item is None:

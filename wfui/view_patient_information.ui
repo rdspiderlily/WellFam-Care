@@ -294,7 +294,7 @@ QPushButton:hover {
     <string notr="true"/>
    </property>
    <property name="currentIndex">
-    <number>2</number>
+    <number>1</number>
    </property>
    <widget class="QWidget" name="viewPatInfo">
     <widget class="QLabel" name="label_3">
@@ -1843,7 +1843,7 @@ color:black;</string>
 }</string>
      </property>
      <property name="currentIndex">
-      <number>1</number>
+      <number>2</number>
      </property>
      <widget class="QWidget" name="personalInfo">
       <property name="styleSheet">

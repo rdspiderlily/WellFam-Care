@@ -1,6 +1,7 @@
 from PyQt5.QtWidgets import QLineEdit, QComboBox, QDateEdit, QPushButton, QMessageBox, QSpinBox, QCheckBox
 from PyQt5 import uic
 from Database import connect_db
+from PyQt5.QtCore import pyqtSignal
 
 class PersonalInfoController:
     def __init__(self, page, patient_id):
@@ -403,7 +404,6 @@ class PersonalInfoController:
                     cur.execute("UPDATE PATIENT SET PAT_ISDELETED = TRUE WHERE PAT_ID = %s", (self.patient_id,))
                     conn.commit()
                     QMessageBox.information(self.page, "Deleted", "Patient has been moved to trash successfully.")
-                    
                     self.page.window().close()
 
                 except Exception as e:

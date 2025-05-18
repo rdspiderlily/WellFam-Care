@@ -5,7 +5,7 @@ from PyQt5.QtWidgets import (
 )
 
 from PyQt5.QtCore import QDate, QTime
-from datetime import date, datetime
+from datetime import date
 import os
 import webbrowser
 from PyPDF2 import PdfReader, PdfWriter
@@ -1460,7 +1460,6 @@ class MaternalRecordsController:
 
         if reply == QMessageBox.Yes:
             self.save_all_page()
-            QMessageBox.information(self.pageMSR, "Success", "Information saved successfully.")
             self.set_all_fields_read_only()
 
     def on_cancel_clicked(self):

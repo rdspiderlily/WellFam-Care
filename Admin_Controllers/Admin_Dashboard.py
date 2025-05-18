@@ -215,7 +215,7 @@ class AdminDashboardController:
                 return
             
             self.queueNo = self.queueDialog.findChild(QLineEdit, "lineEditQueueNo")
-            self.patientName = self.queueDialog.findChild(QLineEdit, "lineEditPatientName")
+            self.patientName = self.queueDialog.findChild(QLineEdit, "lineEditPatName")
             self.appointmentTime = self.queueDialog.findChild(QLineEdit, "lineEditAppTime")
 
             self.checkboxYes = self.queueDialog.findChild(QWidget, "checkBoxYes")
@@ -240,8 +240,8 @@ class AdminDashboardController:
             self.saveButton.clicked.connect(self.save_queue_update)
         
         queue_no = self.tableWidQueue.item(row, 0).text()
-        patient_name = self.tableWidQueue.item(row, 1).text()
-        app_time = self.tableWidQueue.item(row, 2).text()
+        app_time = self.tableWidQueue.item(row, 1).text()
+        patient_name = self.tableWidQueue.item(row, 2).text()
 
         self.queueNo.setText(queue_no)
         self.queueNo.setEnabled(False)
