@@ -13,6 +13,7 @@ Supports login system, patient records, appointments, document uploads and servi
     - `bcrypt`
     - `PyQt5`
     - `PyPDF2`
+    - `PyQtChart`
 You can install the required packages via: pip install -r requirements.txt
 
 #

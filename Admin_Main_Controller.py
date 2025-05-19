@@ -1,7 +1,7 @@
 from PyQt5.QtWidgets import (
     QApplication, QDialog, QMessageBox, QStackedWidget, 
     QPushButton, QLabel, QCalendarWidget, QLineEdit, 
-    QTableWidget, QWidget, QComboBox
+    QTableWidget, QWidget, QComboBox, QFrame
 )
 from PyQt5 import uic
 from PyQt5.QtGui import QIcon, QPixmap
@@ -13,6 +13,7 @@ from Admin_Controllers.Admin_Patient import AdminPatientController
 from Admin_Controllers.Admin_Appointment import AdminAppointmentController
 from Admin_Controllers.Admin_Files import AdminFilesController
 from Admin_Controllers.Admin_Staff import AdminUserController
+from Admin_Controllers.Admin_Report import AdminReportController
 from Admin_Controllers.Admin_Settings import AdminProfileController
 
 from Database import connect_db
@@ -28,7 +29,6 @@ class AdminMainWindow(QDialog):
         uic.loadUi("wfui/admin_dashboard.ui", self)
         self.setWindowTitle("WellFam Care")
         self.setWindowIcon(QIcon("wfpics/logo1.jpg"))
-
 
         self.admin_username = self.findChild(QLabel, "adminUName")
         if self.admin_username:
@@ -187,6 +187,13 @@ class AdminMainWindow(QDialog):
         self.clear()
         self.stackedWidget.setCurrentIndex(5)
         self.set_active_button(self.report_button)
+        self.servicesAvailed = self.findChild(QFrame, "serviceAvailed")
+        self.pregNo = self.findChild(QFrame, "pregPat")
+        self.notpregNo = self.findChild(QFrame, "notpregPat")
+        self.lineChart = self.findChild(QFrame, "lineChart")
+        self.monthlyVServ = self.findChild(QFrame, "visitsService")
+        self.report_controller = AdminReportController(self.servicesAvailed, self.lineChart, self.pregNo, self.notpregNo, self.monthlyVServ)
+        self.report_controller.line_chart()
 
     def settings(self):
         self.clear()
