@@ -104,8 +104,8 @@ class AdminUserController:
             if remove_btn:
                 remove_btn.clicked.connect(lambda: self.remove_user_pic(self.pic_label))
 
-        self.refresh_trash_table()
-        self.trashDialog.show()
+        self.user_list()
+        self.user_dialog.show()
 
     def load_roles(self, comboBox):
         conn = connect_db()
@@ -195,7 +195,7 @@ class AdminUserController:
             QMessageBox.warning(addUserWidget, "Password Mismatch", "Passwords do not match.")
             return
 
-        hashed_password = bcrypt.hashpw(user_password.encode('utf-8'), bcrypt.gensalt())
+        hashed_password = bcrypt.hashpw(user_password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
 
         if self.selected_user_pic_path:
             user_pic_path = self.save_user_image(self.selected_user_pic_path)

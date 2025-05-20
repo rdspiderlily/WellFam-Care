@@ -5,7 +5,7 @@ from PyQt5.QtCore import Qt
 import sys
 
 from Admin_Main_Controller import AdminMainWindow
-#from MidwifeAide_Main_Controller import MidwifeWindow
+from MidwifeAide_Main_Controller import MidwifeMainWindow
 
 from Database import connect_db, check_user_credentials, get_user_role, get_user_id
 
@@ -47,8 +47,13 @@ class LoginWindow(QDialog):
                     self.main_window.show()
                     self.close()
 
-                # elif role == "Midwife":
-                #     self.main_window = MidwifeWindow()
+                elif role == "Midwife":
+                    try:
+                        self.main_window = MidwifeMainWindow(username, user_id)  # if it requires these
+                        self.main_window.show()
+                        self.close()
+                    except Exception as e:
+                        QMessageBox.critical(self, "Error", f"Failed to load Midwife window:\n{e}")
                 # elif role == "Nursing Aide":
                 #     self.main_window = AideWindow()
 
