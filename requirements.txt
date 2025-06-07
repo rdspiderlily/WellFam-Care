@@ -1,0 +1,6 @@
+psycopg2
+bcrypt
+PyQt5
+PyPDF2
+python-dotenv
+PyQtChart
